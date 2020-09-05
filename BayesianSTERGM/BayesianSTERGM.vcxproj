@@ -150,7 +150,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BayesianSTERGM.cpp" />
+    <ClCompile Include="ERGM_MCML.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="armadillo_setting_help_site.txt" />

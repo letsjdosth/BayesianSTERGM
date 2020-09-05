@@ -82,8 +82,16 @@ class Network {
             updateNetworkInfo();
         }
 
+        Network() {
+            //빈 생성자
+        }
+
         int get_n_Node() {
             return n_Node;
+        }
+
+        int get_n_Edge() {
+            return n_Edge;
         }
 
         Mat<int> get_netStructure() {
@@ -143,7 +151,7 @@ private:
     double log_r(Network lastNet, pair<Network, int> proposedNetPair) {
         //model specify 분리할 수 있으면 좋긴할듯 (어떻게?)
         //NOW: model : n_Edge
-        Col<double> model_delta = { (double) proposedNetPair.first.get_n_Node() - lastNet.get_n_Node() };
+        Col<double> model_delta = { (double) proposedNetPair.first.get_n_Edge() - lastNet.get_n_Edge() }; // <-model specify
         Col<double> log_r_col = (given_param * model_delta);
         double res = log_r_col(0);
         if (proposedNetPair.second == 1) res *= -1;
@@ -182,41 +190,187 @@ public:
         //model도 받도록 나중에
     }
 
-    void generate_sample(int num_iter) {
+    void generateSample(int num_iter) {
         for (int i = 0; i < num_iter; i++) {
             sampler();
         }
-        cout << "MCMC done" << endl;
+        // cout << "MCMC done: " << n_iterated << " networks are generated." << endl;
+    }
+
+    void cutBurnIn(int n_burn_in) {
+        MCMCSampleVec.erase(MCMCSampleVec.begin(), MCMCSampleVec.begin() + n_burn_in + 1);
+    }
+
+    vector<Network> getMCMCSampleVec() {
+        return MCMCSampleVec;
     }
 
     void testOut() {
-        for (int i = 0; i < 10; i++) {
+        int i = 0;
+        while (i<MCMCSampleVec.size()) {
             Network printedNet = MCMCSampleVec[i];
+            cout << "#" << i << endl;
             printedNet.printSummary();
-
+            i++;
         }
         
     }
 };
 
 
+class optimizeParam {
+private:
+    vector<Col<double>> ParamSequence;
+    Network observedNet;
+    int n_Node;
+    
+    void updateNetworkInfo() {
+        n_Node = observedNet.get_n_Node();
+    }
+
+    vector<Network> genSampleByMCMC(int m_Smpl, int m_burnIn) {
+        //undirected graph
+        Col<double> lastParam = ParamSequence.back();
+        Mat<int> initialNetStructure; // isolated graph로 시작 (random으로 뿌리면 더 좋을듯)
+        initialNetStructure.zeros(n_Node, n_Node);
+        Network initialNet(initialNetStructure, 0);
+
+        netMCMCSampler MCMCsampler(lastParam, initialNet);
+        MCMCsampler.generateSample(m_Smpl);
+        MCMCsampler.cutBurnIn(m_burnIn);
+        vector<Network> MCMCSampleVec = MCMCsampler.getMCMCSampleVec();
+        return MCMCSampleVec;
+    }
+
+
+    Col<double> genWeight(Col<double> lastParam, vector<Col<double>> MCMCSample_ModelVal) {
+        Col<double> initParam = ParamSequence.front();
+        Col<double> weight = zeros(MCMCSample_ModelVal.size());
+        for (int i = 0; i < MCMCSample_ModelVal.size(); i++) {
+            Col<double> beforeExp = (lastParam - initParam).t()* MCMCSample_ModelVal[i];
+            weight[i] = exp(beforeExp(0));
+        }
+        double weightTotal = accu(weight);
+        weight = weight / weightTotal;
+        return weight;
+    }
+
+
+    Mat<double> invInfoCal(Col<double> lastParam, vector<Col<double>> MCMCSample_ModelVal, Col<double> weight, Col<double> wZsum) {
+        Mat<double> FisherInfo = zeros(lastParam.size(), lastParam.size());
+        Mat<double> wZZsum = zeros(lastParam.size(), lastParam.size());
+        
+        for (int i = 0; i < MCMCSample_ModelVal.size(); i++) {
+            wZZsum += MCMCSample_ModelVal[i] * (MCMCSample_ModelVal[i].t()) * weight[i];
+        }
+        FisherInfo = wZZsum - wZsum * (wZsum.t());
+        Mat<double> invFisherInfo = inv(FisherInfo);
+        return invFisherInfo;
+    }
+
+    Col<double> NRupdate1Step() {
+        Col<double> lastParam = ParamSequence.back();
+
+        //MCMC
+        int m_MCSample = 1000;
+        vector<Network> MCMCSampleVec = genSampleByMCMC(10000, 9000);
+        
+        //make MCMCSample_ModelVal vector for each MCMC sample (in paper, Z_i)
+        //NOW: model : n_Edge
+        vector<Col<double>> MCMCSample_ModelVal; //Z_i vectors
+        for (int i = 0; i < MCMCSampleVec.size(); i++) {
+            Col<double> val = { (double)MCMCSampleVec[i].get_n_Edge() }; // <- model specify
+            MCMCSample_ModelVal.push_back(val);
+        }
+
+        //make weight vector (in paper, w_i)
+        Col<double> weight = genWeight(lastParam, MCMCSample_ModelVal);
+
+        //Newton-Raphson
+        Col<double> Observed_ModelVal = {(double) observedNet.get_n_Edge() };
+
+        Col<double> wZsum = zeros(lastParam.size());
+        for (int i = 0; i < MCMCSample_ModelVal.size(); i++) {
+            wZsum += MCMCSample_ModelVal[i] * weight[i];
+        }
+        Mat<double> invFisherInfo = invInfoCal(lastParam, MCMCSample_ModelVal, weight, wZsum);
+
+        
+        Col<double> newParam = lastParam + invFisherInfo * ( Observed_ModelVal - wZsum );
+        return newParam;
+    }
+
+
+public:
+    optimizeParam(Col<double> initialParam, Network observed) {
+        ParamSequence.push_back(initialParam);
+        observedNet = observed;
+        updateNetworkInfo();
+    }
+    
+    void RunOptimize() {
+        bool eq = false;
+        int runNWnum = 0;
+        double epsilon_thres = 0.002;
+        while (!eq) {
+            cout << "N-R iter" << runNWnum << endl;
+            Col<double> lastParam = ParamSequence.back();
+            Col<double> newParam = NRupdate1Step();
+            ParamSequence.push_back(newParam);
+            eq = approx_equal(lastParam, newParam, "absdiff", epsilon_thres);
+            cout << "proposed: " << newParam << endl;
+            runNWnum++;
+        }
+        cout << "optimized! iter:" << runNWnum << endl;
+    }
+
+    void testOut() {
+        vector<Network> MCMCSampleVec = genSampleByMCMC(10, 8);
+        int i = 0;
+        while (i < MCMCSampleVec.size()) {
+            Network printedNet = MCMCSampleVec[i];
+            cout << "#" << i << endl;
+            printedNet.printSummary();
+            i++;
+        }
+        
+    }
+};
+
 
 int main()
 {
-    Mat<int> A = { {0,1,1},
-                    {1,0,1},
-                    {1,1,0} };
+    Mat<int> A = {  {0,1,1,0,0,1},
+                    {1,0,1,0,0,0},
+                    {1,1,0,0,1,0},
+                    {0,0,0,0,0,1},
+                    {0,0,1,0,0,1},
+                    {1,0,0,1,1,0} }
+    ;
 
     Network netA = Network(A, false);
     netA.printSummary();
 
 
-    Col<double> testParam = { 0.1 };
-    netMCMCSampler sampler(testParam, netA);
+    //MCMCsampler test
+    //Col<double> testParam = { 0.1 };
+    //netMCMCSampler sampler(testParam, netA);
+    //sampler.generateSample(10);
+    //sampler.testOut();
+    //sampler.cutBurnIn(8);
+    //cout << "after burnin" << endl;
+    //sampler.testOut();
 
-    sampler.generate_sample(10);
-    sampler.testOut();
+    //Optimizer test
+    Col<double> initParam = { 0.0 };
+    optimizeParam OptimizerA (initParam, netA);
+    OptimizerA.RunOptimize();
+
+    //Col<double> testvec = { 1,2,3,4,5 };
+    //testvec = testvec / 5;
+    //cout << testvec << endl;
+
+
 
     return 0;
 }
-
