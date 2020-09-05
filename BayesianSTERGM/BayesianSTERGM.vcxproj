@@ -152,6 +152,9 @@
   <ItemGroup>
     <ClCompile Include="BayesianSTERGM.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="armadillo_setting_help_site.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
