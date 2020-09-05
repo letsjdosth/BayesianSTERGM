@@ -20,10 +20,12 @@ class Network {
         bool isDirected;
         int n_Node;
         int n_Edge;
+        Col<int> dist_nodeDegree;
 
         void updateNetworkInfo() {
             n_Node = netStructure.n_rows;
             n_Edge = edgeNum();
+            dist_nodeDegree = nodeDegreeDist();
         }
         
         int edgeNum() {
@@ -39,7 +41,7 @@ class Network {
             Col<int> nodeDegree = sum(netStructure, 1);
             return nodeDegree;
         }
-        
+
         Col<int> nodeDegreeDist() {
             Col<int> degreeDistRes;
             degreeDistRes.zeros(n_Node + 1);
@@ -51,6 +53,35 @@ class Network {
                 degreeDistRes(*it)++;
             }
             return degreeDistRes;
+        }
+
+        Col<int> sharedPartnerDist() {
+            
+        }
+        
+        int fact(int n) {
+            int res = 1;
+            for (int i = 2; i <= n; i++) {
+                res = res * i;
+            }
+            return res;
+        }
+        int nCr(int n, int r) {
+            return fact(n) / (fact(r) * fact(n - r));
+        }
+
+        Col<int> k_starDist() {
+            Col<int> k_starDistRes;
+            k_starDistRes.zeros(n_Node);
+            k_starDistRes(0) = 0; //undefined
+            k_starDistRes(1) = n_Edge;
+            for (int k = 2; k < n_Node; k++) {
+                for (int i = 1; i < n_Node; i++) {
+                    k_starDistRes(k) += (nCr(i, k) * dist_nodeDegree(i));
+                }
+            }
+            return k_starDistRes;
+
         }
 
         int n_triangle() {
@@ -104,9 +135,10 @@ class Network {
             cout << "isDirected :" << isDirected << endl;
             cout << "n_node :" << n_Node << endl;
             cout << "n_edge :" << n_Edge << endl;
-            cout << "node degree : " << nodeDegree().t() << endl;
+            cout << "node degree : " << dist_nodeDegree.t() << endl;
             cout << "degree_dist : " << nodeDegreeDist().t() << endl;
             cout << "triangle : " << n_triangle() << endl;
+            cout << "kstar_dist :" << k_starDist().t() << endl;
             cout << "===========================" << endl;
         }
 
@@ -322,6 +354,10 @@ public:
             runNWnum++;
         }
         cout << "optimized! iter:" << runNWnum << endl;
+    }
+
+    Col<double> getMCMLE() {
+        return ParamSequence.back();
     }
 
     void testOut() {
