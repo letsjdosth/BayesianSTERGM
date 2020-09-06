@@ -150,7 +150,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BERGM.cpp" />
+    <ClCompile Include="BERGM_MCMC.cpp" />
     <ClCompile Include="ERGM_MCML.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="netMCMCSampler.cpp" />
@@ -160,6 +160,7 @@
     <Text Include="armadillo_setting_help_site.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BERGM_MCMC.h" />
     <ClInclude Include="ERGM_MCML.h" />
     <ClInclude Include="netMCMCSampler.h" />
     <ClInclude Include="Network.h" />

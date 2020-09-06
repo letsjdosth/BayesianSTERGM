@@ -23,9 +23,6 @@
     <ClCompile Include="ERGM_MCML.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="BERGM.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -33,6 +30,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="netMCMCSampler.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="BERGM_MCMC.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -44,6 +44,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="ERGM_MCML.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="BERGM_MCMC.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
