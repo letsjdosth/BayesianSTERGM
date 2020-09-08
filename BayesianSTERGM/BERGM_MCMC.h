@@ -23,10 +23,11 @@ private:
     Network genNetworkSampleByMCMC(Col<double> parameter, int m_MCMCiter);
     double log_paramPriorPDF(Col<double> param);
     double log_r(Col<double> lastParam, Col<double> proposedParam, Network exchangeNet);
-    void sampler();
+    void sampler(int num_exchangeMCiter);
 public:
     BERGM_MCMC(Col<double> initialParam, Network observed);
-    void generateSample(int num_iter);
+    void generateSample(int num_mainMCiter, int num_exchangeMCiter);
     void cutBurnIn(int n_burn_in);
+    vector<Col<double>> getPosteriorSample();
     void testOut();
 };

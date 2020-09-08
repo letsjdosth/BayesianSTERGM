@@ -17,10 +17,10 @@ void BERGM_MCMC::updateNetworkInfo() {
     n_paramDim = ParamPosteriorSmpl[0].size();
 }
 
-Col<double> BERGM_MCMC::proposeParam(Col<double> mean, double covRate) {
+Col<double> BERGM_MCMC::proposeParam(Col<double> mean, double varRate) {
     //from multivariate normal
     Mat<double> covariance(n_paramDim, n_paramDim, fill::eye);
-    Col<double> proposedParam = mvnrnd(mean, covariance * covRate);
+    Col<double> proposedParam = mvnrnd(mean, covariance * varRate);
     return proposedParam;
 }
 
@@ -52,10 +52,10 @@ double BERGM_MCMC::log_r(Col<double> lastParam, Col<double> proposedParam, Netwo
     return res;
 }
 
-void BERGM_MCMC::sampler() {
+void BERGM_MCMC::sampler(int num_exchangeMCiter) {
     Col<double> lastParam = ParamPosteriorSmpl.back();
     Col<double> proposedParam = proposeParam(lastParam, 0.0025);
-    Network exchangeNet = genNetworkSampleByMCMC(proposedParam, 10000);
+    Network exchangeNet = genNetworkSampleByMCMC(proposedParam, num_exchangeMCiter);
 
     double log_unif_sample = log(randu());
     double log_r_val = log_r(lastParam, proposedParam, exchangeNet);
@@ -81,12 +81,12 @@ BERGM_MCMC::BERGM_MCMC(Col<double> initialParam, Network observed) {
 }
 
 
-void BERGM_MCMC::generateSample(int num_iter) {
-    for (int i = 0; i < num_iter; i++) {
+void BERGM_MCMC::generateSample(int num_mainMCiter, int num_exchangeMCiter) {
+    for (int i = 0; i < num_mainMCiter; i++) {
         if (i % 10 == 0) {
-            cout << "MCMC : " << n_iterated << "/" << num_iter << endl;
+            cout << "MCMC : " << n_iterated << "/" << num_mainMCiter << endl;
         }
-        sampler();
+        sampler(num_exchangeMCiter);
     }
     cout << "MCMC done: " << n_iterated << " posterior samples are generated." << endl;
 }
@@ -94,6 +94,12 @@ void BERGM_MCMC::generateSample(int num_iter) {
 void BERGM_MCMC::cutBurnIn(int n_burn_in) {
     ParamPosteriorSmpl.erase(ParamPosteriorSmpl.begin(), ParamPosteriorSmpl.begin() + n_burn_in + 1);
 }
+
+vector<Col<double>> BERGM_MCMC::getPosteriorSample() {
+    return ParamPosteriorSmpl;
+}
+
+
 
 void BERGM_MCMC::testOut() {
     int i = 0;
