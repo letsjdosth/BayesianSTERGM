@@ -16,6 +16,7 @@ using namespace arma;
 //FOR ERGM:
 // 1. netMCMCSampler.log_r 의 model_delta(Col<double>)에서 모델항 각각에 대한 '차이 term'을 col의 element로 추가
 // 2. ERGM_MCML.NRupdate1Step의, MCMCSampleVec을 만드는 for문 안 val(Col<double>)에 일반 term을 col의 element로 추가
+// 3. ERGM_MCML.NRupdate1Step의, Col<double> Observed_ModelVal에 일반 term을 col의 element로 추가
 //FOR BERGM:
 // 1. netMCMCSampler.log_r 의 model_delta(Col<double>)에서 모델항 각각에 대한 '차이 term'을 col의 element로 추가
 // 2. BERGM_MCMC.log_r의 model_delta(Col<double>)에서 모델항 각각에 대한 '차이 term'을 col의 element로 추가
