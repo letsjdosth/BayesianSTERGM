@@ -67,7 +67,7 @@ Col<double> ERGM_MCML::NRupdate1Step() {
     //NOW: model : n_Edge
     vector<Col<double>> MCMCSample_ModelVal; //Z_i vectors
     for (int i = 0; i < MCMCSampleVec.size(); i++) {
-        Col<double> val = { (double)MCMCSampleVec[i].get_n_Edge() }; // <- model specify
+        Col<double> val = { (double)MCMCSampleVec[i].get_n_Edge(), (double)MCMCSampleVec[i].get_n_triangle() }; // <- model specify
         MCMCSample_ModelVal.push_back(val);
     }
 
@@ -75,7 +75,7 @@ Col<double> ERGM_MCML::NRupdate1Step() {
     Col<double> weight = genWeight(lastParam, MCMCSample_ModelVal);
 
     //Newton-Raphson
-    Col<double> Observed_ModelVal = { (double)observedNet.get_n_Edge() };
+    Col<double> Observed_ModelVal = { (double)observedNet.get_n_Edge(), (double)observedNet.get_n_triangle() }; // <-model specify
 
     Col<double> wZsum = zeros(lastParam.size());
     for (int i = 0; i < MCMCSample_ModelVal.size(); i++) {
@@ -99,7 +99,7 @@ ERGM_MCML::ERGM_MCML(Col<double> initialParam, Network observed) {
 void ERGM_MCML::RunOptimize() {
     bool eq = false;
     int runNWnum = 0;
-    double epsilon_thres = 0.002;
+    double epsilon_thres = 0.05;
     while (!eq) {
         cout << "N-R iter" << runNWnum << endl;
         Col<double> lastParam = ParamSequence.back();

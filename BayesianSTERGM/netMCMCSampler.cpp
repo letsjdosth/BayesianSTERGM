@@ -33,7 +33,8 @@ pair<Network, int> netMCMCSampler::proposeNet(Network lastNet) {
 double netMCMCSampler::log_r(Network lastNet, pair<Network, int> proposedNetPair) {
     //model specify 분리할 수 있으면 좋긴할듯 (어떻게?)
     //NOW: model : n_Edge
-    Col<double> model_delta = { (double)proposedNetPair.first.get_n_Edge() - lastNet.get_n_Edge() }; // <-model specify
+    Col<double> model_delta = { (double)proposedNetPair.first.get_n_Edge() - lastNet.get_n_Edge(),
+                                (double)proposedNetPair.first.get_n_triangle() - lastNet.get_n_triangle()}; // <-model specify
     Col<double> log_r_col = (given_param * model_delta);
     double res = log_r_col(0);
     if (proposedNetPair.second == 1) res *= -1;

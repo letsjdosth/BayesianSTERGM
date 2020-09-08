@@ -110,6 +110,10 @@ int Network::get_n_Edge() {
     return n_Edge;
 }
 
+int Network::get_n_triangle() {
+    return n_triangle();
+}
+
 Mat<int> Network::get_netStructure() {
     return netStructure;
 }

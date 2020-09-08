@@ -71,6 +71,11 @@ private:
         return autoCorrVec;
     }
 
+    Col<double> smplQuantile(int dim_idx, Col<double> prob_pts) {
+        Col<double> sampleSequence = MCDimSepVec[dim_idx];
+        return quantile(sampleSequence, prob_pts);
+    }
+
 
 public:
     MCdiagnostics(vector<Col<double>> MCsample) {
@@ -85,11 +90,24 @@ public:
         return autoCorr(dim_idx, maxLag);
     }
 
+    void print_mean(int dim_idx) {
+        cout << "mean(dim #" << dim_idx << ") : " << MCDimMean[dim_idx] << endl;
+    }
+
     void print_autoCorr(int dim_idx, int maxLag) {
         vector<double> nowAutoCorr = autoCorr(dim_idx, maxLag);
         cout << "auotcorrelation: ";
         for (int i = 0; i < maxLag + 1; i++) {
             cout << nowAutoCorr[i] << "  ";
+        }
+        cout << endl;
+    }
+
+    void print_quantile(int dim_idx, Col<double> prob_pts){
+        Col<double> quantileVec = smplQuantile(dim_idx, prob_pts);
+        cout << "quantile: ";
+        for (int i = 0; i < prob_pts.size(); i++) {
+            cout << quantileVec[i] << "  ";
         }
         cout << endl;
     }
@@ -119,24 +137,28 @@ int main()
     //cout << "after burnin" << endl;
     //sampler.testOut();
 
-    ////Optimizer test
-    //Col<double> initParam = { 0.0 };
-    //ERGM_MCML OptimizerA(initParam, netA);
-    //OptimizerA.RunOptimize();
+    //ERGM test
+    //Optimizer test
+    /*Col<double> initParam = { 0.0 , 0.0 };
+    ERGM_MCML OptimizerA(initParam, netA);
+    OptimizerA.RunOptimize();*/
 
-    //Col<double> testvec = { 1,2,3,4,5 };
-    //testvec = testvec / 5;
-    //cout << testvec << endl;
 
-    //BERGM test
-    Col<double> initParam = { 0.0 };
+    ////BERGM test
+    Col<double> initParam = { 0.0 , 0.0};
     BERGM_MCMC bergm(initParam, netA);
-    bergm.generateSample(1000, 10000);
-    bergm.cutBurnIn(500);
+    bergm.generateSample(3000, 3000);
+    bergm.cutBurnIn(1000);
     
 
     MCdiagnostics bergmDiag(bergm.getPosteriorSample());
+    bergmDiag.print_mean(0);
+    Col<double> quantilePts = { 0.1, 0.25, 0.5, 0.75, 0.9 };
+    bergmDiag.print_quantile(0, quantilePts);
     bergmDiag.print_autoCorr(0, 30);
+    bergmDiag.print_mean(1);
+    bergmDiag.print_quantile(1, quantilePts);
+    bergmDiag.print_autoCorr(1, 30);
     
     return 0;
 }

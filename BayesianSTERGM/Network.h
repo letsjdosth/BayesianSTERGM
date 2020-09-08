@@ -17,6 +17,7 @@ private:
     Col<int> nodeDegree();
     Col<int> nodeDegreeDist();
     //Col<int> sharedPartnerDist();
+    //Col<int> geometricallyWeightedDegree();
     int fact(int n);
     int nCr(int n, int r);
     Col<int> k_starDist();
@@ -26,6 +27,7 @@ public:
     Network();
     int get_n_Node();
     int get_n_Edge();
+    int get_n_triangle();
     Mat<int> get_netStructure();
     void printSummary();
 };
