@@ -115,13 +115,12 @@ public:
 
 int main()
 {
-    Mat<int> A = { {0,1,1,0,0,1},
-                    {1,0,1,0,0,0},
-                    {1,1,0,0,1,0},
-                    {0,0,0,0,0,1},
-                    {0,0,1,0,0,1},
-                    {1,0,0,1,1,0} }
-    ;
+    Mat<int> A = {{0,1,0,1,1},
+                  {1,0,1,0,1},
+                  {0,1,0,0,0},
+                  {1,0,0,0,0},
+                  {1,1,0,0,0}
+    };
 
     Network netA = Network(A, false);
     netA.printSummary();
@@ -138,11 +137,11 @@ int main()
 
     //ERGM test
     //Optimizer test
-    Col<double> initParam = { 0.0 , 0.0 };
+    /*Col<double> initParam = { 0.0 , 0.0 };
     ERGM_MCML OptimizerA(initParam, netA);
     OptimizerA.RunOptimize();
     OptimizerA.printDiagnosticVal();
-    
+    */
 
 
     //////BERGM test

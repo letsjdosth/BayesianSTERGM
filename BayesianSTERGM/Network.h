@@ -14,14 +14,26 @@ private:
 
     void updateNetworkInfo();
     int edgeNum();
+    
     Col<int> nodeDegree();
     Col<int> nodeDegreeDist();
-    //Col<int> sharedPartnerDist();
-    //Col<int> geometricallyWeightedDegree();
+    double geoWeightedNodeDegree(double tau);
+
+    Mat<int> edgewiseSharedPartner();
+    Col<int> edgewiseSharedPartnerDist();
+    double geoWeightedESP(double tau);
+    
+    Mat<int> dyadwiseSharedPartner();
+    Col<int> dyadwiseSharedPartnerDist();
+    double geoWeightedDSP(double tau);
+
     int fact(int n);
     int nCr(int n, int r);
     Col<int> k_starDist();
     int n_triangle();
+    Col<int> n_triangleDist();
+
+
 public:
     Network(Mat<int> inputNet, bool isDirectedInput);
     Network();

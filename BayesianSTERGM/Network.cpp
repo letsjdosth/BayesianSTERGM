@@ -39,9 +39,115 @@ Col<int> Network::nodeDegreeDist() {
     return degreeDistRes;
 }
 
-//Col<int> Network::sharedPartnerDist() {
-//
-//}
+double Network::geoWeightedNodeDegree(double tau) {
+    double gwd=0;
+    double d = 1 - exp(-tau);
+    double s = 1;
+    Col<int> degreeDist = nodeDegreeDist();
+
+    for (int i = 1; i < n_Node; i++) {
+        s *= d;
+        gwd += ((1 - s) * degreeDist(i));
+    }
+    gwd *= exp(tau);
+    return gwd;
+}
+
+Mat<int> Network::edgewiseSharedPartner() {
+    //undirected
+    Mat<int> ESP;
+    ESP.zeros(n_Node, n_Node);
+
+    for (int c = 1; c < n_Node; c++) {
+        for (int r = 0; r < c; r++) {
+            if (netStructure(r, c) == 1) {
+                for (int k = 0; k < n_Node; k++) {
+                    if (netStructure(r, k) == 1 && netStructure(k, c) == 1) {
+                        ESP(c, r) += 1;
+                        ESP(r, c) += 1;
+                    }
+                }
+            }
+        }
+    }
+    return ESP;
+}
+
+Col<int> Network::edgewiseSharedPartnerDist() {
+    //undirected
+    Col<int> ESPDistRes;
+    ESPDistRes.zeros(n_Node - 1); // 0 ~ (n-2);
+    Mat<int> ESP = edgewiseSharedPartner();
+    for (int c = 1;c < n_Node; c++) {
+        for (int r = 0; r < c; r++) {
+            int i = ESP(r, c);
+            ESPDistRes(i) += 1;
+        }
+    }
+    ESPDistRes(0) = 0;
+    ESPDistRes(0) = n_Node - sum(ESPDistRes);
+
+    return ESPDistRes;
+}
+
+double Network::geoWeightedESP(double tau) {
+    double GWESP = 0;
+    double d = 1 - exp(-tau);
+    double s = 1;
+    Col<int> ESPdist = edgewiseSharedPartnerDist();
+    for (int i = 1; i < (n_Node - 1); i++) {
+        s *= d;
+        GWESP += (1 - s) * ESPdist(i);
+    }
+    GWESP *= exp(tau);
+    return GWESP;
+}
+
+Mat<int> Network::dyadwiseSharedPartner() {
+    //undirected
+    Mat<int> DSP;
+    DSP.zeros(n_Node, n_Node);
+
+    for (int c = 1; c < n_Node; c++) {
+        for (int r = 0; r < c; r++) {
+            for (int k = 0; k < n_Node; k++) {
+                if (netStructure(r, k) == 1 && netStructure(k, c) == 1) {
+                    DSP(c, r) += 1;
+                    DSP(r, c) += 1;
+                }
+            }
+        }
+    }
+    return DSP;
+}
+Col<int> Network::dyadwiseSharedPartnerDist() {
+    //undirected
+    Col<int> DSPDistRes;
+    DSPDistRes.zeros(n_Node - 1); // 0 ~ (n-2);
+    Mat<int> ESP = dyadwiseSharedPartner();
+    for (int c = 1;c < n_Node; c++) {
+        for (int r = 0; r < c; r++) {
+            int i = ESP(r, c);
+            DSPDistRes(i) += 1;
+        }
+    }
+    return DSPDistRes;
+
+}
+double Network::geoWeightedDSP(double tau) {
+    double GWDSP = 0;
+    double d = 1 - exp(-tau);
+    double s = 1;
+    Col<int> ESPdist = dyadwiseSharedPartnerDist();
+    for (int i = 1; i < (n_Node - 1); i++) {
+        s *= d;
+        GWDSP += (1 - s) * ESPdist(i);
+    }
+    GWDSP *= exp(tau);
+    return GWDSP;
+}
+
+
 
 int Network::fact(int n) {
     int res = 1;
@@ -58,7 +164,7 @@ int Network::nCr(int n, int r) {
 Col<int> Network::k_starDist() {
     Col<int> k_starDistRes;
     k_starDistRes.zeros(n_Node);
-    k_starDistRes(0) = 0; //undefined
+    // k_starDistRes(0) = 0; //undefined
     k_starDistRes(1) = n_Edge;
     for (int k = 2; k < n_Node; k++) {
         for (int i = 1; i < n_Node; i++) {
@@ -91,6 +197,28 @@ int Network::n_triangle() {
     }
 }
 
+Col<int> Network::n_triangleDist() {
+    Col<int> triangleDistRes;
+    triangleDistRes.zeros(n_Node-1);
+    
+    Col<int> ESPdist = edgewiseSharedPartnerDist();
+    // triangleDistRes(0) = 0; //undefined
+    // 1-order
+    for (int i = 0; i < ESPdist.size(); i++) {
+        triangleDistRes(1) += (i * ESPdist(i));
+    }
+    triangleDistRes(1) /= 3;
+
+    // 2-order ~
+    for (int k = 2; k < (n_Node - 1); k++) {
+        for (int i = 1; i < (n_Node - 1); i++) {
+            triangleDistRes(k) += nCr(i, k) * ESPdist(i);
+        }
+    }
+
+    return triangleDistRes;
+}
+
 
 Network::Network(Mat<int> inputNet, bool isDirectedInput) {
     netStructure = inputNet;
@@ -121,13 +249,22 @@ Mat<int> Network::get_netStructure() {
 void Network::printSummary() {
     cout << "===========================" << endl;
     cout << netStructure << endl;
-    cout << "isDirected :" << isDirected << endl;
-    cout << "n_node :" << n_Node << endl;
-    cout << "n_edge :" << n_Edge << endl;
+    cout << "isDirected : " << isDirected << endl;
+    cout << "n_node : " << n_Node << endl;
+    cout << "n_edge : " << n_Edge << endl;
     cout << "node degree : " << dist_nodeDegree.t() << endl;
     cout << "degree_dist : " << nodeDegreeDist().t() << endl;
+    cout << "geometrically weighted node degree : " << geoWeightedNodeDegree(0.3) << endl;
     cout << "triangle : " << n_triangle() << endl;
-    cout << "kstar_dist :" << k_starDist().t() << endl;
+    cout << "triangle_dist : " << n_triangleDist().t() << endl;
+    cout << "kstar_dist : " << k_starDist().t() << endl;
+    cout << "Edgewise Shared Partnership : \n" << edgewiseSharedPartner() << endl;
+    cout << "Edgewise Shared Partnership Dist : " << edgewiseSharedPartnerDist().t() << endl;
+    cout << "geometrically weighted Edgewise Shared Partnership : " << geoWeightedESP(0.3) << endl;
+    cout << "Dyadwise Shared Partnership : \n" << dyadwiseSharedPartner() << endl;
+    cout << "Dyadwise Shared Partnership Dist : " << dyadwiseSharedPartnerDist().t() << endl;
+    cout << "geometrically weighted Dyadwise Shared Partnership : " << geoWeightedDSP(0.3) << endl;
+
     cout << "===========================" << endl;
 }
 
