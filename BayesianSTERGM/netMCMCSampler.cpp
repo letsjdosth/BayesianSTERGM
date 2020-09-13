@@ -60,6 +60,7 @@ void netMCMCSampler::sampler() {
 }
 
 
+
 //public
 netMCMCSampler::netMCMCSampler(Col<double> param, Network initialNet) {
     given_param = param.t();
@@ -71,6 +72,10 @@ netMCMCSampler::netMCMCSampler(Row<double> param, Network initialNet) {
     MCMCSampleVec.push_back(initialNet);
     //model도 받도록 나중에
 }
+netMCMCSampler::netMCMCSampler() {
+    //비워둘것
+}
+
 
 void netMCMCSampler::generateSample(int num_iter) {
     for (int i = 0; i < num_iter; i++) {

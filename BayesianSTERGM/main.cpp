@@ -15,13 +15,11 @@ using namespace arma;
 //자동화가안되어서.. 수동으로매번바꿔야함(...)
 //FOR ERGM:
 // 1. netMCMCSampler.log_r 의 model_delta(Col<double>)에서 모델항 각각에 대한 '차이 term'을 col의 element로 추가
-// 2. ERGM_MCML.NRupdate1Step의, MCMCSampleVec을 만드는 for문 안 val(Col<double>)에 일반 term을 col의 element로 추가
-// 3. ERGM_MCML.NRupdate1Step의, Col<double> Observed_ModelVal에 일반 term을 col의 element로 추가
+// 2. ERGM_MCML.netOne_modelVal의 val에 일반 term을 col의 element로 추가
 //FOR BERGM:
 // 1. netMCMCSampler.log_r 의 model_delta(Col<double>)에서 모델항 각각에 대한 '차이 term'을 col의 element로 추가
 // 2. BERGM_MCMC.log_r의 model_delta(Col<double>)에서 모델항 각각에 대한 '차이 term'을 col의 element로 추가
 // 3. 필요시 prior 조정 (BERGM_MCMC.log_paramPriorPDF() 구현)
-
 
 class MCdiagnostics {
 private:
@@ -140,26 +138,28 @@ int main()
 
     //ERGM test
     //Optimizer test
-    /*Col<double> initParam = { 0.0 , 0.0 };
+    Col<double> initParam = { 0.0 , 0.0 };
     ERGM_MCML OptimizerA(initParam, netA);
-    OptimizerA.RunOptimize();*/
-
-
-    ////BERGM test
-    Col<double> initParam = { 0.0 , 0.0};
-    BERGM_MCMC bergm(initParam, netA);
-    bergm.generateSample(3000, 3000);
-    bergm.cutBurnIn(1000);
+    OptimizerA.RunOptimize();
+    OptimizerA.printDiagnosticVal();
     
 
-    MCdiagnostics bergmDiag(bergm.getPosteriorSample());
-    bergmDiag.print_mean(0);
-    Col<double> quantilePts = { 0.1, 0.25, 0.5, 0.75, 0.9 };
-    bergmDiag.print_quantile(0, quantilePts);
-    bergmDiag.print_autoCorr(0, 30);
-    bergmDiag.print_mean(1);
-    bergmDiag.print_quantile(1, quantilePts);
-    bergmDiag.print_autoCorr(1, 30);
-    
+
+    //////BERGM test
+    //Col<double> initParam = { 0.0 , 0.0};
+    //BERGM_MCMC bergm(initParam, netA);
+    //bergm.generateSample(3000, 3000);
+    //bergm.cutBurnIn(1000);
+    //
+
+    //MCdiagnostics bergmDiag(bergm.getPosteriorSample());
+    //bergmDiag.print_mean(0);
+    //Col<double> quantilePts = { 0.1, 0.25, 0.5, 0.75, 0.9 };
+    //bergmDiag.print_quantile(0, quantilePts);
+    //bergmDiag.print_autoCorr(0, 30);
+    //bergmDiag.print_mean(1);
+    //bergmDiag.print_quantile(1, quantilePts);
+    //bergmDiag.print_autoCorr(1, 30);
+    //
     return 0;
 }

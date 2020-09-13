@@ -25,6 +25,7 @@ private:
 public:
     netMCMCSampler(Col<double> param, Network initialNet);
     netMCMCSampler(Row<double> param, Network initialNet);
+    netMCMCSampler();
     void generateSample(int num_iter);
     void cutBurnIn(int n_burn_in);
     vector<Network> getMCMCSampleVec();
