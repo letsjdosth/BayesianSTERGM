@@ -29,5 +29,6 @@ public:
     void generateSample(int num_iter);
     void cutBurnIn(int n_burn_in);
     vector<Network> getMCMCSampleVec();
+    vector<Col<double>> getDiagStatVec();
     void testOut();
 };

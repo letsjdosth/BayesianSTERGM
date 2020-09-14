@@ -92,6 +92,21 @@ vector<Network> netMCMCSampler::getMCMCSampleVec() {
     return MCMCSampleVec;
 }
 
+vector<Col<double>> netMCMCSampler::getDiagStatVec() {
+    // output candid: edge, kstar, triangle, geoWeightedNodeDegree, geoWeightedESP, geoWeightedDSP
+    
+    vector<Col<double>> res;
+    for (int i = 0; i < MCMCSampleVec.size(); i++) {
+        Network net = MCMCSampleVec[i];
+        Col<double> netStat = { //필요시 위 candid들 더 추가
+            (double)net.get_n_Edge(),
+            (double)net.get_n_triangle()
+        };
+        res.push_back(netStat);
+    }
+    return res;
+}
+
 void netMCMCSampler::testOut() {
     int i = 0;
     while (i < MCMCSampleVec.size()) {

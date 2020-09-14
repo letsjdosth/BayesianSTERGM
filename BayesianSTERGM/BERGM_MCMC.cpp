@@ -26,7 +26,7 @@ Col<double> BERGM_MCMC::proposeParam(Col<double> mean, double varRate) {
 
 Network BERGM_MCMC::genNetworkSampleByMCMC(Col<double> parameter, int m_MCMCiter) {
     //undirected graph
-    Mat<int> initialNetStructure; // isolated graph로 시작 (random으로 뿌리면 더 좋을듯)
+    Mat<int> initialNetStructure; // isolated graph로 시작 (random으로 뿌리면 더 좋을듯) <- 이거 고칠것
     initialNetStructure.zeros(n_Node, n_Node);
     Network initialNet(initialNetStructure, 0);
 
