@@ -21,6 +21,12 @@ using namespace arma;
 // 2. BERGM_MCMC.log_r의 model_delta(Col<double>)에서 모델항 각각에 대한 '차이 term'을 col의 element로 추가
 // 3. 필요시 prior 조정 (BERGM_MCMC.log_paramPriorPDF() 구현)
 
+//diagnostics
+//FOR netMCMC-DIAG:
+// 1. vector<Col<double>> netMCMCSampler::getDiagStatVec() 의, netStat col에 진단요소 추가. 이후 main에서 이 함수 실행
+// 2. 이후, MCdiagnostics 생성자에 집어넣자
+// 나중에: (BERGM/ERGM)에서 마지막 샘플러 꺼내서 조사하는 함수 구현
+
 class MCdiagnostics {
 private:
     vector<Col<double>> MCSampleVec;
@@ -123,17 +129,21 @@ int main()
     };
 
     Network netA = Network(A, false);
-    netA.printSummary();
+    // netA.printSummary();
 
 
-    ////MCMCsampler test
-    //Col<double> testParam = { 0.1 };
-    //netMCMCSampler sampler(testParam, netA);
-    //sampler.generateSample(10);
+    //MCMCsampler test
+    Col<double> testParam = { 1, 1 };
+    netMCMCSampler sampler(testParam, netA);
+    sampler.generateSample(10000);
     //sampler.testOut();
-    //sampler.cutBurnIn(8);
-    //cout << "after burnin" << endl;
+    sampler.cutBurnIn(8000);
+    cout << "after burnin" << endl;
     //sampler.testOut();
+    vector<Col<double>> diagNetVec = sampler.getDiagStatVec();
+    for (int i = 0; i < diagNetVec.size(); i++) {
+        cout << diagNetVec[i].t() << endl;
+    }
 
     //ERGM test
     //Optimizer test

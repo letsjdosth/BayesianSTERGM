@@ -60,7 +60,7 @@ Mat<double> ERGM_MCML::invInfoCal(Col<double> lastParam, vector<Col<double>> MCM
 Col<double> ERGM_MCML::netOne_modelVal(Network net) {
     // make Z(y)
     //NOW: model : n_Edge
-    Col<double> val = { (double)net.get_n_Edge(), (double)net.get_n_triangle() }; // <- model specify
+    Col<double> val = { (double)net.get_n_Edge(), (double)net.get_triangleDist(1) }; // <- model specify
     return val;
 }
 
