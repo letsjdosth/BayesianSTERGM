@@ -34,7 +34,7 @@ double netMCMCSampler::log_r(Network lastNet, pair<Network, int> proposedNetPair
     //model specify 분리할 수 있으면 좋긴할듯 (어떻게?)
     //NOW: model : n_Edge
     Col<double> model_delta = { (double)proposedNetPair.first.get_n_Edge() - lastNet.get_n_Edge(),
-                                (double)proposedNetPair.first.get_triangleDist(1) - lastNet.get_triangleDist(1)}; // <-model specify
+                                (double)proposedNetPair.first.get_k_starDist(2) - lastNet.get_k_starDist(2)}; // <-model specify
     Col<double> log_r_col = (given_param * model_delta);
     double res = log_r_col(0);
     if (proposedNetPair.second == 1) res *= -1;
@@ -100,10 +100,10 @@ vector<Col<double>> netMCMCSampler::getDiagStatVec() {
         Network net = MCMCSampleVec[i];
         Col<double> netStat = { //필요시 위 candid들 더 추가
             (double)net.get_n_Edge(),
-            (double)net.get_k_starDist(1),
-            (double)net.get_triangleDist(1),
-            net.get_geoWeightedNodeDegree(0.3),
-            net.get_geoWeightedESP(0.3)
+            (double)net.get_k_starDist(2),
+            // (double)net.get_triangleDist(1),
+            // net.get_geoWeightedNodeDegree(0.3),
+            // net.get_geoWeightedESP(0.3)
         };
         res.push_back(netStat);
     }

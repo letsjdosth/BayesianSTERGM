@@ -90,7 +90,7 @@ Col<int> Network::edgewiseSharedPartnerDist() {
         }
     }
     ESPDistRes(0) = 0;
-    ESPDistRes(0) = n_Node - sum(ESPDistRes);
+    ESPDistRes(0) = n_Edge - sum(ESPDistRes);
 
     return ESPDistRes;
 }
