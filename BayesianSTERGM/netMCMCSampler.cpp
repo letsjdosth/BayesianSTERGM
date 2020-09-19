@@ -37,7 +37,7 @@ double netMCMCSampler::log_r(Network lastNet, pair<Network, int> proposedNetPair
                                 (double)proposedNetPair.first.get_k_starDist(2) - lastNet.get_k_starDist(2)}; // <-model specify
     Col<double> log_r_col = (given_param * model_delta);
     double res = log_r_col(0);
-    if (proposedNetPair.second == 1) res *= -1;
+    // if (proposedNetPair.second == 1) res *= -1; //논문을다시보니 없어야하는게 맞는듯 (diff가 논문에선 무조건 1에서 0으로 갈 때임)
     return res;
 }
 
@@ -100,10 +100,10 @@ vector<Col<double>> netMCMCSampler::getDiagStatVec() {
         Network net = MCMCSampleVec[i];
         Col<double> netStat = { //필요시 위 candid들 더 추가
             (double)net.get_n_Edge(),
-            (double)net.get_k_starDist(2),
-            // (double)net.get_triangleDist(1),
-            // net.get_geoWeightedNodeDegree(0.3),
-            // net.get_geoWeightedESP(0.3)
+            //(double)net.get_k_starDist(2),
+            //(double)net.get_triangleDist(1),
+            net.get_geoWeightedNodeDegree(0.3),
+            net.get_geoWeightedESP(0.3)
         };
         res.push_back(netStat);
     }
