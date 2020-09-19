@@ -153,6 +153,7 @@
     <ClCompile Include="BERGM_MCMC.cpp" />
     <ClCompile Include="ERGM_MCML.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MCdiagnostics.cpp" />
     <ClCompile Include="netMCMCSampler.cpp" />
     <ClCompile Include="Network.cpp" />
   </ItemGroup>
@@ -164,6 +165,7 @@
     <ClInclude Include="ERGM_MCML.h" />
     <ClInclude Include="netMCMCSampler.h" />
     <ClInclude Include="Network.h" />
+    <ClInclude Include="MCdiagnostics.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

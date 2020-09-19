@@ -35,6 +35,9 @@
     <ClCompile Include="BERGM_MCMC.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="MCdiagnostics.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Network.h">
@@ -47,6 +50,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="BERGM_MCMC.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="MCdiagnostics.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

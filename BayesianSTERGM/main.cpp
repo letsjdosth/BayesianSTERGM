@@ -7,6 +7,7 @@
 #include "netMCMCSampler.h"
 #include "ERGM_MCML.h"
 #include "BERGM_MCMC.h"
+#include "MCdiagnostics.h"
 
 using namespace std;
 using namespace arma;
@@ -21,7 +22,7 @@ using namespace arma;
 // 2. BERGM_MCMC.log_r의 model_delta(Col<double>)에서 모델항 각각에 대한 '차이 term'을 col의 element로 추가
 // 3. 필요시 prior 조정 (BERGM_MCMC.log_paramPriorPDF() 구현)
 
-//diagnostics
+//diagnostics 방법
 //FOR netMCMC-DIAG:
 // 1. vector<Col<double>> netMCMCSampler::getDiagStatVec() 의, netStat col에 진단요소 추가. 이후 main에서 이 함수 실행
 // 2. 이후, MCdiagnostics 생성자에 집어넣자
@@ -30,97 +31,13 @@ using namespace arma;
 //할일: thinning 구현 (ㅠㅠfor문돌리면 쉽긴한데.. 보다 똑똑하게 어떻게 방법없는지 찾기)
 // traceplot
 
-class MCdiagnostics {
+class temporalNetMCMCSampler{
 private:
-    vector<Col<double>> MCSampleVec;
-    int n_sample;
-    int n_dim;
-
-    vector<Col<double>> MCDimSepVec;
-    vector<double> MCDimMean; //Col<double>이 나을수도 있겠음..
-    vector<double> MCDimVar;
-
-
-    void MCdimSeparation() {
-        for (int i = 0; i < n_dim; i++) {
-            Col<double> nth_dim_for_each_sample(n_sample);
-            for (int j = 0; j < n_sample; j++) {
-                nth_dim_for_each_sample(j) = MCSampleVec[j](i);
-            }
-            MCDimSepVec.push_back(nth_dim_for_each_sample);
-        }
-    }
-
-    void MCdimStatisticCal() {
-        MCDimMean.clear();
-        MCDimVar.clear();
-        for (int i = 0; i < n_dim; i++) {
-            Col<double> dimSepSample = MCDimSepVec[i];
-            MCDimMean.push_back(mean(dimSepSample));
-            MCDimVar.push_back(var(dimSepSample));
-        }
-        
-    }
-
-    vector<double> autoCorr(int dim_idx, int maxLag) {
-        Col<double> sampleSequence = MCDimSepVec[dim_idx];
-        vector<double> autoCorrVec(maxLag+1);
-        autoCorrVec[0] = 1.0;
-        Col<double> diffMean = sampleSequence - MCDimMean[dim_idx];
-        for (int i = 1; i < maxLag + 1; i++) {
-            int num_pair = diffMean.size() - i;
-            double cov_term = 0;
-            for (int j = 0; j < num_pair; j++) {
-                cov_term += (diffMean[j] * diffMean[j + i]);
-            }
-            cov_term /= num_pair;
-            autoCorrVec[i] = (cov_term/MCDimVar[dim_idx]);
-        }
-        return autoCorrVec;
-    }
-
-    Col<double> smplQuantile(int dim_idx, Col<double> prob_pts) {
-        Col<double> sampleSequence = MCDimSepVec[dim_idx];
-        return quantile(sampleSequence, prob_pts);
-    }
-
 
 public:
-    MCdiagnostics(vector<Col<double>> MCsample) {
-        MCSampleVec = MCsample;
-        n_sample = MCsample.size();
-        n_dim = MCsample[0].size();
-        MCdimSeparation();
-        MCdimStatisticCal();
-    }
-
-    vector<double> get_autoCorr(int dim_idx, int maxLag) {
-        return autoCorr(dim_idx, maxLag);
-    }
-
-    void print_mean(int dim_idx) {
-        cout << "mean(dim #" << dim_idx << ") : " << MCDimMean[dim_idx] << endl;
-    }
-
-    void print_autoCorr(int dim_idx, int maxLag) {
-        vector<double> nowAutoCorr = autoCorr(dim_idx, maxLag);
-        cout << "auotcorrelation: ";
-        for (int i = 0; i < maxLag + 1; i++) {
-            cout << nowAutoCorr[i] << "  ";
-        }
-        cout << endl;
-    }
-
-    void print_quantile(int dim_idx, Col<double> prob_pts){
-        Col<double> quantileVec = smplQuantile(dim_idx, prob_pts);
-        cout << "quantile: ";
-        for (int i = 0; i < prob_pts.size(); i++) {
-            cout << quantileVec[i] << "  ";
-        }
-        cout << endl;
-    }
 
 };
+
 
 int main()
 {
@@ -183,8 +100,8 @@ int main()
     ////BERGM test
     Col<double> initParam = { 0.0 , 0.0};
     BERGM_MCMC bergm(initParam, netA);
-    bergm.generateSample(1000, 900);
-    bergm.cutBurnIn(500);
+    bergm.generateSample(500, 100);
+    bergm.cutBurnIn(250);
     
 
     MCdiagnostics bergmDiag(bergm.getPosteriorSample());
