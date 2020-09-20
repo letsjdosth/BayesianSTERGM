@@ -312,8 +312,8 @@ int main()
     Col<double> testParam1 = { 0.2, 0.1 };
     Col<double> testParam2 = { -0.2,-0.1 };
     BSTERGM_MCMC Bstergm = BSTERGM_MCMC(testParam1, testParam2, netSeq);
-    Bstergm.generateSample(200000);
-    Bstergm.cutBurnIn(180000);
+    Bstergm.generateSample(300000);
+    Bstergm.cutBurnIn(100000);
     Bstergm.thinning(500);
     //Bstergm.testOut();
     
@@ -333,6 +333,9 @@ int main()
     BstergmDiag2.print_mean(1);
     BstergmDiag2.print_quantile(1, quantilePts);
     BstergmDiag2.print_autoCorr(1, 30);
+
+    BstergmDiag1.writeToCsv_Sample("formation.csv");
+    BstergmDiag2.writeToCsv_Sample("dissolution.csv");
 
     //=====================================
 

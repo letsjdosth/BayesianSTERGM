@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <iostream>
+#include <fstream>
 #include <armadillo>
 
 using namespace std;
@@ -29,4 +30,5 @@ public:
     void print_mean(int dim_idx);
     void print_autoCorr(int dim_idx, int maxLag);
     void print_quantile(int dim_idx, Col<double> prob_pts);
+    void writeToCsv_Sample(string filename);
 };

@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <iostream>
+#include <fstream>
 #include <armadillo>
 #include "MCdiagnostics.h"
 
@@ -87,4 +88,23 @@ void MCdiagnostics::print_quantile(int dim_idx, Col<double> prob_pts) {
         cout << quantileVec[i] << "  ";
     }
     cout << endl;
+}
+
+void MCdiagnostics::writeToCsv_Sample(string filename) {
+    ofstream file;
+    file.open(filename);
+    for (int i = 0; i < MCSampleVec.size(); i++) {
+        Col<double> line = MCSampleVec[i];
+        for (int c = 0; c < line.size(); c++) {
+            if (c == line.size() - 1) {
+                file << line(c);
+            }
+            else {
+                file << line(c) << ",";
+            }
+            
+        }
+        file << "\n";
+    }
+    file.close();
 }
