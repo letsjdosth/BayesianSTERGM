@@ -55,5 +55,8 @@
     <ClInclude Include="MCdiagnostics.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="STERGMnetMCSampler.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

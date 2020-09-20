@@ -166,6 +166,7 @@
     <ClInclude Include="netMCMCSampler.h" />
     <ClInclude Include="Network.h" />
     <ClInclude Include="MCdiagnostics.h" />
+    <ClInclude Include="STERGMnetMCSampler.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
