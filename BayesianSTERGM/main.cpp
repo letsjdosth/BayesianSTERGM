@@ -157,9 +157,16 @@ public:
         }
     }
 
-    Network getTemporalNetMCMCSample() {
+    Network get_CombinedNetMCMCSample() {
         return combined_MCMCSampleVec.back();
     }
+    Network get_FormationNetMCMCSample() {
+        return formation_MCMCSampleVec.back();
+    }
+    Network get_DissolutionNetMCMCSample() {
+        return dissolution_MCMCSampleVec.back();
+    }
+
 
     void cutBurnIn(int n_burn_in) {
         formation_MCMCSampleVec.erase(formation_MCMCSampleVec.begin(), formation_MCMCSampleVec.begin() + n_burn_in + 1);
@@ -183,18 +190,30 @@ class STERGMnetMCSampler {
 private:
     int T_time;
     Network initialNet;
-    vector<vector<Network>> SeqVec;
+    vector<vector<Network>> combined_SeqVec;
+    vector<vector<Network>> formation_SeqVec;
+    vector<vector<Network>> dissolution_SeqVec;
+
     Col<double> formation_Param;
     Col<double> dissolution_Param;
 
     void sequenceSampler(int num_each_iter_per_time) {
-        vector<Network> oneSeq = { initialNet };
+        vector<Network> formation_oneSeq = { initialNet };
+        vector<Network> dissolution_oneSeq = { initialNet };
+        vector<Network> combined_oneSeq = { initialNet };
+        
         for (int i = 0; i < T_time; i++) {
-            STERGMnet1TimeMCSampler sampler = STERGMnet1TimeMCSampler(formation_Param, dissolution_Param, oneSeq.back());
+            STERGMnet1TimeMCSampler sampler = STERGMnet1TimeMCSampler(formation_Param, dissolution_Param, combined_oneSeq.back());
             sampler.generateSample(num_each_iter_per_time);
-            oneSeq.push_back(sampler.getTemporalNetMCMCSample());
+            
+            formation_oneSeq.push_back(sampler.get_FormationNetMCMCSample());
+            dissolution_oneSeq.push_back(sampler.get_DissolutionNetMCMCSample());
+            combined_oneSeq.push_back(sampler.get_CombinedNetMCMCSample());
+
         }
-        SeqVec.push_back(oneSeq);
+        formation_SeqVec.push_back(formation_oneSeq);
+        dissolution_SeqVec.push_back(dissolution_oneSeq);
+        combined_SeqVec.push_back(combined_oneSeq);
     }
 
 public:
@@ -202,6 +221,7 @@ public:
         // 빈 생성자
     }
     STERGMnetMCSampler(Col<double> formationParam, Col<double> dissolutionParam, Network initial, int T_time) {
+        //예: sample은 t=1,2,3(=T_time)이며, t=0엔 initial이 무조건 들어감(샘플로는 자르고 쓸 것)
         this->T_time = T_time;
         this->formation_Param = formationParam;
         this->dissolution_Param = dissolutionParam;
@@ -211,17 +231,42 @@ public:
         for (int j = 0; j < n_Seq; j++) {
             sequenceSampler(num_each_iter_per_time);
         }
-        cout << "SeqVec size" << SeqVec.size() << endl;
+        cout << "SeqVec size" << combined_SeqVec.size() << endl;
     }
+    vector<vector<Network>> get_FormationSeqVec() {
+        return formation_SeqVec;
+    }
+    vector<vector<Network>> get_DissolutionSeqVec() {
+        return dissolution_SeqVec;
+    }
+    vector<vector<Network>> get_CombinedSeqVec() {
+        return combined_SeqVec;
+    }
+
+    vector<Network> get_LastFormationSeq() {
+        return formation_SeqVec.back();
+    }
+    vector<Network> get_LastDissolutionSeq() {
+        return dissolution_SeqVec.back();
+    }
+    vector<Network> get_LastCombinedSeq() {
+        return combined_SeqVec.back();
+    }
+
     void printResult(int idx) {
-        vector<Network> outNets = SeqVec[idx];
+        vector<Network> outNets = combined_SeqVec[idx];
+        vector<Network> outFormationNets = formation_SeqVec[idx];
+        vector<Network> outDissolutionNets = dissolution_SeqVec[idx];
         cout << "Sample Sequence #" << idx << endl;
         for (int i = 0; i < outNets.size(); i++) {
             cout << "t=" << i << endl;
-            //cout << outNets[i].get_netStructure() << endl;
-            cout << "n_edge:" << outNets[i].get_n_Edge() << endl;
+            cout << "formation:\n" << outFormationNets[i].get_netStructure() << endl;
+            cout << "dissolution\n" << outDissolutionNets[i].get_netStructure() << endl;
+            cout << "combined\n" << outNets[i].get_netStructure() << endl;
+            //cout << "n_edge:" << outNets[i].get_n_Edge() << endl;
         }
     }
+
     
 };
 
