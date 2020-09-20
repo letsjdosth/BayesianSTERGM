@@ -125,6 +125,8 @@ public:
         dissolution_MCMCSampleVec.push_back(lastTimeNet); //initial net을 따로 받아도 될듯
         combined_MCMCSampleVec.push_back(lastTimeNet); //initial net을 따로 받아도 될듯
         n_Node = lastTimeNet.get_n_Node();
+        n_accepted = 0;
+        n_iterated = 0;
     }
 
     void generateSample(int num_iter) {
@@ -164,6 +166,7 @@ public:
 
 class STERGMnetMCSampler {
 private:
+    bool resultInitInclude;
     int T_time;
     Network initialNet;
     vector<vector<Network>> combined_SeqVec;
@@ -174,11 +177,30 @@ private:
     Col<double> dissolution_Param;
 
     void sequenceSampler(int num_each_iter_per_time) {
-        vector<Network> formation_oneSeq = { initialNet };
-        vector<Network> dissolution_oneSeq = { initialNet };
-        vector<Network> combined_oneSeq = { initialNet };
+        vector<Network> formation_oneSeq;
+        vector<Network> dissolution_oneSeq;
+        vector<Network> combined_oneSeq;
+        
+        int i;
+        if (resultInitInclude) {
+            formation_oneSeq.push_back(initialNet);
+            dissolution_oneSeq.push_back(initialNet);
+            combined_oneSeq.push_back(initialNet);
+            i = 0;
+        }
+        else {
+            // i=0, 
+            STERGMnet1TimeMCSampler firstSampler = STERGMnet1TimeMCSampler(formation_Param, dissolution_Param, initialNet);
+            firstSampler.generateSample(num_each_iter_per_time);
+            formation_oneSeq.push_back(firstSampler.get_FormationNetMCMCSample());
+            dissolution_oneSeq.push_back(firstSampler.get_DissolutionNetMCMCSample());
+            combined_oneSeq.push_back(firstSampler.get_CombinedNetMCMCSample());
+            
+            // next i's
+            i = 1;
+        }
 
-        for (int i = 0; i < T_time; i++) {
+        for (i; i < T_time; i++) {
             STERGMnet1TimeMCSampler sampler = STERGMnet1TimeMCSampler(formation_Param, dissolution_Param, combined_oneSeq.back());
             sampler.generateSample(num_each_iter_per_time);
 
@@ -196,9 +218,11 @@ public:
     STERGMnetMCSampler() {
         // 빈 생성자
     }
-    STERGMnetMCSampler(Col<double> formationParam, Col<double> dissolutionParam, Network initial, int T_time) {
-        //예: sample은 t=1,2,3(=T_time)이며, t=0엔 initial이 무조건 들어감(샘플로는 자르고 쓸 것)
+    STERGMnetMCSampler(Col<double> formationParam, Col<double> dissolutionParam, int T_time, Network initial, bool resultInitInclude) {
+        //예: sample은 t=0,1,...T_time-1 (총 T_time개)임.
+        //
         this->T_time = T_time;
+        this->resultInitInclude = resultInitInclude;
         this->formation_Param = formationParam;
         this->dissolution_Param = dissolutionParam;
         initialNet = initial;
@@ -207,7 +231,7 @@ public:
         for (int j = 0; j < n_Seq; j++) {
             sequenceSampler(num_each_iter_per_time);
         }
-        cout << "SeqVec size" << combined_SeqVec.size() << endl;
+        // cout << "SeqVec size" << combined_SeqVec.size() << endl;
     }
     vector<vector<Network>> get_FormationSeqVec() {
         return formation_SeqVec;
