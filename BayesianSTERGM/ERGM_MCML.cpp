@@ -215,7 +215,7 @@ netMCMCSampler ERGM_MCML::getLatestStep_netMCSampler() {
     return latestStep_netMCSampler;
 }
 
-void ERGM_MCML::printDiagnosticVal() {
+void ERGM_MCML::print_checkConvergence() {
     cout << "if var_MC >> logLiklihood, then re-optimize with new initial condition." << endl;
     cout << "VAR_MC: " << diag_varianceLastMC(10) << " , ";
     cout << "logLiklihood(est): " << diag_estimatedLikelihood() << endl;

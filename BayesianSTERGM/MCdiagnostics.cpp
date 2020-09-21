@@ -64,6 +64,10 @@ MCdiagnostics::MCdiagnostics(vector<Col<double>> MCsample) {
     MCdimStatisticCal();
 }
 
+Col<double> MCdiagnostics::get_mean() {
+    Col<double> res = Col<double>(MCDimMean);
+    return res;
+}
 vector<double> MCdiagnostics::get_autoCorr(int dim_idx, int maxLag) {
     return autoCorr(dim_idx, maxLag);
 }

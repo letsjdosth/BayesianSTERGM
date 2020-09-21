@@ -41,6 +41,6 @@ public:
     void RunOptimize();
     Col<double> getMCMLE();
     netMCMCSampler getLatestStep_netMCSampler();
-    void printDiagnosticVal();
+    void print_checkConvergence();
     void testOut();
 };

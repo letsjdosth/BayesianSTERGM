@@ -28,6 +28,7 @@ public:
     BERGM_MCMC(Col<double> initialParam, Network observed);
     void generateSample(int num_mainMCiter, int num_exchangeMCiter);
     void cutBurnIn(int n_burn_in);
+    void thinning(int n_lag);
     vector<Col<double>> getPosteriorSample();
     void testOut();
 };

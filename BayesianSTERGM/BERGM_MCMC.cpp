@@ -95,6 +95,13 @@ void BERGM_MCMC::generateSample(int num_mainMCiter, int num_exchangeMCiter) {
 void BERGM_MCMC::cutBurnIn(int n_burn_in) {
     ParamPosteriorSmpl.erase(ParamPosteriorSmpl.begin(), ParamPosteriorSmpl.begin() + n_burn_in + 1);
 }
+void BERGM_MCMC::thinning(int n_lag) {
+    vector<Col<double>> ParamPosteriorSmpl_afterThinning;
+    for (int i = 0; i < ParamPosteriorSmpl.size(); i += n_lag) {
+        ParamPosteriorSmpl_afterThinning.push_back(ParamPosteriorSmpl[i]);
+    }
+    ParamPosteriorSmpl = ParamPosteriorSmpl_afterThinning;
+}
 
 vector<Col<double>> BERGM_MCMC::getPosteriorSample() {
     return ParamPosteriorSmpl;

@@ -118,5 +118,4 @@ void netMCMCSampler::testOut() {
         printedNet.printSummary();
         i++;
     }
-
 }

@@ -26,6 +26,7 @@ private:
 
 public:
     MCdiagnostics(vector<Col<double>> MCsample);
+    Col<double> get_mean();
     vector<double> get_autoCorr(int dim_idx, int maxLag);
     void print_mean(int dim_idx);
     void print_autoCorr(int dim_idx, int maxLag);

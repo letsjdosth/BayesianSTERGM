@@ -48,7 +48,7 @@ double Network::geoWeightedNodeDegree(double tau) {
     double gwd=0;
     double d = 1 - exp(-tau);
     double s = 1;
-    Col<int> degreeDist = nodeDegreeDist();
+    Col<int> degreeDist = dist_nodeDegree;
 
     for (int i = 1; i < n_Node; i++) {
         s *= d;
@@ -255,10 +255,10 @@ int Network::get_n_Edge() {
     return n_Edge;
 }
 int Network::get_nodeDegreeDist(int degree) {
-    return nodeDegreeDist()[degree];
+    return dist_nodeDegree[degree];
 }
 Col<int> Network::get_nodeDegreeDist() {
-    return nodeDegreeDist();
+    return dist_nodeDegree;
 }
 double Network::get_geoWeightedNodeDegree(double tau) {
     return geoWeightedNodeDegree(tau);
@@ -303,8 +303,8 @@ void Network::printSummary() {
     cout << "isDirected : " << isDirected << endl;
     cout << "n_node : " << n_Node << endl;
     cout << "n_edge : " << n_Edge << endl;
-    cout << "node degree : " << dist_nodeDegree.t() << endl;
-    cout << "degree_dist : " << nodeDegreeDist().t() << endl;
+    cout << "node degree : " << nodeDegree().t() << endl;
+    cout << "degree_dist : " << dist_nodeDegree.t() << endl;
     cout << "geometrically weighted node degree : " << geoWeightedNodeDegree(0.3) << endl;
     cout << "triangle_dist : " << n_triangleDist().t() << endl;
     cout << "kstar_dist : " << k_starDist().t() << endl;
