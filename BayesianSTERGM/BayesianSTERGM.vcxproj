@@ -152,6 +152,7 @@
   <ItemGroup>
     <ClCompile Include="BERGM_MCMC.cpp" />
     <ClCompile Include="ERGM_MCML.cpp" />
+    <ClCompile Include="GoodnessOfFit_ERGM.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MCdiagnostics.cpp" />
     <ClCompile Include="netMCMCSampler.cpp" />
