@@ -24,7 +24,7 @@ private:
     //나중에 최소거리dist에 대해서도 하면 좋긴할듯
 
     void netMCMC(int n_iter, int n_burn_in) {
-        Mat<int> zeroMat(5, 5, fill::zeros); // initial. zeromat 싫으면 STERGMnetMCSampler::genSymmetricMat을 가져올 것
+        Mat<int> zeroMat(n_Node, n_Node, fill::zeros); // initial. zeromat 싫으면 STERGMnetMCSampler::genSymmetricMat을 가져올 것
         Network zeroNet(zeroMat, 0);
         netMCMCSampler gofERGMSampler(fittedParam, zeroNet);
         gofERGMSampler.generateSample(n_iter);

@@ -91,11 +91,34 @@ int main()
     //    {0,1,0,0,1},
     //    {0,1,0,0,1},
     //    {1,1,1,1,0} };
-    Network netA = Network(A, false);
-    netA.printSummary();
+    Mat<int> floBusiness = {
+        {0,1,1,0,0, 0,0,0,0,0, 0,0,0,0,0, 0},
+        {1,0,1,1,0, 0,0,0,0,0, 0,0,0,0,0, 0},
+        {1,1,0,1,1, 0,0,0,0,0, 0,0,0,0,0, 0},
+        {0,0,1,0,1, 0,0,0,0,0, 0,0,0,0,0, 0},
+        {0,0,1,1,0, 1,0,0,0,0, 0,0,0,0,0, 0},
+
+        {0,0,0,1,1, 0,1,1,0,0, 0,0,0,0,0, 0},
+        {0,0,0,0,0, 1,0,1,0,0, 0,0,0,0,0, 0},
+        {0,0,0,0,0, 1,1,0,1,1, 1,0,0,0,0, 0},
+        {0,0,0,0,0, 0,0,1,0,0, 0,0,0,0,0, 0},
+        {0,0,0,0,0, 0,0,1,0,0, 0,0,0,0,0, 0},
+
+        {0,0,0,0,0, 0,0,1,0,0, 0,0,0,0,0, 0},
+        {0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0},
+        {0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0},
+        {0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0},
+        {0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0},
+
+        {0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0}
+    };
+    //Network netA = Network(A, false);
+    //netA.printSummary();
     //Network netB = Network(B, false);
     //Network netC = Network(C, false);
     //vector<Network> netSeq = { netA, netB, netC };
+    Network netFloBusiness = Network(floBusiness, false);
+    netFloBusiness.printSummary();
     //=================================================================================================
     //// stergm sampler : STERGMnet1TimeMCSampler test
     //Col<double> testParam1 = { 0.2, 0.1 };
@@ -191,10 +214,10 @@ int main()
     //=================================================================================================
     ////BERGM test
     Col<double> initParam = { 0.01 , -0.01 };
-    BERGM_MCMC bergm(initParam, netA);
-    bergm.generateSample(20000, 1000);
-    bergm.cutBurnIn(10000);
-    bergm.thinning(50);
+    BERGM_MCMC bergm(initParam, netFloBusiness);
+    bergm.generateSample(10000, 1000);
+    bergm.cutBurnIn(5000);
+    bergm.thinning(25);
     
     //BERGM MCMCDIAG
     MCdiagnostics bergmDiag(bergm.getPosteriorSample());
@@ -208,10 +231,11 @@ int main()
     bergmDiag.writeToCsv_Sample("bergmPosteriorSample.csv");
 
     //BERGM GOF
-    GoodnessOfFit_ERGM gofBERGMdiagF = GoodnessOfFit_ERGM(netA, bergmDiag.get_mean());
-    gofBERGMdiagF.run(100000, 90000);
+    // {-2.19095, 0.0456346} (3000∞≥ µπ∑»¿ª∂ß)
+    GoodnessOfFit_ERGM gofBERGMdiagF = GoodnessOfFit_ERGM(netFloBusiness, bergmDiag.get_mean());
+    gofBERGMdiagF.run(10000, 1000);
     gofBERGMdiagF.printResult();
-    netA.printSummary();
+    netFloBusiness.printSummary();
 
     return 0;
 }
