@@ -3,7 +3,7 @@
 #include <iostream>
 #include <armadillo>
 
-#include "STERGMnetMCSampler.h"
+#include "STERGMnetSampler.h"
 #include "Network.h"
 
 using namespace std;
@@ -61,10 +61,10 @@ private:
         Col<double> res = mvnrnd(lastParam, proposalCov);
         return res;
     }
-    STERGMnetMCSampler getSampler_ExchangeNetSeqByMCMC(Col<double> param_formation, Col<double> param_dissolution) {
+    STERGMnetSeqSampler getSampler_ExchangeNetSeqByMCMC(Col<double> param_formation, Col<double> param_dissolution) {
         //initial : obs의 첫 time값에서 시작
-        STERGMnetMCSampler exchangeSampler = STERGMnetMCSampler(param_formation, param_dissolution, T_time, observedSeq[0], true);
-        exchangeSampler.generateSample(1, 1);//앞은 1 고정. 뒤는 indepMCMC를 depMCMC로 고치면 많이 돌릴 것
+        STERGMnetSeqSampler exchangeSampler = STERGMnetSeqSampler(param_formation, param_dissolution, T_time, observedSeq[0]);
+        exchangeSampler.generateSample(1, 1);//둘다 1,1 고정
         return exchangeSampler;
     }
     double log_r(Col<double> param_lastFormation, Col<double> param_lastDissolution,
@@ -75,12 +75,12 @@ private:
         Row<double> model_delta_exchangeDissolution_2(n_paramDim, fill::zeros);
         Row<double> model_delta_obsFormation_3(n_paramDim, fill::zeros);
         Row<double> model_delta_obsDissolution_4(n_paramDim, fill::zeros);
-        //cout << T_time << exchange_combinedSeq.size() << endl; //T_time,T_time+1(이유: sampler에서 초항을 붙여나왔음)
+        //cout << T_time << exchange_combinedSeq.size() << endl; //T_time,T_time
         //cout << T_time << observedSeq.size() << observed_FormationSeq.size() << endl; //모두 T_time
 
         // now model
         // n_Edge, k_starDist(2)
-        for (int t = 1; t < T_time + 1; t++) { //exchange_~Seq엔 sampler에서 사용한 initial y0(=obs 첫항)가 붙어있음.
+        for (int t = 1; t < T_time; t++) {
             model_delta_exchangeFormation_1 += {
                 (double)exchange_FormationSeq[t].get_n_Edge() - exchange_combinedSeq[t - 1].get_n_Edge(),
                     (double)exchange_FormationSeq[t].get_k_starDist(2) - exchange_combinedSeq[t - 1].get_k_starDist(2)
@@ -91,7 +91,6 @@ private:
             };
         }
         for (int t = 1; t < T_time; t++) {
-            //어차피 sampler 초항을 obs 첫값을 썼으므로, delta 첫항은 0임. 해당항을 빼고 계산함
             model_delta_obsFormation_3 += {
                 (double)observed_FormationSeq[t].get_n_Edge() - observedSeq[t - 1].get_n_Edge(),
                     (double)observed_FormationSeq[t].get_k_starDist(2) - observedSeq[t - 1].get_k_starDist(2)
@@ -117,7 +116,7 @@ private:
         Col<double> param_newDissolution = proposeParam(param_lastDissolution);
 
         //exchange sample
-        STERGMnetMCSampler exSeqGenerator = getSampler_ExchangeNetSeqByMCMC(param_newFormation, param_newDissolution);
+        STERGMnetSeqSampler exSeqGenerator = getSampler_ExchangeNetSeqByMCMC(param_newFormation, param_newDissolution);
         vector<Network> exchange_combinedSeq = exSeqGenerator.get_LastCombinedSeq();
         vector<Network> exchange_formationSeq = exSeqGenerator.get_LastFormationSeq();
         vector<Network> exchange_dissolutionSeq = exSeqGenerator.get_LastDissolutionSeq();

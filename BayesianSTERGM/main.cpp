@@ -8,7 +8,7 @@
 #include "ERGM_MCML.h"
 #include "BERGM_MCMC.h"
 #include "MCdiagnostics.h"
-#include "STERGMnetMCSampler.h"
+#include "STERGMnetSampler.h"
 #include "BSTERGM_MCMC.h"
 #include "GoodnessOfFit_ERGM.h"
 
@@ -79,23 +79,23 @@ int main()
         {0,1,0,0,0},
         {1,0,0,0,0},
         {1,1,0,0,0} };
-    //Mat<int> B = {
-    //    {0,1,0,1,1},
-    //    {1,0,0,0,1},
-    //    {0,0,0,0,1},
-    //    {1,0,0,0,0},
-    //    {1,1,1,0,0} };
-    //Mat<int> C = {
-    //    {0,0,0,0,1},
-    //    {0,0,1,1,1},
-    //    {0,1,0,0,1},
-    //    {0,1,0,0,1},
-    //    {1,1,1,1,0} };
+    Mat<int> B = {
+        {0,1,0,1,1},
+        {1,0,0,0,1},
+        {0,0,0,0,1},
+        {1,0,0,0,0},
+        {1,1,1,0,0} };
+    Mat<int> C = {
+        {0,0,0,0,1},
+        {0,0,1,1,1},
+        {0,1,0,0,1},
+        {0,1,0,0,1},
+        {1,1,1,1,0} };
     Mat<int> floBusiness = {
         {0,1,1,0,0, 0,0,0,0,0, 0,0,0,0,0, 0},
         {1,0,1,1,0, 0,0,0,0,0, 0,0,0,0,0, 0},
         {1,1,0,1,1, 0,0,0,0,0, 0,0,0,0,0, 0},
-        {0,0,1,0,1, 0,0,0,0,0, 0,0,0,0,0, 0},
+        {0,1,1,0,1, 1,0,0,0,0, 0,0,0,0,0, 0},
         {0,0,1,1,0, 1,0,0,0,0, 0,0,0,0,0, 0},
 
         {0,0,0,1,1, 0,1,1,0,0, 0,0,0,0,0, 0},
@@ -112,28 +112,28 @@ int main()
 
         {0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0}
     };
-    //Network netA = Network(A, false);
+    Network netA = Network(A, false);
     //netA.printSummary();
-    //Network netB = Network(B, false);
-    //Network netC = Network(C, false);
-    //vector<Network> netSeq = { netA, netB, netC };
+    Network netB = Network(B, false);
+    Network netC = Network(C, false);
+    vector<Network> netSeq = { netA, netB, netC };
     Network netFloBusiness = Network(floBusiness, false);
-    netFloBusiness.printSummary();
+    //netFloBusiness.printSummary();
     //=================================================================================================
-    //// stergm sampler : STERGMnet1TimeMCSampler test
+    //// stergm sampler : STERGMnet1TimeSampler test
     //Col<double> testParam1 = { 0.2, 0.1 };
     //Col<double> testParam2 = { -0.2,-0.1 };
 
-    //STERGMnet1TimeMCSampler tsampler = STERGMnet1TimeMCSampler(testParam1, testParam2, netA);
+    //STERGMnet1TimeSampler tsampler = STERGMnet1TimeSampler(testParam1, testParam2, netA);
     //tsampler.generateSample(1000);
     //tsampler.cutBurnIn(994);
     //tsampler.testOut();
     //=================================================================================================
-    //// stergm sampler : STERGMnetMCSampler test
+    //// stergm sampler : STERGMnetSeqSampler test
     //Col<double> testParam1 = { 0.2, 0.1 };
     //Col<double> testParam2 = { -0.2,-0.1 };
 
-    //STERGMnetMCSampler Tsampler = STERGMnetMCSampler(testParam1, testParam2, netA, 3);
+    //STERGMnetSeqSampler Tsampler = STERGMnetSeqSampler(testParam1, testParam2, netA, 3);
     //Tsampler.generateSample(10, 1000);
     //Tsampler.printResult(0);
     //Tsampler.printResult(1);
@@ -141,35 +141,35 @@ int main()
     //Tsampler.printResult(3);
 
     //=================================================================================================
-    ////BSTERGM test
+    //BSTERGM test
     
-    //Col<double> testParam1 = { 0.2, 0.1 };
-    //Col<double> testParam2 = { -0.2,-0.1 };
-    //BSTERGM_MCMC Bstergm = BSTERGM_MCMC(testParam1, testParam2, netSeq);
-    //Bstergm.generateSample(300000);
-    //Bstergm.cutBurnIn(100000);
-    //Bstergm.thinning(500);
-    ////Bstergm.testOut();
+    Col<double> testParam1 = { 0.2, 0.1 };
+    Col<double> testParam2 = { -0.2,-0.1 };
+    BSTERGM_MCMC Bstergm = BSTERGM_MCMC(testParam1, testParam2, netSeq);
+    Bstergm.generateSample(300000);
+    Bstergm.cutBurnIn(100000);
+    Bstergm.thinning(500);
+    //Bstergm.testOut();
     
-    //MCdiagnostics BstergmDiag1(Bstergm.getPosteriorSample_formation());
-    //BstergmDiag1.print_mean(0);
-    //Col<double> quantilePts = { 0.1, 0.25, 0.5, 0.75, 0.9 };
-    //BstergmDiag1.print_quantile(0, quantilePts);
-    //BstergmDiag1.print_autoCorr(0, 30);
-    //BstergmDiag1.print_mean(1);
-    //BstergmDiag1.print_quantile(1, quantilePts);
-    //BstergmDiag1.print_autoCorr(1, 30);
+    MCdiagnostics BstergmDiag1(Bstergm.getPosteriorSample_formation());
+    BstergmDiag1.print_mean(0);
+    Col<double> quantilePts = { 0.1, 0.25, 0.5, 0.75, 0.9 };
+    BstergmDiag1.print_quantile(0, quantilePts);
+    BstergmDiag1.print_autoCorr(0, 30);
+    BstergmDiag1.print_mean(1);
+    BstergmDiag1.print_quantile(1, quantilePts);
+    BstergmDiag1.print_autoCorr(1, 30);
 
-    //MCdiagnostics BstergmDiag2(Bstergm.getPosteriorSample_dissolution());
-    //BstergmDiag2.print_mean(0);
-    //BstergmDiag2.print_quantile(0, quantilePts);
-    //BstergmDiag2.print_autoCorr(0, 30);
-    //BstergmDiag2.print_mean(1);
-    //BstergmDiag2.print_quantile(1, quantilePts);
-    //BstergmDiag2.print_autoCorr(1, 30);
+    MCdiagnostics BstergmDiag2(Bstergm.getPosteriorSample_dissolution());
+    BstergmDiag2.print_mean(0);
+    BstergmDiag2.print_quantile(0, quantilePts);
+    BstergmDiag2.print_autoCorr(0, 30);
+    BstergmDiag2.print_mean(1);
+    BstergmDiag2.print_quantile(1, quantilePts);
+    BstergmDiag2.print_autoCorr(1, 30);
 
-    //BstergmDiag1.writeToCsv_Sample("formation.csv");
-    //BstergmDiag2.writeToCsv_Sample("dissolution.csv");
+    BstergmDiag1.writeToCsv_Sample("formation.csv");
+    BstergmDiag2.writeToCsv_Sample("dissolution.csv");
 
     //=================================================================================================
     //// MCMCsampler test
@@ -213,29 +213,29 @@ int main()
 
     //=================================================================================================
     ////BERGM test
-    Col<double> initParam = { 0.01 , -0.01 };
-    BERGM_MCMC bergm(initParam, netFloBusiness);
-    bergm.generateSample(10000, 1000);
-    bergm.cutBurnIn(5000);
-    bergm.thinning(25);
-    
-    //BERGM MCMCDIAG
-    MCdiagnostics bergmDiag(bergm.getPosteriorSample());
-    bergmDiag.print_mean(0);
-    Col<double> quantilePts = { 0.1, 0.25, 0.5, 0.75, 0.9 };
-    bergmDiag.print_quantile(0, quantilePts);
-    bergmDiag.print_autoCorr(0, 30);
-    bergmDiag.print_mean(1);
-    bergmDiag.print_quantile(1, quantilePts);
-    bergmDiag.print_autoCorr(1, 30);
-    bergmDiag.writeToCsv_Sample("bergmPosteriorSample.csv");
+    //Col<double> initParam = { 0.01 , -0.01 };
+    //BERGM_MCMC bergm(initParam, netFloBusiness);
+    //bergm.generateSample(10000, 1000);
+    //bergm.cutBurnIn(5000);
+    //bergm.thinning(25);
+    //
+    ////BERGM MCMCDIAG
+    //MCdiagnostics bergmDiag(bergm.getPosteriorSample());
+    //bergmDiag.print_mean(0);
+    //Col<double> quantilePts = { 0.1, 0.25, 0.5, 0.75, 0.9 };
+    //bergmDiag.print_quantile(0, quantilePts);
+    //bergmDiag.print_autoCorr(0, 30);
+    //bergmDiag.print_mean(1);
+    //bergmDiag.print_quantile(1, quantilePts);
+    //bergmDiag.print_autoCorr(1, 30);
+    //bergmDiag.writeToCsv_Sample("bergmPosteriorSample.csv");
 
-    //BERGM GOF
-    // {-2.19095, 0.0456346} (3000∞≥ µπ∑»¿ª∂ß)
-    GoodnessOfFit_ERGM gofBERGMdiagF = GoodnessOfFit_ERGM(netFloBusiness, bergmDiag.get_mean());
-    gofBERGMdiagF.run(10000, 1000);
-    gofBERGMdiagF.printResult();
-    netFloBusiness.printSummary();
+    ////BERGM GOF
+    //// {-2.19095, 0.0456346} (3000∞≥ µπ∑»¿ª∂ß)
+    //GoodnessOfFit_ERGM gofBERGMdiagF = GoodnessOfFit_ERGM(netFloBusiness, bergmDiag.get_mean());
+    //gofBERGMdiagF.run(10000, 1000);
+    //gofBERGMdiagF.printResult();
+    //netFloBusiness.printSummary();
 
     return 0;
 }
