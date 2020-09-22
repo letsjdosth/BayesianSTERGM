@@ -56,8 +56,9 @@ private:
     }
 
     double log_accProb(Network proposed, bool isFormation) {
+        //NOW MODEL : n_edge + k2stardist
         Col<double> model_delta = { (double)proposed.get_n_Edge() - lastTimeNet.get_n_Edge(),
-                                    (double)proposed.get_k_starDist(2) - lastTimeNet.get_k_starDist(2) };
+                                    (double)proposed.get_k_starDist(2) - lastTimeNet.get_k_starDist(2) }; // <-model specify
         Col<double> param;
         if (isFormation) {
             param = formation_Param;
@@ -111,10 +112,8 @@ public:
         n_Node = lastTimeNet.get_n_Node();
     }
 
-    void generateSample(int num_iter) {
-        for (int i = 0; i < num_iter; i++) {
-            sampler();
-        }
+    void generateSample() {
+        sampler();
     }
 
     Network get_CombinedNetMCMCSample() {
@@ -139,7 +138,7 @@ private:
     Col<double> formation_Param;
     Col<double> dissolution_Param;
 
-    void sequenceSampler(int num_each_iter_per_time) {
+    void sequenceSampler() {
         vector<Network> formation_oneSeq;
         vector<Network> dissolution_oneSeq;
         vector<Network> combined_oneSeq;
@@ -151,7 +150,7 @@ private:
         
         for (int i = 1; i < T_time; i++) {
             STERGMnet1TimeSampler sampler = STERGMnet1TimeSampler(formation_Param, dissolution_Param, combined_oneSeq.back());
-            sampler.generateSample(num_each_iter_per_time);
+            sampler.generateSample();
 
             formation_oneSeq.push_back(sampler.get_FormationNetMCMCSample());
             dissolution_oneSeq.push_back(sampler.get_DissolutionNetMCMCSample());
@@ -175,10 +174,9 @@ public:
         this->dissolution_Param = dissolutionParam;
         this->initialNet = initialNet;
     }
-    void generateSample(int n_Seq, int num_each_iter_per_time) {
-        //일반적으로는 그냥 1,1
+    void generateSample(int n_Seq) {
         for (int j = 0; j < n_Seq; j++) {
-            sequenceSampler(num_each_iter_per_time);
+            sequenceSampler();
         }
         // cout << "SeqVec size" << combined_SeqVec.size() << endl;
     }

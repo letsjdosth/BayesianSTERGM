@@ -64,7 +64,7 @@ private:
     STERGMnetSeqSampler getSampler_ExchangeNetSeqByMCMC(Col<double> param_formation, Col<double> param_dissolution) {
         //initial : obs의 첫 time값에서 시작
         STERGMnetSeqSampler exchangeSampler = STERGMnetSeqSampler(param_formation, param_dissolution, T_time, observedSeq[0]);
-        exchangeSampler.generateSample(1, 1);//둘다 1,1 고정
+        exchangeSampler.generateSample(1);
         return exchangeSampler;
     }
     double log_r(Col<double> param_lastFormation, Col<double> param_lastDissolution,

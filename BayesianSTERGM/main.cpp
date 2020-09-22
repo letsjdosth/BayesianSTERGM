@@ -25,7 +25,9 @@ using namespace arma;
 // 2. BERGM_MCMC.log_r의 model_delta(Col<double>)에서 모델항 각각에 대한 '차이 term'을 col의 element로 추가
 // 3. 필요시 prior 조정 (BERGM_MCMC.log_paramPriorPDF() 구현)
 //For BSTERGM:
-// 1. STERGMnet1TimeMCSampler.log_r의 model_delta_formation, model_delta_dissolution 모델항 '차이 term' 수정
+// 1. STERGMnet1TimeMCSampler.log_accProb의 model_delta 항 '차이 term' 수정
+// 2. BSTERGM_MCMC의 log_r에서 model delta 4개항 '차이 term' 수정
+// 3. 필요시 prior 조정 (double log_paramPriorPDF(Col<double> param_formation, Col<double> param_dissolution) 구현)
 
 // MCMC 진단방법
 //FOR BERGM/BSTERGM:
@@ -38,7 +40,11 @@ using namespace arma;
 // GoF 방법
 // For ERGM/BERGM:
 // 1. netMCMCSample.log_r에서 모델 확인 (fitting시의 모델과 같아야 함. 위에서 (각각의) 1번이 되어있다면 바꾸지 않아도 됨
-// 2. GoodnessOfFItERGM 생성자에 맞게 집어넣고, run 이후 printSummary 호출 (기본적으로 MC는 0-MAT에서 시작함)
+// 2. GoodnessOfFItERGM 생성자/make_diagStat에 맞게 집어넣고, run 이후 printSummary 호출 (기본적으로 MC는 0-MAT에서 시작함)
+// For BSTERGM
+// 1. STERGMnet1TimeSampler 클래스의 log_accProb에서 모델 확인 (fitting시의 모델과 같아야 함)
+// 2. GoodnessOfFit_1time_STERGM 생성자/make_diagStat에 추가로 보고싶은것 맞게 집어넣고, GoodnessOfFit_STERGM 인스턴스 찍어서 
+// 시작시간별로 run
 
 
 // B-STERGM문제
@@ -46,6 +52,130 @@ using namespace arma;
 //할일: 
 // 1. STERGMnetMCSampler 알고리즘체크후 후 헤더에서 CPP 분리
 // 2. BSTERGM_mcmc 알고리즘체크후 헤더에서 CPP 분리
+
+class GoodnessOfFit_1time_STERGM {
+private:
+    Network obsStartNet;
+    Network obsNextNet;
+    Col<double> fittedParam_formation;
+    Col<double> fittedParam_dissolution;
+    int n_Node;
+    
+    vector<Network> gofSampleVec;
+    vector<vector<double>> nodeDegreeDist_eachDegreeVec;
+    vector<vector<double>> edgewiseSharedPartnerDist_eachDegreeVec;
+    vector<vector<double>> userSpecific_eachVec;
+    vector<Col<double>> summaryQuantile_nodeDegreeDist;
+    vector<Col<double>> summaryQuantile_ESPDist;
+    vector<Col<double>> summaryQuantile_userSpecific;
+
+    void netGenerate(int num_smpl) {
+        STERGMnet1TimeSampler stepGoF = STERGMnet1TimeSampler(fittedParam_formation, fittedParam_dissolution, obsStartNet);
+        for (int i = 0; i < num_smpl; i++) {
+            stepGoF.generateSample();
+            gofSampleVec.push_back(stepGoF.get_CombinedNetMCMCSample());
+        }
+    }
+    
+    void make_diagStat() {
+        for (int i = 0; i < gofSampleVec.size(); i++) {
+            Network net = gofSampleVec[i];
+            //diag netstat 설정
+            Col<int> netNodeDegreeDist = net.get_nodeDegreeDist(); //1차원 높게나옴(n_Node+1)
+            Col<int> netESPDist = net.get_edgewiseSharedPartnerDist();
+            vector<double> userSpecific = { //<-추가로 얻고싶은 netStat을 집어넣을것. 이후 생성자에서 추가netStat 개수 설정
+                (double)net.get_n_Edge(),
+                net.get_geoWeightedNodeDegree(0.3),
+                net.get_geoWeightedESP(0.3)
+            };
+
+            //diag netstat 계산
+            for (int degree = 0; degree < n_Node; degree++) {
+                nodeDegreeDist_eachDegreeVec[degree].push_back((double)netNodeDegreeDist(degree));
+            }
+            for (int degree = 0; degree < n_Node - 1; degree++) {
+                edgewiseSharedPartnerDist_eachDegreeVec[degree].push_back((double)netESPDist(degree));
+            }
+            for (int i = 0; i < userSpecific.size(); i++) {
+                userSpecific_eachVec[i].push_back(userSpecific[i]);
+            }
+        }
+    }
+    void make_diagSummary(){
+        Col<double> quantilePts = { 0.1, 0.25, 0.5, 0.75, 0.9 };
+        for (int deg = 0; deg < nodeDegreeDist_eachDegreeVec.size(); deg++) {
+            Col<double> eachNodeDegree = Col<double>(nodeDegreeDist_eachDegreeVec[deg]);
+            summaryQuantile_nodeDegreeDist.push_back(quantile(eachNodeDegree, quantilePts));
+        }
+        for (int deg = 0; deg < edgewiseSharedPartnerDist_eachDegreeVec.size(); deg++) {
+            Col<double> eachESP = Col<double>(edgewiseSharedPartnerDist_eachDegreeVec[deg]);
+            summaryQuantile_ESPDist.push_back(quantile(eachESP, quantilePts));
+        }
+        for (int i = 0; i < userSpecific_eachVec.size(); i++) {
+            Col<double> each = Col<double>(userSpecific_eachVec[i]);
+            summaryQuantile_userSpecific.push_back(quantile(each, quantilePts));
+        }
+    }
+
+public:
+    GoodnessOfFit_1time_STERGM() {
+
+    }
+    GoodnessOfFit_1time_STERGM(Col<double> fittedParam_formation, Col<double> fittedParam_dissolution,
+            Network obsStartNet, Network obsNextNet) {
+        this->obsStartNet= obsStartNet;
+        this->obsNextNet= obsNextNet;
+        this->n_Node = obsStartNet.get_n_Node();
+        this->fittedParam_formation = fittedParam_formation;
+        this->fittedParam_dissolution = fittedParam_dissolution;
+        this->nodeDegreeDist_eachDegreeVec.resize(n_Node);
+        this->edgewiseSharedPartnerDist_eachDegreeVec.resize(n_Node - 1);
+        this->userSpecific_eachVec.resize(3); // <- 여기에서 추가netStat 개수 설정!!
+    }
+    void run(int n_smpl) {
+        netGenerate(n_smpl);
+        make_diagStat();
+        make_diagSummary();
+    }
+    void printResult() {
+        Col<int> obsNodeDegree = obsNextNet.get_nodeDegreeDist();
+        Col<int> obsESP = obsNextNet.get_edgewiseSharedPartnerDist();
+        for (int i = 0; i < summaryQuantile_nodeDegreeDist.size(); i++) {
+            cout << "#node degree " << i << " :\n";
+            cout << "data: " << obsNodeDegree(i) << "\n";
+            cout << "at the param: " << summaryQuantile_nodeDegreeDist[i].t() << endl;
+        }
+        for (int i = 0; i < summaryQuantile_ESPDist.size(); i++) {
+            cout << "#Edgewise Shared Partner  degree " << i << " :\n";
+            cout << "data:" << obsESP(i) << "\n";
+            cout << "at the param: " << summaryQuantile_ESPDist[i].t() << endl;
+        }
+        for (int i = 0; i < summaryQuantile_userSpecific.size(); i++) {
+            cout << "#userSpecific index " << i << " :\n";
+            cout << "data:" << "see yourself" << "\n";
+            cout << "at the param: " << summaryQuantile_userSpecific[i].t() << endl;
+        }
+    }
+};
+
+class GoodnessOfFit_STERGM {
+private:
+    vector<Network> obsNetSeq;
+    Col<double> fittedParam_formation;
+    Col<double> fittedParam_dissolution;
+public:
+    GoodnessOfFit_STERGM(Col<double> fittedParam_formation, Col<double> fittedParam_dissolution, vector<Network> obsNetSeq) {
+        this->obsNetSeq = obsNetSeq;
+        this->fittedParam_formation = fittedParam_formation;
+        this->fittedParam_dissolution = fittedParam_dissolution;
+    }
+    void run(int startTime, int n_smpl) {
+        GoodnessOfFit_1time_STERGM gofRunner = GoodnessOfFit_1time_STERGM(fittedParam_formation, fittedParam_dissolution,
+            obsNetSeq[startTime], obsNetSeq[startTime + 1]);
+        gofRunner.run(n_smpl);
+        gofRunner.printResult();
+    }
+};
 
 
 int main()
@@ -170,6 +300,13 @@ int main()
 
     BstergmDiag1.writeToCsv_Sample("formation.csv");
     BstergmDiag2.writeToCsv_Sample("dissolution.csv");
+    
+    GoodnessOfFit_STERGM BstergmGoF (BstergmDiag1.get_mean(), BstergmDiag2.get_mean(), netSeq);
+    cout << "t=0 to t=1" << endl;
+    BstergmGoF.run(0, 30000);
+    cout << "\n\nt=1 to t=2" << endl;
+    BstergmGoF.run(1, 30000);
+    
 
     //=================================================================================================
     //// MCMCsampler test
