@@ -1,0 +1,6 @@
+    Col<double> initParam = { 0.01 , -0.01 };
+    BERGM_MCMC bergm(initParam, netFloBusiness);
+    bergm.generateSample(30000, 100);
+    bergm.cutBurnIn(10000);
+    bergm.thinning(20);
+    

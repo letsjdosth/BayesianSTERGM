@@ -17,10 +17,11 @@ private:
     int n_paramDim;
     int n_accepted;
     int n_iterated;
+    netMCMCSampler lastExchangeNetworkSampler;
 
     void updateNetworkInfo();
     Col<double> proposeParam(Col<double> mean, double covRate);
-    Network genNetworkSampleByMCMC(Col<double> parameter, int m_MCMCiter);
+    Network genNetworkSampleByMCMC(Col<double> parameter, Network initialNet, int m_MCMCiter);
     double log_paramPriorPDF(Col<double> param);
     double log_r(Col<double> lastParam, Col<double> proposedParam, Network exchangeNet);
     void sampler(int num_exchangeMCiter);
@@ -30,5 +31,6 @@ public:
     void cutBurnIn(int n_burn_in);
     void thinning(int n_lag);
     vector<Col<double>> getPosteriorSample();
+    netMCMCSampler get_lastExchangeNetworkSampler();
     void testOut();
 };

@@ -24,14 +24,11 @@ Col<double> BERGM_MCMC::proposeParam(Col<double> mean, double varRate) {
     return proposedParam;
 }
 
-Network BERGM_MCMC::genNetworkSampleByMCMC(Col<double> parameter, int m_MCMCiter) {
+Network BERGM_MCMC::genNetworkSampleByMCMC(Col<double> parameter, Network initialNet, int m_MCMCiter) {
     //undirected graph
-    Mat<int> initialNetStructure; // isolated graph로 시작 (random으로 뿌리면 더 좋을듯) <- 이거 고칠것
-    initialNetStructure.zeros(n_Node, n_Node);
-    Network initialNet(initialNetStructure, 0);
-
     netMCMCSampler MCMCsampler(parameter, initialNet);
     MCMCsampler.generateSample(m_MCMCiter);
+    lastExchangeNetworkSampler = MCMCsampler;
     Network sampleNet = MCMCsampler.getMCMCSampleVec().back(); //last one
     return sampleNet;
 }
@@ -55,8 +52,9 @@ double BERGM_MCMC::log_r(Col<double> lastParam, Col<double> proposedParam, Netwo
 
 void BERGM_MCMC::sampler(int num_exchangeMCiter) {
     Col<double> lastParam = ParamPosteriorSmpl.back();
-    Col<double> proposedParam = proposeParam(lastParam, 0.0025);
-    Network exchangeNet = genNetworkSampleByMCMC(proposedParam, num_exchangeMCiter);
+    Col<double> proposedParam = proposeParam(lastParam, 0.05);
+    Network exchangeInitNet = observedNet;
+    Network exchangeNet = genNetworkSampleByMCMC(proposedParam, exchangeInitNet, num_exchangeMCiter);
 
     double log_unif_sample = log(randu());
     double log_r_val = log_r(lastParam, proposedParam, exchangeNet);
@@ -84,7 +82,7 @@ BERGM_MCMC::BERGM_MCMC(Col<double> initialParam, Network observed) {
 
 void BERGM_MCMC::generateSample(int num_mainMCiter, int num_exchangeMCiter) {
     for (int i = 0; i < num_mainMCiter; i++) {
-        if (i % 10 == 0) {
+        if (i % 100 == 0) {
             cout << "MCMC : " << n_iterated << "/" << num_mainMCiter << endl;
         }
         sampler(num_exchangeMCiter);
@@ -107,7 +105,9 @@ vector<Col<double>> BERGM_MCMC::getPosteriorSample() {
     return ParamPosteriorSmpl;
 }
 
-
+netMCMCSampler BERGM_MCMC::get_lastExchangeNetworkSampler() {
+    return lastExchangeNetworkSampler;
+}
 
 void BERGM_MCMC::testOut() {
     int i = 0;

@@ -166,6 +166,7 @@
     <ClInclude Include="BSTERGM_MCMC.h" />
     <ClInclude Include="ERGM_MCML.h" />
     <ClInclude Include="GoodnessOfFit_ERGM.h" />
+    <ClInclude Include="GoodnessOfFit_STERGM.h" />
     <ClInclude Include="netMCMCSampler.h" />
     <ClInclude Include="Network.h" />
     <ClInclude Include="MCdiagnostics.h" />
