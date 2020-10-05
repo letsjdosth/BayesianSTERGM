@@ -55,9 +55,6 @@
     <ClInclude Include="BERGM_MCMC.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="MCdiagnostics.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="BSTERGM_MCMC.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -68,6 +65,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="GoodnessOfFit_STERGM.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="MCdiagnostics.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
