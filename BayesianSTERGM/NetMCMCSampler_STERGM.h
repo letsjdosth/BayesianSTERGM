@@ -167,7 +167,7 @@ public:
         // ºó »ý¼ºÀÚ
     }
     STERGMnetSeqSampler(Col<double> formationParam, Col<double> dissolutionParam, int T_time, Network initialNet) {
-        //¿¹: sampleÀº t=0,1,...T_time-1 (ÃÑ T_time°³)ÀÓ.
+        //¿¹: ÇÑ sampleÀº t=0,1,...T_time-1 (ÃÑ T_time°³)ÀÇ Network·Î ÀÌ·ç¾îÁü.
         //
         this->T_time = T_time;
         this->formation_Param = formationParam;
@@ -200,11 +200,11 @@ public:
         return combined_SeqVec.back();
     }
 
-    void printResult(int idx) {
-        vector<Network> outNets = combined_SeqVec[idx];
-        vector<Network> outFormationNets = formation_SeqVec[idx];
-        vector<Network> outDissolutionNets = dissolution_SeqVec[idx];
-        cout << "Sample Sequence #" << idx << endl;
+    void printResult(int sampleSeqIdx) {
+        vector<Network> outNets = combined_SeqVec[sampleSeqIdx];
+        vector<Network> outFormationNets = formation_SeqVec[sampleSeqIdx];
+        vector<Network> outDissolutionNets = dissolution_SeqVec[sampleSeqIdx];
+        cout << "Sample Sequence #" << sampleSeqIdx << endl;
         for (int i = 0; i < outNets.size(); i++) {
             cout << "t=" << i << endl;
             cout << "formation:\n" << outFormationNets[i].get_netStructure() << endl;

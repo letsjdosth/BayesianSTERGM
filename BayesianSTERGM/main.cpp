@@ -36,11 +36,13 @@ using namespace arma;
 
 // MCMC 진단방법
 //FOR BERGM/BSTERGM:
-// 그냥 posterior sample을 생성자에 넘길 것 (traceplot은 이후 write함수로 써서 R에서 불러서)
+// 그냥 posterior sample을 Diagnostics_MCParamSample 생성자에 넘길 것 (traceplot은 이후 write함수로 써서 R에서 불러서)
 //FOR netMCMC-DIAG:
-// 1. vector<Col<double>> NetMCMCSampler_ERGM::getDiagStatVec() 의, netStat col에 진단요소 추가. 이후 main에서 이 함수 실행
-// 2. 이후, Diagnostics_MCParamSample 생성자에 집어넣자
-// 나중에: (BERGM/ERGM)에서 마지막 샘플러 꺼내서 조사하는 함수 구현
+// 1. (vector<Col<double>> NetMCMCSampler_ERGM::getDiagStatVec() 의, netStat col에 진단요소 추가. 이후 main에서 이 함수 실행
+// 2. 이후, Diagnostics_MCParamSample 생성자에 집어넣자)
+// 3. Diagnostics_MCNetworkSample에 network vector 집어넣자 (BERGM에 해당 get 함수 구현해둠)
+//(추후할일: 1,2번 작업을 3번 클래스에서 자체적으로 하도록 만들자. 쉽게 쓸 인터페이스만 만들면될듯)
+
 
 // GoF 방법
 // For ERGM/BERGM:
@@ -52,9 +54,16 @@ using namespace arma;
 // 시작시간별로 run
 
 
-// B-STERGM문제
-// n_Node + k_starDist(2) -> MCMC 터짐
 //할일: 
+// 1. STERNET.org의 stergm 구현체는, formation과 dissolution의 모델이 다를 때도 돌게 되어있음. 이걸 BSTERGM에도 구현해볼수 있으면 좋을듯
+// 2. BSTERGM prediction-simulation(at fitted param or each param sample value) 
+// -> long-term dynamic 뽑아서 각 netStat ts.plot그리기 및 장기적인 duration/incidence/prevalence 계산
+// (prevalence ~ incidence * duration (근사적으로) <- 아니면그냥 sample에서 직접 계산해도될듯
+
+// 기타: NetMCMCSampler_STERGM 진단? 지금 세팅에서는 할필요 x 
+// (지금은 실상 indep mcmc임. edge를 formation/dissolution에서 하나씩 넣고뺄거면 할수도있겠는데...)
+
+//기타할일
 // 1. STERGMnetMCSampler 알고리즘체크후 후 헤더에서 CPP 분리
 // 2. BSTERGM_mcmc 알고리즘체크후 헤더에서 CPP 분리
 // 3. GoodnessOfFit_STERGM 알고리즘 체크 후 헤더에서 CPP 분리
@@ -125,6 +134,7 @@ int main()
 
         {0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0}
     };
+
     Network netA = Network(A, false);
     //netA.printSummary();
     Network netB = Network(B, false);
@@ -134,66 +144,72 @@ int main()
     //netFloBusiness.printSummary();
     //=================================================================================================
     //// stergm sampler : STERGMnet1TimeSampler test
-    //Col<double> testParam1 = { 0.2, 0.1 };
-    //Col<double> testParam2 = { -0.2,-0.1 };
+    //Col<double> testParam1 = { 1, 1 };
+    //Col<double> testParam2 = { -1,-1 };
 
     //STERGMnet1TimeSampler tsampler = STERGMnet1TimeSampler(testParam1, testParam2, netA);
-    //tsampler.generateSample(1000);
-    //tsampler.cutBurnIn(994);
-    //tsampler.testOut();
+    //tsampler.generateSample();
+    //cout << netA.get_netStructure() << endl;
+    //cout << tsampler.get_FormationNetMCMCSample().get_netStructure() << endl;
+    //cout << tsampler.get_DissolutionNetMCMCSample().get_netStructure() << endl;
+    //cout << tsampler.get_CombinedNetMCMCSample().get_netStructure() << endl;
+    
     //=================================================================================================
     //// stergm sampler : STERGMnetSeqSampler test
     //Col<double> testParam1 = { 0.2, 0.1 };
     //Col<double> testParam2 = { -0.2,-0.1 };
 
-    //STERGMnetSeqSampler Tsampler = STERGMnetSeqSampler(testParam1, testParam2, netA, 3);
-    //Tsampler.generateSample(10, 1000);
+    //STERGMnetSeqSampler Tsampler = STERGMnetSeqSampler(testParam1, testParam2, 5, netA);
+    //Tsampler.generateSample(4);
     //Tsampler.printResult(0);
     //Tsampler.printResult(1);
     //Tsampler.printResult(2);
     //Tsampler.printResult(3);
 
     //=================================================================================================
-    ////BSTERGM test
-    //
-    //Col<double> testParam1 = { 0.2, 0.1 };
-    //Col<double> testParam2 = { -0.2,-0.1 };
-    //BSTERGM_MCMC Bstergm = BSTERGM_MCMC(testParam1, testParam2, netSeq);
-    //Bstergm.generateSample(500000);
-    //Bstergm.cutBurnIn(200000);
-    //Bstergm.thinning(1000);
-    ////Bstergm.testOut();
-    //
-    //Diagnostics_MCParamSample BstergmDiag1(Bstergm.getPosteriorSample_formation());
-    //BstergmDiag1.print_mean(0);
-    //Col<double> quantilePts = { 0.1, 0.25, 0.5, 0.75, 0.9 };
-    //BstergmDiag1.print_quantile(0, quantilePts);
-    //BstergmDiag1.print_autoCorr(0, 30);
-    //BstergmDiag1.print_mean(1);
-    //BstergmDiag1.print_quantile(1, quantilePts);
-    //BstergmDiag1.print_autoCorr(1, 30);
+    //BSTERGM test
+    
+    Col<double> testParam1 = { 0.2, 0.1 };
+    Col<double> testParam2 = { -0.2,-0.1 };
+    BSTERGM_MCMC Bstergm = BSTERGM_MCMC(testParam1, testParam2, netSeq);
+    Bstergm.generateSample(500000);
+    Bstergm.cutBurnIn(200000);
+    Bstergm.thinning(1000);
+    //Bstergm.testOut();
+    
+    Diagnostics_MCParamSample BstergmDiag1(Bstergm.getPosteriorSample_formation());
+    BstergmDiag1.print_mean(0);
+    Col<double> quantilePts = { 0.1, 0.25, 0.5, 0.75, 0.9 };
+    BstergmDiag1.print_quantile(0, quantilePts);
+    BstergmDiag1.print_autoCorr(0, 30);
+    BstergmDiag1.print_mean(1);
+    BstergmDiag1.print_quantile(1, quantilePts);
+    BstergmDiag1.print_autoCorr(1, 30);
 
-    //Diagnostics_MCParamSample BstergmDiag2(Bstergm.getPosteriorSample_dissolution());
-    //BstergmDiag2.print_mean(0);
-    //BstergmDiag2.print_quantile(0, quantilePts);
-    //BstergmDiag2.print_autoCorr(0, 30);
-    //BstergmDiag2.print_mean(1);
-    //BstergmDiag2.print_quantile(1, quantilePts);
-    //BstergmDiag2.print_autoCorr(1, 30);
+    Diagnostics_MCParamSample BstergmDiag2(Bstergm.getPosteriorSample_dissolution());
+    BstergmDiag2.print_mean(0);
+    BstergmDiag2.print_quantile(0, quantilePts);
+    BstergmDiag2.print_autoCorr(0, 30);
+    BstergmDiag2.print_mean(1);
+    BstergmDiag2.print_quantile(1, quantilePts);
+    BstergmDiag2.print_autoCorr(1, 30);
 
-    //BstergmDiag1.writeToCsv_Sample("formation.csv");
-    //BstergmDiag2.writeToCsv_Sample("dissolution.csv");
-    //
+    BstergmDiag1.writeToCsv_Sample("formation.csv");
+    BstergmDiag2.writeToCsv_Sample("dissolution.csv");
+    
 
-    //GoodnessOfFit_STERGM BstergmGoF (BstergmDiag1.get_mean(), BstergmDiag2.get_mean(), netSeq);
-    //cout << "t=0 to t=1" << endl;
-    //BstergmGoF.run(0, 30000);
-    //cout << "\n\nt=1 to t=2" << endl;
-    //BstergmGoF.run(1, 30000);
-    //
+    GoodnessOfFit_STERGM BstergmGoF (BstergmDiag1.get_mean(), BstergmDiag2.get_mean(), netSeq);
+    cout << "t=0 to t=1" << endl;
+    BstergmGoF.run(0, 30000);
+    cout << "\n\nt=1 to t=2" << endl;
+    BstergmGoF.run(1, 30000);
+    
+
+
 
     //=================================================================================================
-    // netMCMCsampler test
+    //=================================================================================================
+    // NetMCMCsampler_ERGM test
     ////now n_edge -2.88316 k2-star 0.229221 (in degeneracy region)
     //netFloBusiness.printSummary();
     //Col<double> testParam = { -2.88316, 0.229221 };
