@@ -1,6 +1,6 @@
 #traceplot
 par(mfrow=c(1,2))
-posterior_sample = read.csv("C:/gitProject/BayesianSTERGM/BayesianSTERGM/bergmPosteriorSample.csv", header=FALSE)
+posterior_sample = read.csv("C:/gitProject/BayesianSTERGM/BayesianSTERGM/formation.csv", header=FALSE)
 mean(posterior_sample$V1)
 mean(posterior_sample$V2)
 plot(1:nrow(posterior_sample), posterior_sample$V1, type="l")

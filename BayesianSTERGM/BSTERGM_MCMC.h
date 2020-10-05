@@ -56,9 +56,9 @@ private:
         //NOW: model parameter prior : 1
         return 0;
     }
-    Col<double> proposeParam(Col<double> lastParam) {
+    Col<double> proposeParam(Col<double> lastParam, double varRate) {
         Mat<double> proposalCov(n_paramDim, n_paramDim, fill::eye);
-        Col<double> res = mvnrnd(lastParam, proposalCov);
+        Col<double> res = mvnrnd(lastParam, proposalCov * varRate);
         return res;
     }
     STERGMnetSeqSampler getSampler_ExchangeNetSeqByMCMC(Col<double> param_formation, Col<double> param_dissolution) {
@@ -112,8 +112,9 @@ private:
         Col<double> param_lastDissolution = paramVec_dissolution.back();
 
         //proposal
-        Col<double> param_newFormation = proposeParam(param_lastFormation);
-        Col<double> param_newDissolution = proposeParam(param_lastDissolution);
+        double varRate = 0.1;
+        Col<double> param_newFormation = proposeParam(param_lastFormation, varRate);
+        Col<double> param_newDissolution = proposeParam(param_lastDissolution, varRate);
 
         //exchange sample
         STERGMnetSeqSampler exSeqGenerator = getSampler_ExchangeNetSeqByMCMC(param_newFormation, param_newDissolution);

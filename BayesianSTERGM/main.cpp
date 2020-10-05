@@ -271,65 +271,66 @@ int main()
     //Tsampler.printResult(3);
 
     //=================================================================================================
-    //BSTERGM test
-    
-    Col<double> testParam1 = { 0.2, 0.1 };
-    Col<double> testParam2 = { -0.2,-0.1 };
-    BSTERGM_MCMC Bstergm = BSTERGM_MCMC(testParam1, testParam2, netSeq);
-    Bstergm.generateSample(300000);
-    Bstergm.cutBurnIn(100000);
-    Bstergm.thinning(500);
-    //Bstergm.testOut();
-    
-    MCdiagnostics BstergmDiag1(Bstergm.getPosteriorSample_formation());
-    BstergmDiag1.print_mean(0);
-    Col<double> quantilePts = { 0.1, 0.25, 0.5, 0.75, 0.9 };
-    BstergmDiag1.print_quantile(0, quantilePts);
-    BstergmDiag1.print_autoCorr(0, 30);
-    BstergmDiag1.print_mean(1);
-    BstergmDiag1.print_quantile(1, quantilePts);
-    BstergmDiag1.print_autoCorr(1, 30);
+    ////BSTERGM test
+    //
+    //Col<double> testParam1 = { 0.2, 0.1 };
+    //Col<double> testParam2 = { -0.2,-0.1 };
+    //BSTERGM_MCMC Bstergm = BSTERGM_MCMC(testParam1, testParam2, netSeq);
+    //Bstergm.generateSample(500000);
+    //Bstergm.cutBurnIn(200000);
+    //Bstergm.thinning(1000);
+    ////Bstergm.testOut();
+    //
+    //MCdiagnostics BstergmDiag1(Bstergm.getPosteriorSample_formation());
+    //BstergmDiag1.print_mean(0);
+    //Col<double> quantilePts = { 0.1, 0.25, 0.5, 0.75, 0.9 };
+    //BstergmDiag1.print_quantile(0, quantilePts);
+    //BstergmDiag1.print_autoCorr(0, 30);
+    //BstergmDiag1.print_mean(1);
+    //BstergmDiag1.print_quantile(1, quantilePts);
+    //BstergmDiag1.print_autoCorr(1, 30);
 
-    MCdiagnostics BstergmDiag2(Bstergm.getPosteriorSample_dissolution());
-    BstergmDiag2.print_mean(0);
-    BstergmDiag2.print_quantile(0, quantilePts);
-    BstergmDiag2.print_autoCorr(0, 30);
-    BstergmDiag2.print_mean(1);
-    BstergmDiag2.print_quantile(1, quantilePts);
-    BstergmDiag2.print_autoCorr(1, 30);
+    //MCdiagnostics BstergmDiag2(Bstergm.getPosteriorSample_dissolution());
+    //BstergmDiag2.print_mean(0);
+    //BstergmDiag2.print_quantile(0, quantilePts);
+    //BstergmDiag2.print_autoCorr(0, 30);
+    //BstergmDiag2.print_mean(1);
+    //BstergmDiag2.print_quantile(1, quantilePts);
+    //BstergmDiag2.print_autoCorr(1, 30);
 
-    BstergmDiag1.writeToCsv_Sample("formation.csv");
-    BstergmDiag2.writeToCsv_Sample("dissolution.csv");
-    
-    GoodnessOfFit_STERGM BstergmGoF (BstergmDiag1.get_mean(), BstergmDiag2.get_mean(), netSeq);
-    cout << "t=0 to t=1" << endl;
-    BstergmGoF.run(0, 30000);
-    cout << "\n\nt=1 to t=2" << endl;
-    BstergmGoF.run(1, 30000);
-    
+    //BstergmDiag1.writeToCsv_Sample("formation.csv");
+    //BstergmDiag2.writeToCsv_Sample("dissolution.csv");
+    //
+
+    //GoodnessOfFit_STERGM BstergmGoF (BstergmDiag1.get_mean(), BstergmDiag2.get_mean(), netSeq);
+    //cout << "t=0 to t=1" << endl;
+    //BstergmGoF.run(0, 30000);
+    //cout << "\n\nt=1 to t=2" << endl;
+    //BstergmGoF.run(1, 30000);
+    //
 
     //=================================================================================================
-    //// MCMCsampler test
-    //Col<double> testParam = { 0.2, 0.1 };
-    //netMCMCSampler sampler(testParam, netA);
-    //sampler.generateSample(100000);
-    ////sampler.testOut();
-    //sampler.cutBurnIn(98000);
-    //cout << "after burnin" << endl;
-    ////sampler.testOut();
-    //vector<Col<double>> diagNetVec = sampler.getDiagStatVec();
-    //for (int i = 0; i < diagNetVec.size(); i++) {
-    //    cout << diagNetVec[i].t() << endl;
-    //}
+    // netMCMCsampler test
+    Col<double> testParam = { 0.2, 0.1 };
+    netMCMCSampler sampler(testParam, netA);
+    sampler.generateSample(100000);
+    //sampler.testOut();
+    sampler.cutBurnIn(98000);
+    cout << "after burnin" << endl;
+    //sampler.testOut();
+    vector<Col<double>> diagNetVec = sampler.getDiagStatVec();
+    for (int i = 0; i < diagNetVec.size(); i++) {
+        cout << diagNetVec[i].t() << endl;
+    }
 
-    //MCdiagnostics netMCMCDiag(diagNetVec);
-    //Col<double> quantilePts = { 0.1, 0.25, 0.5, 0.75, 0.9 };
-    //for (int idx = 0; idx < diagNetVec[0].size(); idx++) {
-    //    netMCMCDiag.print_mean(idx);
-    //    netMCMCDiag.print_quantile(idx, quantilePts);
-    //    netMCMCDiag.print_autoCorr(idx, 50);
-    //}
-    //cout << netA.get_n_Edge() << " " << netA.get_geoWeightedNodeDegree(0.3) << " " << netA.get_geoWeightedESP(0.3) << endl;
+    MCdiagnostics netMCMCDiag(diagNetVec);
+    Col<double> quantilePts = { 0.1, 0.25, 0.5, 0.75, 0.9 };
+    for (int idx = 0; idx < diagNetVec[0].size(); idx++) {
+        netMCMCDiag.print_mean(idx);
+        netMCMCDiag.print_quantile(idx, quantilePts);
+        netMCMCDiag.print_autoCorr(idx, 50);
+    }
+    cout << netA.get_n_Edge() << " " << netA.get_geoWeightedNodeDegree(0.3) << " " << netA.get_geoWeightedESP(0.3) << endl;
  
     //=================================================================================================
     ////ERGM test
