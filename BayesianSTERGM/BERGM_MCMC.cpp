@@ -4,7 +4,7 @@
 #include <armadillo>
 
 #include "Network.h"
-#include "netMCMCSampler.h"
+#include "NetMCMCSampler_ERGM.h"
 #include "BERGM_MCMC.h"
 
 using namespace std;
@@ -26,7 +26,7 @@ Col<double> BERGM_MCMC::proposeParam(Col<double> mean, double varRate) {
 
 Network BERGM_MCMC::genNetworkSampleByMCMC(Col<double> parameter, Network initialNet, int m_MCMCiter) {
     //undirected graph
-    netMCMCSampler MCMCsampler(parameter, initialNet);
+    NetMCMCSampler_ERGM MCMCsampler(parameter, initialNet);
     MCMCsampler.generateSample(m_MCMCiter);
     lastExchangeNetworkSampler = MCMCsampler;
     Network sampleNet = MCMCsampler.getMCMCSampleVec().back(); //last one
@@ -105,7 +105,7 @@ vector<Col<double>> BERGM_MCMC::getPosteriorSample() {
     return ParamPosteriorSmpl;
 }
 
-netMCMCSampler BERGM_MCMC::get_lastExchangeNetworkSampler() {
+NetMCMCSampler_ERGM BERGM_MCMC::get_lastExchangeNetworkSampler() {
     return lastExchangeNetworkSampler;
 }
 

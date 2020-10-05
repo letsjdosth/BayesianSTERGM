@@ -8,7 +8,7 @@ using namespace std;
 using namespace arma;
 
 
-class MCdiagnostics {
+class Diagnostics_MCParamSample {
 private:
     vector<Col<double>> MCSampleVec;
     int n_sample;
@@ -25,7 +25,7 @@ private:
     Col<double> smplQuantile(int dim_idx, Col<double> prob_pts);
 
 public:
-    MCdiagnostics(vector<Col<double>> MCsample);
+    Diagnostics_MCParamSample(vector<Col<double>> MCsample);
     Col<double> get_mean();
     vector<double> get_autoCorr(int dim_idx, int maxLag);
     void print_mean(int dim_idx);

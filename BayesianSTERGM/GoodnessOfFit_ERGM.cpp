@@ -4,7 +4,7 @@
 
 #include <armadillo>
 #include "Network.h"
-#include "netMCMCSampler.h"
+#include "NetMCMCSampler_ERGM.h"
 #include "GoodnessOfFit_ERGM.h"
 
 using namespace std;
@@ -15,7 +15,7 @@ using namespace arma;
 void GoodnessOfFit_ERGM::netMCMC(int n_iter, int n_burn_in) {
     Mat<int> zeroMat(n_Node, n_Node, fill::zeros); // initial. zeromat 싫으면 STERGMnetMCSampler::genSymmetricMat을 가져올 것
     Network zeroNet(zeroMat, 0);
-    netMCMCSampler gofERGMSampler(fittedParam, zeroNet);
+    NetMCMCSampler_ERGM gofERGMSampler(fittedParam, zeroNet);
     gofERGMSampler.generateSample(n_iter);
     gofERGMSampler.cutBurnIn(n_burn_in);
     gofSampleVec = gofERGMSampler.getMCMCSampleVec();

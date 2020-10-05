@@ -2,7 +2,7 @@
 #include <vector>
 #include <armadillo>
 #include "Network.h"
-#include "netMCMCSampler.h"
+#include "NetMCMCSampler_ERGM.h"
 
 using namespace std;
 using namespace arma;
@@ -16,7 +16,7 @@ private:
     int n_Node;
 
     //for diagnostic of MCMC
-    netMCMCSampler latestStep_netMCSampler;
+    NetMCMCSampler_ERGM latestStep_netMCSampler;
 
 
     Col<double> netOne_modelVal(Network net);
@@ -40,7 +40,7 @@ public:
     ERGM_MCML(Col<double> initialParam, Network observed);
     void RunOptimize();
     Col<double> getMCMLE();
-    netMCMCSampler getLatestStep_netMCSampler();
+    NetMCMCSampler_ERGM getLatestStep_netMCSampler();
     void print_checkConvergence();
     void testOut();
 };

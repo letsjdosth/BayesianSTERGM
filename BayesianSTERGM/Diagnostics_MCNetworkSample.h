@@ -1,23 +1,20 @@
 #pragma once
+#include <fstream>
 #include <vector>
 #include <iostream>
 #include <armadillo>
 
 #include "Network.h"
-#include "NetMCMCSampler_STERGM.h"
 
 using namespace std;
 using namespace arma;
 
-class GoodnessOfFit_1time_STERGM {
+
+class Diagnostics_MCNetworkSample {
 private:
-    Network obsStartNet;
-    Network obsNextNet;
-    Col<double> fittedParam_formation;
-    Col<double> fittedParam_dissolution;
+    vector<Network> networkSampleVec;
     int n_Node;
 
-    vector<Network> gofSampleVec;
     vector<vector<double>> nodeDegreeDist_eachDegreeVec;
     vector<vector<double>> edgewiseSharedPartnerDist_eachDegreeVec;
     vector<vector<double>> userSpecific_eachVec;
@@ -25,18 +22,9 @@ private:
     vector<Col<double>> summaryQuantile_ESPDist;
     vector<Col<double>> summaryQuantile_userSpecific;
 
-    void netGenerate(int num_smpl) {
-        STERGMnet1TimeSampler stepGoF = STERGMnet1TimeSampler(fittedParam_formation, fittedParam_dissolution, obsStartNet);
-        for (int i = 0; i < num_smpl; i++) {
-            stepGoF.generateSample();
-            gofSampleVec.push_back(stepGoF.get_CombinedNetMCMCSample());
-        }
-    }
-
     void make_diagStat() {
-        for (int i = 0; i < gofSampleVec.size(); i++) {
-            Network net = gofSampleVec[i];
-            //diag netstat 설정
+        for (int i = 0; i < networkSampleVec.size(); i++) {
+            Network net = networkSampleVec[i];
             Col<int> netNodeDegreeDist = net.get_nodeDegreeDist(); //1차원 높게나옴(n_Node+1)
             Col<int> netESPDist = net.get_edgewiseSharedPartnerDist();
             vector<double> userSpecific = { //<-추가로 얻고싶은 netStat을 집어넣을것. 이후 생성자에서 추가netStat 개수 설정
@@ -45,7 +33,6 @@ private:
                 net.get_geoWeightedESP(0.3)
             };
 
-            //diag netstat 계산
             for (int degree = 0; degree < n_Node; degree++) {
                 nodeDegreeDist_eachDegreeVec[degree].push_back((double)netNodeDegreeDist(degree));
             }
@@ -59,6 +46,7 @@ private:
     }
     void make_diagSummary() {
         Col<double> quantilePts = { 0.1, 0.25, 0.5, 0.75, 0.9 };
+
         for (int deg = 0; deg < nodeDegreeDist_eachDegreeVec.size(); deg++) {
             Col<double> eachNodeDegree = Col<double>(nodeDegreeDist_eachDegreeVec[deg]);
             summaryQuantile_nodeDegreeDist.push_back(quantile(eachNodeDegree, quantilePts));
@@ -74,61 +62,75 @@ private:
     }
 
 public:
-    GoodnessOfFit_1time_STERGM() {
+    Diagnostics_MCNetworkSample() {
 
     }
-    GoodnessOfFit_1time_STERGM(Col<double> fittedParam_formation, Col<double> fittedParam_dissolution,
-        Network obsStartNet, Network obsNextNet) {
-        this->obsStartNet = obsStartNet;
-        this->obsNextNet = obsNextNet;
-        this->n_Node = obsStartNet.get_n_Node();
-        this->fittedParam_formation = fittedParam_formation;
-        this->fittedParam_dissolution = fittedParam_dissolution;
+    Diagnostics_MCNetworkSample(vector<Network> networkSampleVec) {
+        this->networkSampleVec = networkSampleVec;
+        this->n_Node = networkSampleVec[0].get_n_Node();
         this->nodeDegreeDist_eachDegreeVec.resize(n_Node);
         this->edgewiseSharedPartnerDist_eachDegreeVec.resize(n_Node - 1);
         this->userSpecific_eachVec.resize(3); // <- 여기에서 추가netStat 개수 설정!!
-    }
-    void run(int n_smpl) {
-        netGenerate(n_smpl);
         make_diagStat();
         make_diagSummary();
     }
+
+
     void printResult() {
-        Col<int> obsNodeDegree = obsNextNet.get_nodeDegreeDist();
-        Col<int> obsESP = obsNextNet.get_edgewiseSharedPartnerDist();
         for (int i = 0; i < summaryQuantile_nodeDegreeDist.size(); i++) {
             cout << "#node degree " << i << " :\n";
-            cout << "data: " << obsNodeDegree(i) << "\n";
             cout << "at the param: " << summaryQuantile_nodeDegreeDist[i].t() << endl;
         }
         for (int i = 0; i < summaryQuantile_ESPDist.size(); i++) {
             cout << "#Edgewise Shared Partner  degree " << i << " :\n";
-            cout << "data:" << obsESP(i) << "\n";
             cout << "at the param: " << summaryQuantile_ESPDist[i].t() << endl;
         }
         for (int i = 0; i < summaryQuantile_userSpecific.size(); i++) {
             cout << "#userSpecific index " << i << " :\n";
-            cout << "data:" << "see yourself" << "\n";
             cout << "at the param: " << summaryQuantile_userSpecific[i].t() << endl;
         }
     }
-};
 
-class GoodnessOfFit_STERGM {
-private:
-    vector<Network> obsNetSeq;
-    Col<double> fittedParam_formation;
-    Col<double> fittedParam_dissolution;
-public:
-    GoodnessOfFit_STERGM(Col<double> fittedParam_formation, Col<double> fittedParam_dissolution, vector<Network> obsNetSeq) {
-        this->obsNetSeq = obsNetSeq;
-        this->fittedParam_formation = fittedParam_formation;
-        this->fittedParam_dissolution = fittedParam_dissolution;
+    void writeToCsv_Sample(string filename) {
+        ofstream file;
+        file.open(filename);
+
+        //make header
+        for (int c = 0; c < nodeDegreeDist_eachDegreeVec.size(); c++) {
+            file << "nodeDegree" << c << ",";
+        }
+        for (int c = 0; c < edgewiseSharedPartnerDist_eachDegreeVec.size(); c++) {
+            file << "edgewiseSharedPartner" << c << ",";
+        }
+        for (int c = 0; c < userSpecific_eachVec.size(); c++) {
+            if (c == userSpecific_eachVec.size() - 1) {
+                file << "userSpecific" << c;
+            }
+            else {
+                file << "userSpecific" << c << ",";
+            }
+        }
+        file << "\n";
+
+        //fill values
+        for (int i = 0; i < networkSampleVec.size(); i++) {
+            for (int c = 0; c < nodeDegreeDist_eachDegreeVec.size(); c++) {
+                file << nodeDegreeDist_eachDegreeVec[c][i] << ",";
+            }
+            for (int c = 0; c < edgewiseSharedPartnerDist_eachDegreeVec.size(); c++) {
+                file << edgewiseSharedPartnerDist_eachDegreeVec[c][i] << ",";
+            }
+            for (int c = 0; c < userSpecific_eachVec.size(); c++) {
+                if (c == userSpecific_eachVec.size() - 1) {
+                    file << userSpecific_eachVec[c][i];
+                }
+                else {
+                    file << userSpecific_eachVec[c][i] << ",";
+                }
+            }
+            file << "\n";
+        }
+        file.close();
     }
-    void run(int startTime, int n_smpl) {
-        GoodnessOfFit_1time_STERGM gofRunner = GoodnessOfFit_1time_STERGM(fittedParam_formation, fittedParam_dissolution,
-            obsNetSeq[startTime], obsNetSeq[startTime + 1]);
-        gofRunner.run(n_smpl);
-        gofRunner.printResult();
-    }
+
 };

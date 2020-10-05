@@ -154,8 +154,8 @@
     <ClCompile Include="ERGM_MCML.cpp" />
     <ClCompile Include="GoodnessOfFit_ERGM.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MCdiagnostics.cpp" />
-    <ClCompile Include="netMCMCSampler.cpp" />
+    <ClCompile Include="Diagnostics_MCParamSample.cpp" />
+    <ClCompile Include="NetMCMCSampler_ERGM.cpp" />
     <ClCompile Include="Network.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -164,13 +164,14 @@
   <ItemGroup>
     <ClInclude Include="BERGM_MCMC.h" />
     <ClInclude Include="BSTERGM_MCMC.h" />
+    <ClInclude Include="Diagnostics_MCNetworkSample.h" />
     <ClInclude Include="ERGM_MCML.h" />
     <ClInclude Include="GoodnessOfFit_ERGM.h" />
     <ClInclude Include="GoodnessOfFit_STERGM.h" />
-    <ClInclude Include="netMCMCSampler.h" />
+    <ClInclude Include="NetMCMCSampler_ERGM.h" />
     <ClInclude Include="Network.h" />
-    <ClInclude Include="MCdiagnostics.h" />
-    <ClInclude Include="STERGMnetSampler.h" />
+    <ClInclude Include="Diagnostics_MCParamSample.h" />
+    <ClInclude Include="NetMCMCSampler_STERGM.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

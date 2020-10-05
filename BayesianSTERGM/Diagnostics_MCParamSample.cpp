@@ -3,14 +3,14 @@
 #include <iostream>
 #include <fstream>
 #include <armadillo>
-#include "MCdiagnostics.h"
+#include "Diagnostics_MCParamSample.h"
 
 using namespace std;
 using namespace arma;
 
 // private
 
-void MCdiagnostics::MCdimSeparation() {
+void Diagnostics_MCParamSample::MCdimSeparation() {
     for (int i = 0; i < n_dim; i++) {
         Col<double> nth_dim_for_each_sample(n_sample);
         for (int j = 0; j < n_sample; j++) {
@@ -20,7 +20,7 @@ void MCdiagnostics::MCdimSeparation() {
     }
 }
 
-void MCdiagnostics::MCdimStatisticCal() {
+void Diagnostics_MCParamSample::MCdimStatisticCal() {
     MCDimMean.clear();
     MCDimVar.clear();
     for (int i = 0; i < n_dim; i++) {
@@ -31,7 +31,7 @@ void MCdiagnostics::MCdimStatisticCal() {
 
 }
 
-vector<double> MCdiagnostics::autoCorr(int dim_idx, int maxLag) {
+vector<double> Diagnostics_MCParamSample::autoCorr(int dim_idx, int maxLag) {
     Col<double> sampleSequence = MCDimSepVec[dim_idx];
     vector<double> autoCorrVec(maxLag + 1);
     autoCorrVec[0] = 1.0;
@@ -48,7 +48,7 @@ vector<double> MCdiagnostics::autoCorr(int dim_idx, int maxLag) {
     return autoCorrVec;
 }
 
-Col<double> MCdiagnostics::smplQuantile(int dim_idx, Col<double> prob_pts) {
+Col<double> Diagnostics_MCParamSample::smplQuantile(int dim_idx, Col<double> prob_pts) {
     Col<double> sampleSequence = MCDimSepVec[dim_idx];
     return quantile(sampleSequence, prob_pts);
 }
@@ -56,7 +56,7 @@ Col<double> MCdiagnostics::smplQuantile(int dim_idx, Col<double> prob_pts) {
 
 // public
 
-MCdiagnostics::MCdiagnostics(vector<Col<double>> MCsample) {
+Diagnostics_MCParamSample::Diagnostics_MCParamSample(vector<Col<double>> MCsample) {
     MCSampleVec = MCsample;
     n_sample = MCsample.size();
     n_dim = MCsample[0].size();
@@ -64,19 +64,19 @@ MCdiagnostics::MCdiagnostics(vector<Col<double>> MCsample) {
     MCdimStatisticCal();
 }
 
-Col<double> MCdiagnostics::get_mean() {
+Col<double> Diagnostics_MCParamSample::get_mean() {
     Col<double> res = Col<double>(MCDimMean);
     return res;
 }
-vector<double> MCdiagnostics::get_autoCorr(int dim_idx, int maxLag) {
+vector<double> Diagnostics_MCParamSample::get_autoCorr(int dim_idx, int maxLag) {
     return autoCorr(dim_idx, maxLag);
 }
 
-void MCdiagnostics::print_mean(int dim_idx) {
+void Diagnostics_MCParamSample::print_mean(int dim_idx) {
     cout << "mean(dim #" << dim_idx << ") : " << MCDimMean[dim_idx] << endl;
 }
 
-void MCdiagnostics::print_autoCorr(int dim_idx, int maxLag) {
+void Diagnostics_MCParamSample::print_autoCorr(int dim_idx, int maxLag) {
     vector<double> nowAutoCorr = autoCorr(dim_idx, maxLag);
     cout << "auotcorrelation: ";
     for (int i = 0; i < maxLag + 1; i++) {
@@ -85,7 +85,7 @@ void MCdiagnostics::print_autoCorr(int dim_idx, int maxLag) {
     cout << endl;
 }
 
-void MCdiagnostics::print_quantile(int dim_idx, Col<double> prob_pts) {
+void Diagnostics_MCParamSample::print_quantile(int dim_idx, Col<double> prob_pts) {
     Col<double> quantileVec = smplQuantile(dim_idx, prob_pts);
     cout << "quantile: ";
     for (int i = 0; i < prob_pts.size(); i++) {
@@ -94,7 +94,7 @@ void MCdiagnostics::print_quantile(int dim_idx, Col<double> prob_pts) {
     cout << endl;
 }
 
-void MCdiagnostics::writeToCsv_Sample(string filename) {
+void Diagnostics_MCParamSample::writeToCsv_Sample(string filename) {
     ofstream file;
     file.open(filename);
     for (int i = 0; i < MCSampleVec.size(); i++) {

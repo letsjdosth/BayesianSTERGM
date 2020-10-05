@@ -2,7 +2,7 @@
 #include <vector>
 #include <armadillo>
 #include "Network.h"
-#include "netMCMCSampler.h"
+#include "NetMCMCSampler_ERGM.h"
 
 using namespace std;
 using namespace arma;
@@ -17,7 +17,7 @@ private:
     int n_paramDim;
     int n_accepted;
     int n_iterated;
-    netMCMCSampler lastExchangeNetworkSampler;
+    NetMCMCSampler_ERGM lastExchangeNetworkSampler;
 
     void updateNetworkInfo();
     Col<double> proposeParam(Col<double> mean, double covRate);
@@ -31,6 +31,6 @@ public:
     void cutBurnIn(int n_burn_in);
     void thinning(int n_lag);
     vector<Col<double>> getPosteriorSample();
-    netMCMCSampler get_lastExchangeNetworkSampler();
+    NetMCMCSampler_ERGM get_lastExchangeNetworkSampler();
     void testOut();
 };

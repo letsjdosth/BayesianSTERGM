@@ -1,11 +1,11 @@
 #pragma once
-#include "netMCMCSampler.h"
+#include "NetMCMCSampler_ERGM.h"
 #include "Network.h"
 #include <vector>
 #include <armadillo>
 
 
-pair<int, int> netMCMCSampler::selectRandom2Edges(int n_Node) {
+pair<int, int> NetMCMCSampler_ERGM::selectRandom2Edges(int n_Node) {
     int randNode1 = randi<int>(distr_param(0, n_Node - 1));
     int randNode2 = randi<int>(distr_param(0, n_Node - 1));
     while (randNode1 == randNode2) {
@@ -16,7 +16,7 @@ pair<int, int> netMCMCSampler::selectRandom2Edges(int n_Node) {
 
 }
 
-pair<Network, int> netMCMCSampler::proposeNet(Network lastNet) {
+pair<Network, int> NetMCMCSampler_ERGM::proposeNet(Network lastNet) {
     int n_node = lastNet.get_n_Node();
     pair<int, int> changeEdgeIndex = selectRandom2Edges(n_node);
     Mat<int> proposalNetStructure = lastNet.get_netStructure();
@@ -30,18 +30,18 @@ pair<Network, int> netMCMCSampler::proposeNet(Network lastNet) {
     return res;
 }
 
-double netMCMCSampler::log_r(Network lastNet, pair<Network, int> proposedNetPair) {
+double NetMCMCSampler_ERGM::log_r(Network lastNet, pair<Network, int> proposedNetPair) {
     //model specify 분리할 수 있으면 좋긴할듯 (어떻게?)
     //NOW: model : n_Edge
     Col<double> model_delta = { (double)proposedNetPair.first.get_n_Edge() - lastNet.get_n_Edge(),
-                                (double)proposedNetPair.first.get_k_starDist(2) - lastNet.get_k_starDist(2)}; // <-model specify
+                                (double)proposedNetPair.first.get_k_starDist(2) - lastNet.get_k_starDist(2) }; // <-model specify
     Col<double> log_r_col = (given_param * model_delta);
     double res = log_r_col(0);
     // if (proposedNetPair.second == 1) res *= -1; //논문을다시보니 없어야하는게 맞는듯 (diff가 논문에선 무조건 1에서 0으로 갈 때임)
     return res;
 }
 
-void netMCMCSampler::sampler() {
+void NetMCMCSampler_ERGM::sampler() {
     Network lastNet = MCMCSampleVec.back();
     pair<Network, int> proposedNetPair = proposeNet(lastNet);
     double log_unif_sample = log(randu());
@@ -62,39 +62,39 @@ void netMCMCSampler::sampler() {
 
 
 //public
-netMCMCSampler::netMCMCSampler(Col<double> param, Network initialNet) {
+NetMCMCSampler_ERGM::NetMCMCSampler_ERGM(Col<double> param, Network initialNet) {
     given_param = param.t();
     MCMCSampleVec.push_back(initialNet);
     //model도 받도록 나중에
 }
-netMCMCSampler::netMCMCSampler(Row<double> param, Network initialNet) {
+NetMCMCSampler_ERGM::NetMCMCSampler_ERGM(Row<double> param, Network initialNet) {
     given_param = param;
     MCMCSampleVec.push_back(initialNet);
     //model도 받도록 나중에
 }
-netMCMCSampler::netMCMCSampler() {
+NetMCMCSampler_ERGM::NetMCMCSampler_ERGM() {
     //비워둘것
 }
 
 
-void netMCMCSampler::generateSample(int num_iter) {
+void NetMCMCSampler_ERGM::generateSample(int num_iter) {
     for (int i = 0; i < num_iter; i++) {
         sampler();
     }
     // cout << "MCMC done: " << n_iterated << " networks are generated." << endl;
 }
 
-void netMCMCSampler::cutBurnIn(int n_burn_in) {
+void NetMCMCSampler_ERGM::cutBurnIn(int n_burn_in) {
     MCMCSampleVec.erase(MCMCSampleVec.begin(), MCMCSampleVec.begin() + n_burn_in + 1);
 }
 
-vector<Network> netMCMCSampler::getMCMCSampleVec() {
+vector<Network> NetMCMCSampler_ERGM::getMCMCSampleVec() {
     return MCMCSampleVec;
 }
 
-vector<Col<double>> netMCMCSampler::getDiagStatVec() {
+vector<Col<double>> NetMCMCSampler_ERGM::getDiagStatVec() {
     // output candid: edge, kstar, triangle, geoWeightedNodeDegree, geoWeightedESP, geoWeightedDSP
-    
+
     vector<Col<double>> res;
     for (int i = 0; i < MCMCSampleVec.size(); i++) {
         Network net = MCMCSampleVec[i];
@@ -110,7 +110,7 @@ vector<Col<double>> netMCMCSampler::getDiagStatVec() {
     return res;
 }
 
-void netMCMCSampler::testOut() {
+void NetMCMCSampler_ERGM::testOut() {
     int i = 0;
     while (i < MCMCSampleVec.size()) {
         Network printedNet = MCMCSampleVec[i];

@@ -1,18 +1,21 @@
 #pragma once
 #include <vector>
 #include <iostream>
-#include <fstream>
 #include <armadillo>
 
 #include "Network.h"
-#include "netMCMCSampler.h"
+#include "NetMCMCSampler_ERGM.h"
 #include "ERGM_MCML.h"
 #include "BERGM_MCMC.h"
-#include "MCdiagnostics.h"
-#include "STERGMnetSampler.h"
-#include "BSTERGM_MCMC.h"
 #include "GoodnessOfFit_ERGM.h"
+
+#include "NetMCMCSampler_STERGM.h"
+#include "BSTERGM_MCMC.h"
 #include "GoodnessOfFit_STERGM.h"
+
+#include "Diagnostics_MCParamSample.h"
+#include "Diagnostics_MCNetworkSample.h"
+
 
 using namespace std;
 using namespace arma;
@@ -20,10 +23,10 @@ using namespace arma;
 //model specification
 //자동화가안되어서.. 수동으로매번바꿔야함(...)
 //FOR ERGM:
-// 1. netMCMCSampler.log_r 의 model_delta(Col<double>)에서 모델항 각각에 대한 '차이 term'을 col의 element로 추가
+// 1. NetMCMCSampler_ERGM.log_r 의 model_delta(Col<double>)에서 모델항 각각에 대한 '차이 term'을 col의 element로 추가
 // 2. ERGM_MCML.netOne_modelVal의 val에 일반 term을 col의 element로 추가
 //FOR BERGM:
-// 1. netMCMCSampler.log_r 의 model_delta(Col<double>)에서 모델항 각각에 대한 '차이 term'을 col의 element로 추가
+// 1. NetMCMCSampler_ERGM.log_r 의 model_delta(Col<double>)에서 모델항 각각에 대한 '차이 term'을 col의 element로 추가
 // 2. BERGM_MCMC.log_r의 model_delta(Col<double>)에서 모델항 각각에 대한 '차이 term'을 col의 element로 추가
 // 3. 필요시 prior 조정 (BERGM_MCMC.log_paramPriorPDF() 구현)
 //For BSTERGM:
@@ -35,8 +38,8 @@ using namespace arma;
 //FOR BERGM/BSTERGM:
 // 그냥 posterior sample을 생성자에 넘길 것 (traceplot은 이후 write함수로 써서 R에서 불러서)
 //FOR netMCMC-DIAG:
-// 1. vector<Col<double>> netMCMCSampler::getDiagStatVec() 의, netStat col에 진단요소 추가. 이후 main에서 이 함수 실행
-// 2. 이후, MCdiagnostics 생성자에 집어넣자
+// 1. vector<Col<double>> NetMCMCSampler_ERGM::getDiagStatVec() 의, netStat col에 진단요소 추가. 이후 main에서 이 함수 실행
+// 2. 이후, Diagnostics_MCParamSample 생성자에 집어넣자
 // 나중에: (BERGM/ERGM)에서 마지막 샘플러 꺼내서 조사하는 함수 구현
 
 // GoF 방법
@@ -56,130 +59,6 @@ using namespace arma;
 // 2. BSTERGM_mcmc 알고리즘체크후 헤더에서 CPP 분리
 // 3. GoodnessOfFit_STERGM 알고리즘 체크 후 헤더에서 CPP 분리
 
-class netMCMCSamplerDiagnostics {
-private:
-    vector<Network> networkSampleVec;
-    int n_Node;
-
-    vector<vector<double>> nodeDegreeDist_eachDegreeVec;
-    vector<vector<double>> edgewiseSharedPartnerDist_eachDegreeVec;
-    vector<vector<double>> userSpecific_eachVec;
-    vector<Col<double>> summaryQuantile_nodeDegreeDist;
-    vector<Col<double>> summaryQuantile_ESPDist;
-    vector<Col<double>> summaryQuantile_userSpecific;
-
-    void make_diagStat() {
-        for (int i = 0; i < networkSampleVec.size(); i++) {
-            Network net = networkSampleVec[i];
-            Col<int> netNodeDegreeDist = net.get_nodeDegreeDist(); //1차원 높게나옴(n_Node+1)
-            Col<int> netESPDist = net.get_edgewiseSharedPartnerDist();
-            vector<double> userSpecific = { //<-추가로 얻고싶은 netStat을 집어넣을것. 이후 생성자에서 추가netStat 개수 설정
-                (double)net.get_n_Edge(),
-                net.get_geoWeightedNodeDegree(0.3),
-                net.get_geoWeightedESP(0.3)
-            };
-
-            for (int degree = 0; degree < n_Node; degree++) {
-                nodeDegreeDist_eachDegreeVec[degree].push_back((double)netNodeDegreeDist(degree));
-            }
-            for (int degree = 0; degree < n_Node - 1; degree++) {
-                edgewiseSharedPartnerDist_eachDegreeVec[degree].push_back((double)netESPDist(degree));
-            }
-            for (int i = 0; i < userSpecific.size(); i++) {
-                userSpecific_eachVec[i].push_back(userSpecific[i]);
-            }
-        }
-    }
-    void make_diagSummary() {
-        Col<double> quantilePts = { 0.1, 0.25, 0.5, 0.75, 0.9 };
-
-        for (int deg = 0; deg < nodeDegreeDist_eachDegreeVec.size(); deg++) {
-            Col<double> eachNodeDegree = Col<double>(nodeDegreeDist_eachDegreeVec[deg]);
-            summaryQuantile_nodeDegreeDist.push_back(quantile(eachNodeDegree, quantilePts));
-        }
-        for (int deg = 0; deg < edgewiseSharedPartnerDist_eachDegreeVec.size(); deg++) {
-            Col<double> eachESP = Col<double>(edgewiseSharedPartnerDist_eachDegreeVec[deg]);
-            summaryQuantile_ESPDist.push_back(quantile(eachESP, quantilePts));
-        }
-        for (int i = 0; i < userSpecific_eachVec.size(); i++) {
-            Col<double> each = Col<double>(userSpecific_eachVec[i]);
-            summaryQuantile_userSpecific.push_back(quantile(each, quantilePts));
-        }
-    }
-
-public:
-    netMCMCSamplerDiagnostics() {
-
-    }
-    netMCMCSamplerDiagnostics(vector<Network> networkSampleVec) {
-        this->networkSampleVec = networkSampleVec;
-        this->n_Node = networkSampleVec[0].get_n_Node();
-        this->nodeDegreeDist_eachDegreeVec.resize(n_Node);
-        this->edgewiseSharedPartnerDist_eachDegreeVec.resize(n_Node - 1);
-        this->userSpecific_eachVec.resize(3); // <- 여기에서 추가netStat 개수 설정!!
-        make_diagStat();
-        make_diagSummary();
-    }
-
-
-    void printResult() {
-        for (int i = 0; i < summaryQuantile_nodeDegreeDist.size(); i++) {
-            cout << "#node degree " << i << " :\n";
-            cout << "at the param: " << summaryQuantile_nodeDegreeDist[i].t() << endl;
-        }
-        for (int i = 0; i < summaryQuantile_ESPDist.size(); i++) {
-            cout << "#Edgewise Shared Partner  degree " << i << " :\n";
-            cout << "at the param: " << summaryQuantile_ESPDist[i].t() << endl;
-        }
-        for (int i = 0; i < summaryQuantile_userSpecific.size(); i++) {
-            cout << "#userSpecific index " << i << " :\n";
-            cout << "at the param: " << summaryQuantile_userSpecific[i].t() << endl;
-        }
-    }
-
-    void writeToCsv_Sample(string filename) {
-        ofstream file;
-        file.open(filename);
-        
-        //make header
-        for (int c = 0; c < nodeDegreeDist_eachDegreeVec.size(); c++) {
-            file << "nodeDegree" << c << ",";
-        }
-        for (int c = 0; c < edgewiseSharedPartnerDist_eachDegreeVec.size(); c++) {
-            file << "edgewiseSharedPartner" << c << ",";
-        }
-        for (int c = 0; c < userSpecific_eachVec.size(); c++) {
-            if (c == userSpecific_eachVec.size() - 1) {
-                file << "userSpecific" << c;
-            }
-            else {
-                file << "userSpecific" << c << ",";
-            }
-        }
-        file << "\n";
-
-        //fill values
-        for (int i = 0; i < networkSampleVec.size(); i++) {
-            for (int c = 0; c < nodeDegreeDist_eachDegreeVec.size(); c++) {
-                file << nodeDegreeDist_eachDegreeVec[c][i] << ",";
-            }
-            for (int c = 0; c < edgewiseSharedPartnerDist_eachDegreeVec.size(); c++) {
-                file << edgewiseSharedPartnerDist_eachDegreeVec[c][i] << ",";
-            }
-            for (int c = 0; c < userSpecific_eachVec.size(); c++) {
-                if (c == userSpecific_eachVec.size() - 1) {
-                    file << userSpecific_eachVec[c][i];
-                }
-                else {
-                    file << userSpecific_eachVec[c][i] << ",";
-                }
-            }
-            file << "\n";
-        }
-        file.close();
-    }
-
-};
 
 
 int main()
@@ -285,7 +164,7 @@ int main()
     //Bstergm.thinning(1000);
     ////Bstergm.testOut();
     //
-    //MCdiagnostics BstergmDiag1(Bstergm.getPosteriorSample_formation());
+    //Diagnostics_MCParamSample BstergmDiag1(Bstergm.getPosteriorSample_formation());
     //BstergmDiag1.print_mean(0);
     //Col<double> quantilePts = { 0.1, 0.25, 0.5, 0.75, 0.9 };
     //BstergmDiag1.print_quantile(0, quantilePts);
@@ -294,7 +173,7 @@ int main()
     //BstergmDiag1.print_quantile(1, quantilePts);
     //BstergmDiag1.print_autoCorr(1, 30);
 
-    //MCdiagnostics BstergmDiag2(Bstergm.getPosteriorSample_dissolution());
+    //Diagnostics_MCParamSample BstergmDiag2(Bstergm.getPosteriorSample_dissolution());
     //BstergmDiag2.print_mean(0);
     //BstergmDiag2.print_quantile(0, quantilePts);
     //BstergmDiag2.print_autoCorr(0, 30);
@@ -318,7 +197,7 @@ int main()
     ////now n_edge -2.88316 k2-star 0.229221 (in degeneracy region)
     //netFloBusiness.printSummary();
     //Col<double> testParam = { -2.88316, 0.229221 };
-    //netMCMCSampler sampler(testParam, netFloBusiness);
+    //NetMCMCSampler_ERGM sampler(testParam, netFloBusiness);
     //sampler.generateSample(100000);
     ////sampler.testOut();
     //sampler.cutBurnIn(50000);
@@ -327,7 +206,7 @@ int main()
     //    cout << diagNetVec[i].t() << endl;
     //}
 
-    //MCdiagnostics netMCMCDiag(diagNetVec);
+    //Diagnostics_MCParamSample netMCMCDiag(diagNetVec);
     //Col<double> quantilePts = { 0.1, 0.25, 0.5, 0.75, 0.9 };
     //for (int idx = 0; idx < diagNetVec[0].size(); idx++) {
     //    netMCMCDiag.print_mean(idx);
@@ -335,8 +214,8 @@ int main()
     //    netMCMCDiag.print_autoCorr(idx, 50);
     //}
     //cout << netA.get_n_Edge() << " " << netA.get_geoWeightedNodeDegree(0.3) << " " << netA.get_geoWeightedESP(0.3) << endl;
- 
-    //netMCMCSamplerDiagnostics netDiag = netMCMCSamplerDiagnostics(sampler.getMCMCSampleVec());
+
+    //Diagnostics_MCNetworkSample netDiag = Diagnostics_MCNetworkSample(sampler.getMCMCSampleVec());
     //netDiag.printResult();
 
     //=================================================================================================
@@ -365,7 +244,7 @@ int main()
     //bergm.thinning(30);
     //
     ////BERGM MCMCDIAG
-    //MCdiagnostics bergmDiag(bergm.getPosteriorSample());
+    //Diagnostics_MCParamSample bergmDiag(bergm.getPosteriorSample());
     //bergmDiag.print_mean(0);
     //Col<double> quantilePts = { 0.1, 0.25, 0.5, 0.75, 0.9 };
     //bergmDiag.print_quantile(0, quantilePts);
@@ -382,17 +261,17 @@ int main()
     ////SAA n_edge : -2.842, k2-star : 0.283
     ////now n_edge -2.88316 k2-star 0.229221
 
-    // Col<double> fittedParam = bergmDiag.get_mean();
-    Col<double> fittedParam = { -2.88316, 0.229221 }; // 수동
+    // Col<double> fittedParam = bergmDiag.get_mean(); //자동 (둘중하나만 주석해제)
+    //Col<double> fittedParam = { -2.88316, 0.229221 }; // 수동
 
-    GoodnessOfFit_ERGM gofBERGMdiagF = GoodnessOfFit_ERGM(netFloBusiness, fittedParam);
-    gofBERGMdiagF.run(50000, 25000);
-    gofBERGMdiagF.printResult();
-    netFloBusiness.printSummary();
+    //GoodnessOfFit_ERGM gofBERGMdiagF = GoodnessOfFit_ERGM(netFloBusiness, fittedParam);
+    //gofBERGMdiagF.run(50000, 25000);
+    //gofBERGMdiagF.printResult();
+    //netFloBusiness.printSummary();
 
     ////BERGM LAST Exchange Sampler diag
-    //netMCMCSampler lastExNetSampler = bergm.get_lastExchangeNetworkSampler();
-    //netMCMCSamplerDiagnostics lastExNetDiag = netMCMCSamplerDiagnostics(lastExNetSampler.getMCMCSampleVec());
+    //NetMCMCSampler_ERGM lastExNetSampler = bergm.get_lastExchangeNetworkSampler();
+    //Diagnostics_MCNetworkSample lastExNetDiag = Diagnostics_MCNetworkSample(lastExNetSampler.getMCMCSampleVec());
     //lastExNetDiag.writeToCsv_Sample("lastExNetSamplerNetworkStats.csv");
     //// lastExNetDiag.printResult();
 

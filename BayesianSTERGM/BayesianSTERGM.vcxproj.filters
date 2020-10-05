@@ -29,24 +29,21 @@
     <ClCompile Include="Network.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="netMCMCSampler.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="BERGM_MCMC.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="MCdiagnostics.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="GoodnessOfFit_ERGM.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Diagnostics_MCParamSample.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="NetMCMCSampler_ERGM.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Network.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="netMCMCSampler.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="ERGM_MCML.h">
@@ -61,13 +58,19 @@
     <ClInclude Include="GoodnessOfFit_ERGM.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="STERGMnetSampler.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="GoodnessOfFit_STERGM.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="MCdiagnostics.h">
+    <ClInclude Include="Diagnostics_MCParamSample.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMCMCSampler_ERGM.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="NetMCMCSampler_STERGM.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Diagnostics_MCNetworkSample.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

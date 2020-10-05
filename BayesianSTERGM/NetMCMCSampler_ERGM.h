@@ -7,7 +7,7 @@ using namespace std;
 using namespace arma;
 
 
-class netMCMCSampler {
+class NetMCMCSampler_ERGM {
 //undirected
 private:
     Row<double> given_param;
@@ -23,9 +23,9 @@ private:
     void sampler();
 
 public:
-    netMCMCSampler(Col<double> param, Network initialNet);
-    netMCMCSampler(Row<double> param, Network initialNet);
-    netMCMCSampler();
+    NetMCMCSampler_ERGM(Col<double> param, Network initialNet);
+    NetMCMCSampler_ERGM(Row<double> param, Network initialNet);
+    NetMCMCSampler_ERGM();
     void generateSample(int num_iter);
     void cutBurnIn(int n_burn_in);
     vector<Network> getMCMCSampleVec();

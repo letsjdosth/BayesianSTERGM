@@ -3,7 +3,7 @@
 #include <iostream>
 #include <armadillo>
 
-#include "STERGMnetSampler.h"
+#include "NetMCMCSampler_STERGM.h"
 #include "Network.h"
 
 using namespace std;

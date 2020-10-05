@@ -4,11 +4,11 @@
 
 #include <armadillo>
 #include "Network.h"
-#include "netMCMCSampler.h"
+#include "NetMCMCSampler_ERGM.h"
 
 
 class GoodnessOfFit_ERGM {
-    //사용시: netMCMCSampler에서 model 맞추고 쓸 것
+    //사용시: NetMCMCSampler_ERGM에서 model 맞추고 쓸 것
 private:
     Network obsERGM;
     Col<double> fittedParam;

@@ -4,7 +4,7 @@
 #include <armadillo>
 
 #include "Network.h"
-#include "netMCMCSampler.h"
+#include "NetMCMCSampler_ERGM.h"
 #include "ERGM_MCML.h"
 
 using namespace std;
@@ -23,7 +23,7 @@ vector<Network> ERGM_MCML::genSampleByMCMC(int m_Smpl, int m_burnIn) {
     initialNetStructure.zeros(n_Node, n_Node);
     Network initialNet(initialNetStructure, 0);
 
-    netMCMCSampler MCMCsampler(lastParam, initialNet);
+    NetMCMCSampler_ERGM MCMCsampler(lastParam, initialNet);
     MCMCsampler.generateSample(m_Smpl);
     MCMCsampler.cutBurnIn(m_burnIn);
     latestStep_netMCSampler = MCMCsampler;
@@ -109,7 +109,7 @@ Col<double> ERGM_MCML::NRupdate1Step() {
 double ERGM_MCML::diag_logLiklihoodRatio(Col<double> upperParam, Col<double> lowerParam) {
     //smallgamma_m(eta, eta0)
     Col<double> paramDiff = upperParam - lowerParam;
-    
+
     vector<Network> lastMCNetVec = latestStep_netMCSampler.getMCMCSampleVec();
     vector<Col<double>> ModelValVec_MC = netVec_modelVal(lastMCNetVec);
     Col<double> ModelVal_obs = netOne_modelVal(observedNet);
@@ -126,7 +126,7 @@ double ERGM_MCML::diag_logLiklihoodRatio(Col<double> upperParam, Col<double> low
 
     return ratio;
 }
-double ERGM_MCML::diag_estimatedLikelihood(){
+double ERGM_MCML::diag_estimatedLikelihood() {
     //undirected
     Col<double> atTheParam = ParamSequence.back();
     Col<double> initParam = ParamSequence[0];
@@ -136,7 +136,7 @@ double ERGM_MCML::diag_estimatedLikelihood(){
     double logLikelihood = diag_logLiklihoodRatio(atTheParam, initParam) - diag_logLiklihoodRatio(zeroVec, initParam);
     logLikelihood -= log(num_allCase);
     return logLikelihood;
-    }
+}
 
 
 vector<double> ERGM_MCML::autoCorr(Col<double> sampleSequence, int maxLag) {
@@ -211,7 +211,7 @@ Col<double> ERGM_MCML::getMCMLE() {
     return ParamSequence.back();
 }
 
-netMCMCSampler ERGM_MCML::getLatestStep_netMCSampler() {
+NetMCMCSampler_ERGM ERGM_MCML::getLatestStep_netMCSampler() {
     return latestStep_netMCSampler;
 }
 
