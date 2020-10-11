@@ -25,10 +25,10 @@ private:
     vector<Col<double>> summaryQuantile_ESPDist;
     vector<Col<double>> summaryQuantile_userSpecific;
 
-    void netGenerate(int num_smpl) {
-        STERGMnet1TimeSampler stepGoF = STERGMnet1TimeSampler(fittedParam_formation, fittedParam_dissolution, obsStartNet);
-        for (int i = 0; i < num_smpl; i++) {
-            stepGoF.generateSample();
+    void netGenerate(int num_GoF_smpl, int num_for_each_iter) {
+        STERGMnet1TimeSampler_1EdgeMCMC stepGoF = STERGMnet1TimeSampler_1EdgeMCMC(fittedParam_formation, fittedParam_dissolution, obsStartNet);
+        for (int i = 0; i < num_GoF_smpl; i++) {
+            stepGoF.generateSample(num_for_each_iter);
             gofSampleVec.push_back(stepGoF.get_CombinedNetMCMCSample());
         }
     }
@@ -41,8 +41,7 @@ private:
             Col<int> netESPDist = net.get_edgewiseSharedPartnerDist();
             vector<double> userSpecific = { //<-추가로 얻고싶은 netStat을 집어넣을것. 이후 생성자에서 추가netStat 개수 설정
                 (double)net.get_n_Edge(),
-                net.get_geoWeightedNodeDegree(0.3),
-                net.get_geoWeightedESP(0.3)
+                (double)net.get_k_starDist(2)
             };
 
             //diag netstat 계산
@@ -86,10 +85,10 @@ public:
         this->fittedParam_dissolution = fittedParam_dissolution;
         this->nodeDegreeDist_eachDegreeVec.resize(n_Node);
         this->edgewiseSharedPartnerDist_eachDegreeVec.resize(n_Node - 1);
-        this->userSpecific_eachVec.resize(3); // <- 여기에서 추가netStat 개수 설정!!
+        this->userSpecific_eachVec.resize(2); // <- 여기에서 추가netStat 개수 설정!!
     }
-    void run(int n_smpl) {
-        netGenerate(n_smpl);
+    void run(int num_GoF_smpl, int num_for_each_iter) {
+        netGenerate(num_GoF_smpl, num_for_each_iter);
         make_diagStat();
         make_diagSummary();
     }
@@ -125,10 +124,10 @@ public:
         this->fittedParam_formation = fittedParam_formation;
         this->fittedParam_dissolution = fittedParam_dissolution;
     }
-    void run(int startTime, int n_smpl) {
+    void run(int startTime, int num_GoF_smpl, int num_for_each_iter) {
         GoodnessOfFit_1time_STERGM gofRunner = GoodnessOfFit_1time_STERGM(fittedParam_formation, fittedParam_dissolution,
             obsNetSeq[startTime], obsNetSeq[startTime + 1]);
-        gofRunner.run(n_smpl);
+        gofRunner.run(num_GoF_smpl, num_for_each_iter);
         gofRunner.printResult();
     }
 };

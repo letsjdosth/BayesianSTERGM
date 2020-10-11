@@ -9,7 +9,7 @@ using namespace std;
 using namespace arma;
 
 
-class STERGMnet1TimeSampler {
+class STERGMnet1TimeSampler_indepMC {
 private:
     Network lastTimeNet;
     Col<double> formation_Param;
@@ -55,16 +55,16 @@ private:
         return resNet;
     }
 
-    double log_accProb(Network proposed, bool isFormation) {
+    double log_accProb(Network proposed, bool isDissolution) {
         //NOW MODEL : n_edge + k2stardist
         Col<double> model_delta = { (double)proposed.get_n_Edge() - lastTimeNet.get_n_Edge(),
                                     (double)proposed.get_k_starDist(2) - lastTimeNet.get_k_starDist(2) }; // <-model specify
         Col<double> param;
-        if (isFormation) {
-            param = formation_Param;
+        if (isDissolution) {
+            param = dissolution_Param;
         }
         else {
-            param = dissolution_Param;
+            param = formation_Param;
         }
         double exponent = dot(param, model_delta);
         double res = exponent - log(1 + exp(exponent));
@@ -79,8 +79,8 @@ private:
         // formation-dissolution accept-reject
         double log_unif_sample1 = log(randu());
         double log_unif_sample2 = log(randu());
-        double log_accProb_formation = log_accProb(newProposedFormation, 1);
-        double log_accProb_dissolution = log_accProb(newProposedDissolution, 0);
+        double log_accProb_formation = log_accProb(newProposedFormation, 0);
+        double log_accProb_dissolution = log_accProb(newProposedDissolution, 1);
         Network newFormation;
         Network newDissolution;
         if (log_unif_sample1 < log_accProb_formation) {
@@ -102,10 +102,10 @@ private:
     }
 
 public:
-    STERGMnet1TimeSampler() {
+    STERGMnet1TimeSampler_indepMC() {
         //empty constructor
     }
-    STERGMnet1TimeSampler(Col<double> formationParam, Col<double> dissolutionParam, Network lastTimeNet) {
+    STERGMnet1TimeSampler_indepMC(Col<double> formationParam, Col<double> dissolutionParam, Network lastTimeNet) {
         this->formation_Param = formationParam;
         this->dissolution_Param = dissolutionParam;
         this->lastTimeNet = lastTimeNet;
@@ -126,6 +126,138 @@ public:
         return next_dissolutionSample;
     }
 };
+
+
+class STERGMnet1TimeSampler_1EdgeMCMC {
+private:
+    Network lastTimeNet;
+    Col<double> formation_Param;
+    Col<double> dissolution_Param;
+    int n_Node;
+
+    vector<Network> MCproposedNetVec;
+
+    Network next_combinedSample;
+    Network next_formationSample;
+    Network next_dissolutionSample;
+
+    pair<int, int> selectRandom2Edges(int n_Node) {
+        int randNode1 = randi<int>(distr_param(0, n_Node - 1));
+        int randNode2 = randi<int>(distr_param(0, n_Node - 1));
+        while (randNode1 == randNode2) {
+            randNode2 = randi<int>(distr_param(0, n_Node - 1));
+        }
+        pair<int, int> res = { randNode1, randNode2 };
+        return res;
+
+    }
+
+    pair<Network, int> proposeNet(Network lastNet) {
+        pair<int, int> changeEdgeIndex = selectRandom2Edges(n_Node);
+        Mat<int> proposalNetStructure = lastNet.get_netStructure();
+        int Y_ij = proposalNetStructure(changeEdgeIndex.first, changeEdgeIndex.second); //기존값
+
+        proposalNetStructure(changeEdgeIndex.first, changeEdgeIndex.second) = 1 - Y_ij;
+        proposalNetStructure(changeEdgeIndex.second, changeEdgeIndex.first) = 1 - Y_ij;
+        Network proposalNet = Network(proposalNetStructure, false);
+
+        pair<Network, int> res = { proposalNet, Y_ij }; // Y_ij==1 : dissolution, Y_ij==0 : formation
+        return res;
+    }
+
+    double log_r(Network last, Network proposed, bool isDissolution) {
+        //NOW MODEL : n_edge + k2stardist
+        Col<double> model_delta = { (double)proposed.get_n_Edge() - last.get_n_Edge(),
+                                    (double)proposed.get_k_starDist(2) - last.get_k_starDist(2) }; // <-model specify
+        Col<double> param;
+        if (isDissolution) {
+            param = dissolution_Param;
+        }
+        else {
+            param = formation_Param;
+        }
+        double res = dot(param, model_delta);
+        return res;
+    }
+
+    void sampler() {
+        Network lastIterNet = MCproposedNetVec.back();
+        pair<Network, int> proposedNet = proposeNet(lastIterNet);
+        
+        double log_r_val = log_r(lastIterNet, proposedNet.first, proposedNet.second);
+        double log_unif_sample = log(randu());
+
+        if (log_unif_sample < log_r_val) {
+            MCproposedNetVec.push_back(proposedNet.first);
+        }
+        else {
+            MCproposedNetVec.push_back(lastIterNet);
+        }
+    }
+
+    void compute_nextNet() {
+        Mat<int> combinedSt = MCproposedNetVec.back().get_netStructure();
+        Mat<int> formationSt = lastTimeNet.get_netStructure();
+        Mat<int> dissolutionSt = lastTimeNet.get_netStructure();
+
+        //나중에 논리연산으로 고쳐볼 것 (formationSt는 or임. dissolution은 모르겠음)
+        for (int r = 1; r < n_Node; r++) {
+            for (int c = 0; c < r; c++) {
+                if (combinedSt(r, c) == 1) {
+                    formationSt(r, c) = 1;
+                    formationSt(c, r) = 1;
+                }
+                if (combinedSt(r, c) == 0) {
+                    dissolutionSt(r, c) = 0;
+                    dissolutionSt(c, r) = 0;
+                }
+            }
+        }
+        Network formationNet = Network(formationSt, 0);
+        Network dissolutionNet = Network(dissolutionSt, 0);
+        next_formationSample = formationNet;
+        next_dissolutionSample = dissolutionNet;
+        next_combinedSample = MCproposedNetVec.back();
+    }
+
+public:
+    STERGMnet1TimeSampler_1EdgeMCMC() {
+        //empty constructor
+    }
+    STERGMnet1TimeSampler_1EdgeMCMC(Col<double> formationParam, Col<double> dissolutionParam, Network lastTimeNet) {
+        this->formation_Param = formationParam;
+        this->dissolution_Param = dissolutionParam;
+        this->lastTimeNet = lastTimeNet;
+        this->MCproposedNetVec.push_back(lastTimeNet);
+        this->n_Node = lastTimeNet.get_n_Node();
+    }
+
+    void generateSample(int num_iter) {
+        for (int i = 0; i < num_iter; i++) {
+            sampler();
+        }
+        // cout << "MCMC done: " << n_iterated << " networks are generated." << endl;
+        compute_nextNet();
+    }
+
+    void cutBurnIn(int n_burn_in) {
+        MCproposedNetVec.erase(MCproposedNetVec.begin(), MCproposedNetVec.begin() + n_burn_in + 1);
+    }
+    Network get_CombinedNetMCMCSample() {
+        return next_combinedSample;
+    }
+    Network get_FormationNetMCMCSample() {
+        return next_formationSample;
+    }
+    Network get_DissolutionNetMCMCSample() {
+        return next_dissolutionSample;
+    }
+    vector<Network> get_MCMCSampleVec() {
+        return MCproposedNetVec;
+    }
+};
+
+
 
 class STERGMnetSeqSampler {
 private:
@@ -149,7 +281,8 @@ private:
         
         
         for (int i = 1; i < T_time; i++) {
-            STERGMnet1TimeSampler sampler = STERGMnet1TimeSampler(formation_Param, dissolution_Param, combined_oneSeq.back());
+            //sampler 교체시 여기 2줄 변경
+            STERGMnet1TimeSampler_indepMC sampler = STERGMnet1TimeSampler_indepMC(formation_Param, dissolution_Param, combined_oneSeq.back());
             sampler.generateSample();
 
             formation_oneSeq.push_back(sampler.get_FormationNetMCMCSample());

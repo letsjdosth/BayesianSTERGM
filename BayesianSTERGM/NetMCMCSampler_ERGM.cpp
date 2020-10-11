@@ -20,7 +20,7 @@ pair<Network, int> NetMCMCSampler_ERGM::proposeNet(Network lastNet) {
     int n_node = lastNet.get_n_Node();
     pair<int, int> changeEdgeIndex = selectRandom2Edges(n_node);
     Mat<int> proposalNetStructure = lastNet.get_netStructure();
-    int Y_ij = proposalNetStructure(changeEdgeIndex.first, changeEdgeIndex.second);
+    int Y_ij = proposalNetStructure(changeEdgeIndex.first, changeEdgeIndex.second); //±âÁ¸°ª
 
     proposalNetStructure(changeEdgeIndex.first, changeEdgeIndex.second) = 1 - Y_ij;
     proposalNetStructure(changeEdgeIndex.second, changeEdgeIndex.first) = 1 - Y_ij;

@@ -1,6 +1,0 @@
-    Col<double> testParam1 = { 0.2, 0.1 };
-    Col<double> testParam2 = { -0.2,-0.1 };
-    BSTERGM_MCMC Bstergm = BSTERGM_MCMC(testParam1, testParam2, netSeq);
-    Bstergm.generateSample(500000);
-    Bstergm.cutBurnIn(200000);
-    Bstergm.thinning(1000);

@@ -399,5 +399,5 @@ FodyWeavers.xsd
 *.app
 
 
-# output_csv
-*.csv
+# miscel
+Rintrospection/

@@ -28,6 +28,7 @@ void GoodnessOfFit_ERGM::make_diagStat() {
         Col<int> netESPDist = net.get_edgewiseSharedPartnerDist();
         vector<double> userSpecific = { //<-추가로 얻고싶은 netStat을 집어넣을것. 이후 생성자에서 추가netStat 개수 설정
             (double)net.get_n_Edge(),
+            (double)net.get_k_starDist(2),
             net.get_geoWeightedNodeDegree(0.3),
             net.get_geoWeightedESP(0.3)
         };
@@ -71,7 +72,7 @@ GoodnessOfFit_ERGM::GoodnessOfFit_ERGM(Network obsERGM, Col<double> fittedParam)
     this->n_Node = obsERGM.get_n_Node();
     this->nodeDegreeDist_eachDegreeVec.resize(n_Node);
     this->edgewiseSharedPartnerDist_eachDegreeVec.resize(n_Node - 1);
-    this->userSpecific_eachVec.resize(3); // <- 여기에서 추가netStat 개수 설정!!
+    this->userSpecific_eachVec.resize(4); // <- 여기에서 추가netStat 개수 설정!!
 }
 void GoodnessOfFit_ERGM::run(int n_iter, int n_burn_in) {
     netMCMC(n_iter, n_burn_in);

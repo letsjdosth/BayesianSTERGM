@@ -102,17 +102,17 @@ int main()
         {1,0,0,0,0},
         {1,1,0,0,0} };
     Mat<int> B = {
-        {0,1,0,1,1},
+        {0,1,0,1,0},
         {1,0,0,0,1},
         {0,0,0,0,1},
         {1,0,0,0,0},
-        {1,1,1,0,0} };
+        {0,1,1,0,0} };
     Mat<int> C = {
-        {0,0,0,0,1},
-        {0,0,1,1,1},
-        {0,1,0,0,1},
-        {0,1,0,0,1},
-        {1,1,1,1,0} };
+        {0,0,0,1,0},
+        {0,0,0,1,0},
+        {0,0,0,0,0},
+        {1,1,0,0,1},
+        {0,0,0,1,0} };
     Mat<int> floBusiness = {
         {0,1,1,0,0, 0,0,0,0,0, 0,0,0,0,0, 0},
         {1,0,1,1,0, 0,0,0,0,0, 0,0,0,0,0, 0},
@@ -136,24 +136,41 @@ int main()
     };
 
     Network netA = Network(A, false);
-    //netA.printSummary();
+    // netA.printSummary();
     Network netB = Network(B, false);
     Network netC = Network(C, false);
     vector<Network> netSeq = { netA, netB, netC };
     Network netFloBusiness = Network(floBusiness, false);
     //netFloBusiness.printSummary();
     //=================================================================================================
-    //// stergm sampler : STERGMnet1TimeSampler test
-    //Col<double> testParam1 = { 1, 1 };
-    //Col<double> testParam2 = { -1,-1 };
+    // stergm sampler : STERGMnet1TimeSampler test
+    /*Col<double> testParam1 = { -0.43, 0.25 };
+    Col<double> testParam2 = { -5.41,-7.35 };*/
 
+    //// test1
     //STERGMnet1TimeSampler tsampler = STERGMnet1TimeSampler(testParam1, testParam2, netA);
     //tsampler.generateSample();
     //cout << netA.get_netStructure() << endl;
     //cout << tsampler.get_FormationNetMCMCSample().get_netStructure() << endl;
     //cout << tsampler.get_DissolutionNetMCMCSample().get_netStructure() << endl;
     //cout << tsampler.get_CombinedNetMCMCSample().get_netStructure() << endl;
-    
+    //
+    //cout << "---" << endl;
+
+    //// test2
+    //STERGMnet1TimeSampler_1EdgeMCMC t2sampler = STERGMnet1TimeSampler_1EdgeMCMC(testParam1, testParam2, netA);
+    //t2sampler.generateSample(5000);
+    //t2sampler.cutBurnIn(3000);
+    ////cout << netA.get_netStructure() << endl;
+    ////cout << t2sampler.get_FormationNetMCMCSample().get_netStructure() << endl;
+    ////cout << t2sampler.get_DissolutionNetMCMCSample().get_netStructure() << endl;
+    ////cout << t2sampler.get_CombinedNetMCMCSample().get_netStructure() << endl;
+    //
+    //Diagnostics_MCNetworkSample lastExNetDiag = Diagnostics_MCNetworkSample(t2sampler.get_MCMCSampleVec());
+    //lastExNetDiag.writeToCsv_Sample("STERGMnet1TimeSampler_1EdgeMCMC_lastExNetSamplerNetworkStats.csv");
+    //lastExNetDiag.printResult();
+    //netB.printSummary();
+
     //=================================================================================================
     //// stergm sampler : STERGMnetSeqSampler test
     //Col<double> testParam1 = { 0.2, 0.1 };
@@ -167,16 +184,17 @@ int main()
     //Tsampler.printResult(3);
 
     //=================================================================================================
-    //BSTERGM test
+    ////BSTERGM test
     
-    Col<double> testParam1 = { 0.2, 0.1 };
-    Col<double> testParam2 = { -0.2,-0.1 };
-    BSTERGM_MCMC Bstergm = BSTERGM_MCMC(testParam1, testParam2, netSeq);
-    Bstergm.generateSample(500000);
-    Bstergm.cutBurnIn(200000);
-    Bstergm.thinning(1000);
+    Col<double> testParam1 = { 1, 0.13 };
+    Col<double> testParam2 = { -1, -0.05 };
+    BSTERGM_MCMC_RandomLag Bstergm = BSTERGM_MCMC_RandomLag(testParam1, testParam2, netSeq);
+    Bstergm.generateSample(200000, 500);
+    Bstergm.cutBurnIn(30000);
+    Bstergm.thinning(50);
     //Bstergm.testOut();
-    
+
+    //BSTERGM posterior sample diagnostics
     Diagnostics_MCParamSample BstergmDiag1(Bstergm.getPosteriorSample_formation());
     BstergmDiag1.print_mean(0);
     Col<double> quantilePts = { 0.1, 0.25, 0.5, 0.75, 0.9 };
@@ -194,18 +212,24 @@ int main()
     BstergmDiag2.print_quantile(1, quantilePts);
     BstergmDiag2.print_autoCorr(1, 30);
 
-    BstergmDiag1.writeToCsv_Sample("formation.csv");
-    BstergmDiag2.writeToCsv_Sample("dissolution.csv");
+    BstergmDiag1.writeToCsv_Sample("BSTERGM_formation.csv");
+    BstergmDiag2.writeToCsv_Sample("BSTERGM_dissolution.csv");
     
-
+    //BSTERGM GOF
     GoodnessOfFit_STERGM BstergmGoF (BstergmDiag1.get_mean(), BstergmDiag2.get_mean(), netSeq);
     cout << "t=0 to t=1" << endl;
-    BstergmGoF.run(0, 30000);
+    BstergmGoF.run(0, 500, 500);
+    netB.printSummary();
+
     cout << "\n\nt=1 to t=2" << endl;
-    BstergmGoF.run(1, 30000);
-    
+    BstergmGoF.run(1, 500, 500);
+    netC.printSummary();
 
-
+    //BERGM LAST Exchange Sampler diag
+    STERGMnet1TimeSampler_1EdgeMCMC lastExNetSampler = Bstergm.get_lastExchangeNetworkSampler();
+    Diagnostics_MCNetworkSample lastExNetDiag = Diagnostics_MCNetworkSample(lastExNetSampler.get_MCMCSampleVec());
+    lastExNetDiag.writeToCsv_Sample("BSTERGM_lastExNetSamplerNetworkStats.csv");
+    // lastExNetDiag.printResult();
 
     //=================================================================================================
     //=================================================================================================
@@ -253,11 +277,11 @@ int main()
 
     //=================================================================================================
     ////BERGM test
-    //Col<double> initParam = { 0.01 , -0.01 };
+    //Col<double> initParam = { -0.5 , -0.3 };
     //BERGM_MCMC bergm(initParam, netFloBusiness);
-    //bergm.generateSample(25000, 200);
+    //bergm.generateSample(30000, 250);
     //bergm.cutBurnIn(10000);
-    //bergm.thinning(30);
+    //bergm.thinning(50);
     //
     ////BERGM MCMCDIAG
     //Diagnostics_MCParamSample bergmDiag(bergm.getPosteriorSample());
@@ -277,8 +301,8 @@ int main()
     ////SAA n_edge : -2.842, k2-star : 0.283
     ////now n_edge -2.88316 k2-star 0.229221
 
-    // Col<double> fittedParam = bergmDiag.get_mean(); //자동 (둘중하나만 주석해제)
-    //Col<double> fittedParam = { -2.88316, 0.229221 }; // 수동
+    //Col<double> fittedParam = bergmDiag.get_mean(); //자동 (둘중하나만 주석해제)
+    //// Col<double> fittedParam = { -2.88316, 0.229221 }; // 수동
 
     //GoodnessOfFit_ERGM gofBERGMdiagF = GoodnessOfFit_ERGM(netFloBusiness, fittedParam);
     //gofBERGMdiagF.run(50000, 25000);
