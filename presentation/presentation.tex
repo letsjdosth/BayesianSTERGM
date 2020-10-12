@@ -1,0 +1,138 @@
+\ifcase 0  % choose 0=slides, 1=article, 2=refart
+   \documentclass[aspectratio=169,ignorenonframetext,9pt]{beamer}
+\or\documentclass[a4paper,11pt]{article}
+   \usepackage{url,beamerarticle}
+\or\documentclass[a4paper,11pt]{refart}
+   \let\example\relax
+   \usepackage{url,beamerarticle}
+\fi
+
+\ifcase 0  % choose a theme like these
+    % \usetheme{boxes}
+    \usetheme{Boadilla}
+    % \usetheme{Goettingen}% I recommend
+    % \usetheme{Singapore}
+    % \usetheme{Pittsburgh}
+    % \usetheme{Madrid}
+    % \usetheme{Warsaw} % common choice, but often poor
+\fi
+
+\usepackage{graphicx,pgfplots,parskip}
+\usepackage{amsmath,amsfonts,amssymb,amsthm,epsfig,epstopdf,url,array}
+
+
+
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}[section]
+\newtheorem{conj}{Conjecture}[section]
+\newtheorem{exmp}{Example}[section]
+
+
+\title{BSTERGM: Bayesian Separable-Temporal Exponential family Graph Models}
+\author{Choi Seokjun}
+\date{16 Oct. 2020}
+
+
+\begin{document}
+
+\begin{frame}
+\maketitle
+\end{frame}
+
+
+% \begin{abstract}
+% This abstract, being outside the frame environment, does not appear in the presentation.  Your outline will be the basis for a couple of sentences of talk for each of the following questions:
+% \begin{itemize}
+% \item What was done?
+% \item Why do it?
+% \item What were the results?
+% \item What do the results mean in theory and/or practice?
+% \item What is the reader's benefit?
+% \item How can the readers use this information for themselves? 
+% \end{itemize}
+% \end{abstract}
+
+
+\begin{frame}{Outline}
+\tableofcontents
+\end{frame}
+
+
+
+\section{definitions and terminologies}
+\begin{frame}{Random graphs}
+    \begin{defn}[Random graphs and related terminologies]
+    Let $\mathcal{B}=\{0,1\}$. For given $n\in \mathbb{N}$,
+    \begin{itemize}
+        \item The set $\mathcal{Y} \subset \mathcal{B}^{n^2}$ is a set of graphs of $n$ nodes (without weights for each nodes and edges.)
+        \item Let $\Omega$ be an event set. We say $Y: \Omega \to \mathcal{Y}$ is a random variable for a graph, or a random graph.
+        \item For a random graph $Y \in \mathcal{Y}$, denote the edge between i-th node and j-th node by $Y_{ij}$ for $i,j=1,2,...,n$, \\
+            satisfying $Y_{ij}=1$ if the edge is connected. Otherwise, $Y_{ij}=0$.
+        \item If edges of $Y$ have directions, then $Y$ is called a directed graph. Otherwise, $Y$ is called a undirected graph.
+    \end{itemize}
+    \end{defn}
+    Let me notate a realization of random graph by $y$ and its edges by $y_{ij}$ for $i,j=1,2,...,n$.
+
+    Here is a remark. These are obvious that, for given $n\in \mathbb{N}$,
+    \begin{itemize}
+        \item $|\mathcal{Y}|=2^{n(n-1)}$ if $\mathcal{Y}$ is the set of all directed graphs not permitting self-connecting edges.
+        \item $|\mathcal{Y}|=2^{n(n-1)/2}$ if $\mathcal{Y}$ is the set of all graphs of undirected one.
+    \end{itemize}
+    ;thus, the size of $\mathcal{Y}$ grows exponentially when n increases.
+\end{frame}
+
+\begin{frame}{ERGM: Exponential family Random Graphs Models}
+    \begin{defn}[ERGM: Exponential family Random Graphs Models]
+        Let $\mathcal{Y}$ be a set of graphs with $n$ nodes and $Y$ be a random graph (on $\mathcal{Y}$.)
+        Set a distribution on $\mathcal{Y}$ to
+        \[P(Y=y;\theta) = \frac{exp(\theta^{T}s(y))}{c(\theta)}\]
+        for some $\theta\in\mathbb{R}^p$,
+        where $s(y)\in\mathbb{R}^p$ is a vector which is part of y's sufficient network statistics,
+        \\ and $c(\theta)\in\mathbb{R}$ is a normalizing constant satisfying $c(\theta)=\sum_{y\in\mathcal{Y}}exp(\theta^{T}s(y))$.
+        \\ Models which have a such form called the ERGM.
+    \end{defn}
+    
+    \begin{defn}[TERGM: Temporal Exponential family Random Graphs Models]
+        Let $\mathcal{Y}$ be a set of graphs with $n$ nodes. 
+        Let $Y_1=y_1 \in \mathcal{Y}$ be given and $Y_2,...,Y_T (T\in\mathbb{N})$ be random graphs (on $\mathcal{Y}$).
+        Set a distribution on $\mathcal{Y}\times ... \times \mathcal{Y}$ ($T-1$ folds) to
+        \[P(Y_t=y_t|Y_{t-1}=y_{t-1};\theta) = \frac{exp(\theta^{T}s(y_t, y_{t-1}))}{c(\theta, y_{t-1})}\]
+        for $\theta\in\mathbb{R}^p$ and with the first-order Markov assumption $P(Y_2,Y_3,...,Y_T|Y_1)=P(Y_2|Y_1)P(Y_3|Y_2)...P(Y_T|Y_{T-1})$,
+        \\where $s(y_t, y_{t-1})\in\mathbb{R}^n$ is a part of sufficient network statistics,
+        and $c(\theta, y_{t-1})=\sum_{y\in\mathcal{Y}}exp(\theta^{T}s(y, y_{t-1}))$ is a normalizing constant.
+        Models which have a such form called the TERGM.
+    \end{defn}
+\end{frame}
+
+\begin{frame}{STERGM: Separable-Temporal Exponential family Random Graphs Models}
+    \begin{defn}[STERGM: Separable-Temporal Exponential family Random Graphs Models]
+        Let $\mathcal{Y}$ be a set of graphs with $n$ nodes. 
+        Let $Y_1=y_1 \in \mathcal{Y}$ be given and $Y_2,...,Y_T (T\in\mathbb{N})$ be random graphs (on $\mathcal{Y}$).
+        Set a distribution on $\mathcal{Y}\times ... \times \mathcal{Y}$ ($T-1$ folds) by following way:
+
+        Let $\mathcal{Y}^+|_t$ be a subset of $\mathcal{Y}$ consisting all graphs which have equal or additional edges comparing to $y_{t-1}$.
+        Likewise, let $\mathcal{Y}^-|_t$ be a subset of $\mathcal{Y}$ consisting all graphs which have equal or sparse edges comparing to $y_{t-1}$.
+        Next, to $y_t^+ \in \mathcal{Y}^+|_t$ and $y_t^- \in \mathcal{Y}^-|_t$, set
+        \[P(Y_t^+=y_t^+|Y_{t-1}=y_{t-1};\theta^+) = \frac{exp((\theta^+)^{T}s(y_t^+, y_{t-1}))}{c(\theta^+, y_{t-1})},
+        P(Y_t^-=y_t^-|Y_{t-1}=y_{t-1};\theta^-) = \frac{exp((\theta^-)^{T}s(y_t^-, y_{t-1}))}{c(\theta^-, y_{t-1})}\]
+        for some $\theta^+,\theta^-\in\mathbb{R}^p$, $s(y_t^+, y_{t-1}), s(y_t^-, y_{t-1})\in\mathbb{R}^n$, which are parts of sufficient network statistics,
+        and normalizers $c(\theta^+, y_{t-1})=\sum_{y^+\in\mathcal{Y}^+}exp((\theta^+)^{T}s(y^+, y_{t-1})), c(\theta^-, y_{t-1})=\sum_{y^-\in\mathcal{Y}^-}exp((\theta^-)^{T}s(y^-, y_{t-1}))$.
+        
+        Then, defining operations $+,-$ on $\mathcal{Y}$ following the boolean algebra edgewise-ly, set $y_t$ to
+        \[y_t=y_t^+ - (y_{t-1} - y_t^-) = y_t^- + (y_t^+ - y_{t-1})\]
+        
+        Additionally, assume that
+        \begin{itemize}
+            \item The first-order Markov assumption: $P(Y_2,...,Y_T|Y_1)=P(Y_2|Y_1)...P(Y_T|Y_{T-1})$
+            \item The separability: the conditional independence between $Y_t^+$ and $Y_t^-$ for all $t=2,...,T$;
+                thus, \(P(Y_t=y_t|Y_{t-1}=y_{t-1};\theta^+,\theta^-)=P(Y_t^+=y_t^+|Y_{t-1}=y_{t-1};\theta^+)P(Y_t^-=y_t^-|Y_{t-1}=y_{t-1};\theta^-)\)
+        \end{itemize}
+        Models which have a such form called the SERGM.
+    \end{defn}
+\end{frame}
+\end{document}
