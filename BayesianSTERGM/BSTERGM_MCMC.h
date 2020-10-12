@@ -279,20 +279,20 @@ private:
         // now model
         // n_Edge, k_starDist(2)
         model_delta_exchangeFormation_1 += {
-            (double)exchange_Formation.get_n_Edge() - observedSeq[lag_startTimePoint].get_n_Edge(),
-                (double)exchange_Formation.get_k_starDist(2) - observedSeq[lag_startTimePoint].get_k_starDist(2)
+            (double)exchange_Formation.get_n_Edge(), // - observedSeq[lag_startTimePoint].get_n_Edge(),
+                (double)exchange_Formation.get_k_starDist(2) // - observedSeq[lag_startTimePoint].get_k_starDist(2)
         };
         model_delta_exchangeDissolution_2 += {
-            (double)exchange_Dissolution.get_n_Edge() - observedSeq[lag_startTimePoint].get_n_Edge(),
-                (double)exchange_Dissolution.get_k_starDist(2) - observedSeq[lag_startTimePoint].get_k_starDist(2)
+            (double)exchange_Dissolution.get_n_Edge(), // - observedSeq[lag_startTimePoint].get_n_Edge(),
+                (double)exchange_Dissolution.get_k_starDist(2) // - observedSeq[lag_startTimePoint].get_k_starDist(2)
         };
         model_delta_obsFormation_3 += {
-            (double)observed_FormationSeq[lag_startTimePoint+1].get_n_Edge() - observedSeq[lag_startTimePoint].get_n_Edge(),
-                (double)observed_FormationSeq[lag_startTimePoint+1].get_k_starDist(2) - observedSeq[lag_startTimePoint].get_k_starDist(2)
+            (double)observed_FormationSeq[lag_startTimePoint+1].get_n_Edge(), // - observedSeq[lag_startTimePoint].get_n_Edge(),
+                (double)observed_FormationSeq[lag_startTimePoint+1].get_k_starDist(2) // - observedSeq[lag_startTimePoint].get_k_starDist(2)
         };
         model_delta_obsDissolution_4 += {
-            (double)observed_DissolutionSeq[lag_startTimePoint+1].get_n_Edge() - observedSeq[lag_startTimePoint].get_n_Edge(),
-                (double)observed_DissolutionSeq[lag_startTimePoint+1].get_k_starDist(2) - observedSeq[lag_startTimePoint].get_k_starDist(2)
+            (double)observed_DissolutionSeq[lag_startTimePoint+1].get_n_Edge(), // - observedSeq[lag_startTimePoint].get_n_Edge(),
+                (double)observed_DissolutionSeq[lag_startTimePoint+1].get_k_starDist(2) // - observedSeq[lag_startTimePoint].get_k_starDist(2)
         };
 
         log_r_val += dot(param_lastFormation - param_newFormation, model_delta_exchangeFormation_1 - model_delta_obsFormation_3);
