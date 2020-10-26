@@ -1,0 +1,247 @@
+\ifcase 0  % choose 0=slides, 1=article, 2=refart
+   \documentclass[aspectratio=169,ignorenonframetext,9pt]{beamer}
+\or\documentclass[a4paper,11pt]{article}
+   \usepackage{url,beamerarticle}
+\or\documentclass[a4paper,11pt]{refart}
+   \let\example\relax
+   \usepackage{url,beamerarticle}
+\fi
+
+\ifcase 0  % choose a theme like these
+    % \usetheme{boxes}
+    \usetheme{Boadilla}
+    % \usetheme{Goettingen}% I recommend
+    % \usetheme{Singapore}
+    % \usetheme{Pittsburgh}
+    % \usetheme{Madrid}
+    % \usetheme{Warsaw} % common choice, but often poor
+\fi
+
+\usepackage{algorithm,algorithmicx}
+\usepackage{graphicx,pgfplots,parskip}
+\usepackage{amsmath,amsfonts,amssymb,amsthm,epsfig,epstopdf,url,array}
+
+
+
+
+
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}[section]
+\newtheorem{conj}{Conjecture}[section]
+\newtheorem{exmp}{Example}[section]
+\newtheorem{algo}{Algorithm}[section]
+
+
+\title{BSTERGM: Bayesian Separable-Temporal Exponential family Graph Models}
+\author{Choi Seokjun}
+\date{16 Oct. 2020}
+
+
+\begin{document}
+
+\begin{frame}
+\maketitle
+\end{frame}
+
+
+% \begin{abstract}
+% This abstract, being outside the frame environment, does not appear in the presentation.  Your outline will be the basis for a couple of sentences of talk for each of the following questions:
+% \begin{itemize}
+% \item What was done?
+% \item Why do it?
+% \item What were the results?
+% \item What do the results mean in theory and/or practice?
+% \item What is the reader's benefit?
+% \item How can the readers use this information for themselves? 
+% \end{itemize}
+% \end{abstract}
+
+
+\begin{frame}{Outline}
+\tableofcontents
+\end{frame}
+
+
+
+\section{Model definition}
+\begin{frame}{ERGM: Exponential family Random Graphs Models}
+    \begin{defn}[ERGM: Exponential family Random Graphs Models]
+        Let $\mathcal{Y} \subset \{0,1\}^{n^2}$ be a set of graphs with $n$ nodes and $Y$ be a random graph (on $\mathcal{Y}$.)
+        
+        Set a distribution on $\mathcal{Y}$ to
+        \[P(Y=y;\theta) = \frac{exp(\theta^{T}s(y))}{c(\theta)}\]
+        for some $\theta\in\mathbb{R}^p$,
+        where $s(y)\in\mathbb{R}^p$ is a vector which is part of y's sufficient network statistics,
+        \\ and $c(\theta)\in\mathbb{R}$ is a normalizing constant satisfying $c(\theta)=\sum_{y\in\mathcal{Y}}exp(\theta^{T}s(y))$.
+        \\ Models which have a such form are called the ERGM.
+    \end{defn}
+\end{frame}
+
+\begin{frame}{STERGM: Separable-Temporal Exponential family Random Graphs Models}
+    \begin{defn}[STERGM: Separable-Temporal Exponential family Random Graphs Models]
+        Let $Y_{t-1}=y_{t-1} \in \mathcal{Y}$ be given and $Y_t \in \mathcal{Y}$.
+        Let $\mathcal{Y}^+ \subset \mathcal{Y}$ be a set of all graphs having equal or additional edges comparing to $y_{t-1}$. Likewise, define $\mathcal{Y}^-\subset\mathcal{Y}$ having equal or sparser edges.
+        For $Y_t^+ \in \mathcal{Y}^+$, $Y_t^- \in \mathcal{Y}^-$, set 
+        
+        Formation model:
+        \[P(Y_t^+=y_t^+|Y_{t-1}=y_{t-1};\theta^+) = \frac{exp((\theta^+)^{T}s(y_t^+, y_{t-1}))}{c(\theta^+, y_{t-1})}\]
+        Dissolution model:
+        \[P(Y_t^-=y_t^-|Y_{t-1}=y_{t-1};\theta^-) = \frac{exp((\theta^-)^{T}s(y_t^-, y_{t-1}))}{c(\theta^-, y_{t-1})}\]
+        for $\theta^+,\theta^-\in\mathbb{R}^p$, where $s(y_t^+, y_{t-1}), s(y_t^-, y_{t-1})\in\mathbb{R}^n$ are (functions of) sufficient network statistics,
+        and normalizers $c(\theta^+, y_{t-1})=\sum_{y^+\in\mathcal{Y}^+}exp((\theta^+)^{T}s(y^+, y_{t-1})), c(\theta^-, y_{t-1})=\sum_{y^-\in\mathcal{Y}^-}exp((\theta^-)^{T}s(y^-, y_{t-1}))$.
+        
+        Then, defining operations $+,-$ on $\mathcal{Y}$ by the boolean algebra edgewisely, set $y_t$ to
+        \[y_t=y_t^+ - (y_{t-1} - y_t^-) = y_t^- + (y_t^+ - y_{t-1})\]
+        
+        Additionally, assume that
+        \begin{itemize}
+            \item The first-order Markov assumption: $P(Y_2,...,Y_T|Y_1)=P(Y_2|Y_1)...P(Y_T|Y_{T-1})$
+            \item The separability: the conditional independence between $Y_t^+$ and $Y_t^-$ for all $t=2,...,T$;
+                thus, \(P(Y_t=y_t|Y_{t-1}=y_{t-1};\theta^+,\theta^-)=P(Y_t^+=y_t^+|Y_{t-1}=y_{t-1};\theta^+)P(Y_t^-=y_t^-|Y_{t-1}=y_{t-1};\theta^-)\)
+        \end{itemize}
+        Models which have a such form are called the STERGM.
+    \end{defn}
+\end{frame}
+
+\begin{frame}{BSTERGM: Bayesian STERGM}
+    To convert the STERGM to the Bayesian setting, put priors $p(\theta^+),p(\theta^-)$ over $\theta^+,\theta^-$ and take the Bayes rule as the inference rule.
+    Then, the posterior of $\theta^+,\theta^-$ becomes
+    \[P(\theta^+,\theta^-|y_t, y_{t-1}) = \frac{P(Y_t^+=y_t^+|y_{t-1},\theta^+) P(Y_t^-=y_t^-|y_{t-1},\theta^-)P(\theta^+),P(\theta^-)}{c(\theta^+,y_{t-1})c(\theta^-,y_{t-1})} \]
+    where $y_t=y_t^+ - (y_{t-1} - y_t^-) = y_t^- + (y_t^+ - y_{t-1})$.
+
+    Remarks:
+    \begin{itemize}
+        \item We cannot compute the normalizing constants $c(\theta^+,y_{t-1})$, $c(\theta^-,y_{t-1})$ practically because we need to sum up too many terms.
+        \item The constants are doubly intractable: they depend on $\theta^+$,$\theta^-$, the parameters of a model.
+            Thus, we cannot use an ordinary MCMC algorithm to get the posterior sample.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Network Statistics for BSTERGM}
+    As a usual, $s(y_{t}^.,y_{t-1})$ would be chosen by a difference of network statistics, $s'(y_t^.)-s'(y_{t-1})$.
+    For example, some candidates of $s'$ are:
+    \begin{itemize}
+        \item the number of edges
+        \item k-stars
+        \item triangles
+    \end{itemize}
+    Note that we can set $s'$ by a function of sufficient network statistics.
+\end{frame}
+
+\section{Model fitting algorithm}
+\begin{frame}{Fitting the BSTERGM}
+    Suppose that a sequence of graph samples $y_1,...,y_T$ is observed
+    \\ (then, $y_2^+,...,y_T^+$ and $y_2^-,...,y_T^-$ are uniquely determined,) 
+    \\ and we want to fit the observation using BSTERGM.
+    
+    How do we find the posterior distribution of $\theta^+,\theta^-$?
+\end{frame}
+
+\begin{frame}{Fitting the BSTERGM}
+    \begin{algo}[the main chain]
+    Let $y_1,...,y_T$ be given. For $m=1,...,M$,
+    \begin{enumerate}
+        \item Propose candidates $\theta_*^+,\theta_*^-$ from $\epsilon(.|\theta_{m-1}^+,\theta_{m-1}^-)$.
+        \item Select a lag $(t-1,t)$ randomly on $2 \leq t \leq T$.
+        \item Generate an exchange graph $y_{ex} \in\mathcal{Y}$ (with $y_{ex}^+, y_{ex}^-$) at the $\theta_*^+,\theta_*^-$.
+        \item Calculate the exchange MCMC ratio $\pi$ at the lag,
+            \[\pi = \frac{P(y_t^+|y_{t-1},\theta_*^+)P(y_t^-|y_{t-1},\theta_*^-)p(\theta_*^+,\theta_*^-)}
+                {P(y_t^+|y_{t-1},\theta_{m-1}^+)P(y_t^-|y_{t-1},\theta_{m-1}^-)p(\theta_{m-1}^+,\theta_{m-1}^-)}
+                \frac{P(y_{ex}^+|y_{t-1},\theta_{m-1}^+)P(y_{ex}^-|y_{t-1},\theta_{m-1}^-)}{P(y_{ex}^+|y_{t-1},\theta_*^+)P(y_{ex}^-|y_{t-1},\theta_*^-)}\]
+        \item With probability $min(\pi,1)$, accept the proposal and put $(\theta_m^+,\theta_m^-) = (\theta_*^+,\theta_*^-)$.\\
+            Otherwise, reject the proposal and put $(\theta_m^+,\theta_m^-) = (\theta_{m-1}^+,\theta_{m-1}^-)$.
+    \end{enumerate}
+    \end{algo}    
+    Observe that the $\pi$ has no normalizing constant terms because they are canceled out by added exchange terms.
+    \(log\pi = (\theta_*^+-\theta_{m-1}^+)(s'(y_{t}^+)-s'(y_{ex}^+))
+    +(\theta_*^- -\theta_{m-1}^-)(s'(y_{t}^-)-s'(y_{ex}^-))+log \frac{P(\theta_*^+,\theta_*^-)}{P(\theta_{m-1}^+,\theta_{m-1}^-)}\)
+    
+    Moreover, it is noteworthy that for the second step, an auxiliary MCMC chain which generate an exchange sample is used.
+\end{frame}
+
+% \begin{frame}{Fitting the BSTERGM}
+%     We need one more thing. To generate the exchange graph $y_{ex}$ for time $t$ (of the second part of main chain), 
+%     we should have a generative algorithm at a given parameter points.
+%     However, we still do not know the normalizing constant. Thus, I use one more MCMC chain.
+%     \begin{algo}[the auxiliary chain]
+%     Let $\theta^+,\theta^-,y_{t-1}$ be given. For $k=1,...,K$,
+%     \begin{enumerate}
+%         \item Select one edge randomly from the $y_{k-1}$, say, $y_{k-1;ij}$.
+%         \item Propose a new graph $y_*$ with switching the $y_{ij}$ value from $y_{k-1}$: 
+%         \\ If $y_{k-1;ij}=1$, then set $y_{*;ij}=0$(dissolution case.) Oterwise, If $y_{k-1;ij}=0$, then set $y_{*;ij}=1$(formation case.)
+%         \\ (If sample graphs are undirected, switch $y_{ji}$ simultaneously.)
+%         \item Take $\theta$ as $\theta^+$ or $\theta^-$ according to the case. Calculate the MCMC ratio $\phi$,
+%         \[\phi = \frac{P(Y_t=y_*|y_{t-1},\theta)}{P(Y_t=y_{k-1}|y_{t-1},\theta)}= \frac{exp(\theta^T s(y_*,y_{t-1}))}{exp(\theta^T s(y_{k-1},y_{t-1}))} = exp(\theta^T (s'(y*)-s'(y_{k-1})))\]
+%         \item With probability $min(\phi,1)$, accept the proposal and put $y_k=y_*$.\\
+%             Otherwise, reject the proposal and put $y_k=y_{k-1}$.
+%     \end{enumerate}
+%     \end{algo}
+%     After $K$ iteration, use the last network as the exchange sample in the second part of the main algorithm.
+% \end{frame}
+
+\begin{frame}{MCMC Diagnosis}
+    Since we run two kinds of MCMC chains, we should proceed two diagnostic task.
+    
+    The main chain produces the posterior samples of parameter, so the procedure is same as ordinary MCMC case.
+    \begin{itemize}
+        \item Cut burn-in period. Do thinning if it is needed.
+        \item Depict traceplots of each parameter chain to check the convergence and the mixing.
+        \item Depict autocorrelation plot. Calculate ESS if it is needed.
+    \end{itemize}
+
+    Next, checking all auxiliary chains is practically irritating one. 
+    In general, it is suffice to check the auxiliary chain of the last iteration (of the main chain)
+    with statistics included in the model.
+    \begin{itemize}
+        \item Calculate network statistics of all graphs produced by the last auxiliary chain.
+        \item Depict traceplots of each statistics to check the convergence and the mixing.
+    \end{itemize}
+\end{frame}
+
+
+\section{Model inference}
+\begin{frame}{Inference and Prediction}
+    Since we have posterior samples by running the main chain as many as we want, we can follow the common inference procedure for the Bayes models.
+    \begin{itemize}
+        \item An outlining shape of the posterior of $\theta^+,\theta^-|y_1,y_2,...,y_T$ by histogram.
+        \item An approximated summary statistics: mean, mode, variance, ...
+        \item An approximated quantile and probability interval
+    \end{itemize}
+    
+    Moreover, we already have a generative algorithm at the specific parameter point,
+    we can predict the form of network at $T+1,T+2,...$ using posterior sample following standard Bayesian method.
+    For example, for predicting $T+1$,
+    \begin{itemize}
+        \item Run K iteration using auxiliary chain at $y_T$ with each posterior sample points.
+        \item Take the each network as a predicted result.
+    \end{itemize}
+    If you need, calculate some network statistics for the results and get a summary statistics of them.
+\end{frame}
+
+\begin{frame}{Goodness of Fit}
+    To evaluate the goodness of fit for the posterior of $\theta^+,\theta^-$,
+    we can use the auxiliary chain algorithm once again.
+    \begin{algo}[GOF procedure]
+        For t=2,...,T
+        \\For s=1,...,S
+        \begin{enumerate}
+            \item sample $\theta_s^+,\theta_s^-$ from the estimate of posterior.
+            \item simulate $y_s$ using the auxiliary chain under $y_{t-1}$.
+            \item calculate $g(y_s)$, some higher degree statistics (eg. Node-degree dist \& Edgewise Shared Partner dist)
+        \end{enumerate}
+        Draw a box-plot of $g(y_s)$s and compare with $g(y_t)$.
+    \end{algo}
+\end{frame}
+
+\begin{frame}{Supplements}
+    You can find the C++ implementation (using Armadilo: see http://arma.sourceforge.net/)
+    \\ of BSTERGM fitting, diagnostic, and GOF algorithms
+    \\ at my Github page: https://github.com/letsjdosth/BayesianSTERGM.
+\end{frame}
+
+\end{document}
