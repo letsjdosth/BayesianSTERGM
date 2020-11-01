@@ -141,7 +141,18 @@ int main()
     Network netC = Network(C, false);
     vector<Network> netSeq = { netA, netB, netC };
     Network netFloBusiness = Network(floBusiness, false);
-    //netFloBusiness.printSummary();
+    // netFloBusiness.undirected_printSummary();
+
+    Mat<int> U1 = {
+        {0,1,1,1,1},
+        {1,0,1,0,0},
+        {1,0,0,1,0},
+        {0,0,1,0,1},
+        {1,1,0,0,0}
+    };
+    Network netU1 = Network(U1, true);
+    netU1.directed_printSummary();
+
     //=================================================================================================
     // stergm sampler : STERGMnet1TimeSampler test
     /*Col<double> testParam1 = { -0.43, 0.25 };
@@ -184,52 +195,52 @@ int main()
     //Tsampler.printResult(3);
 
     //=================================================================================================
-    ////BSTERGM test
-    
-    Col<double> testParam1 = { 1, 0.13 };
-    Col<double> testParam2 = { -1, -0.05 };
-    BSTERGM_MCMC_RandomLag Bstergm = BSTERGM_MCMC_RandomLag(testParam1, testParam2, netSeq);
-    Bstergm.generateSample(200000, 500);
-    Bstergm.cutBurnIn(30000);
-    Bstergm.thinning(50);
-    //Bstergm.testOut();
+    //////BSTERGM test
+    //
+    //Col<double> testParam1 = { 1, 0.13 };
+    //Col<double> testParam2 = { -1, -0.05 };
+    //BSTERGM_MCMC_RandomLag Bstergm = BSTERGM_MCMC_RandomLag(testParam1, testParam2, netSeq);
+    //Bstergm.generateSample(200000, 500);
+    //Bstergm.cutBurnIn(30000);
+    //Bstergm.thinning(50);
+    ////Bstergm.testOut();
 
-    //BSTERGM posterior sample diagnostics
-    Diagnostics_MCParamSample BstergmDiag1(Bstergm.getPosteriorSample_formation());
-    BstergmDiag1.print_mean(0);
-    Col<double> quantilePts = { 0.1, 0.25, 0.5, 0.75, 0.9 };
-    BstergmDiag1.print_quantile(0, quantilePts);
-    BstergmDiag1.print_autoCorr(0, 30);
-    BstergmDiag1.print_mean(1);
-    BstergmDiag1.print_quantile(1, quantilePts);
-    BstergmDiag1.print_autoCorr(1, 30);
+    ////BSTERGM posterior sample diagnostics
+    //Diagnostics_MCParamSample BstergmDiag1(Bstergm.getPosteriorSample_formation());
+    //BstergmDiag1.print_mean(0);
+    //Col<double> quantilePts = { 0.1, 0.25, 0.5, 0.75, 0.9 };
+    //BstergmDiag1.print_quantile(0, quantilePts);
+    //BstergmDiag1.print_autoCorr(0, 30);
+    //BstergmDiag1.print_mean(1);
+    //BstergmDiag1.print_quantile(1, quantilePts);
+    //BstergmDiag1.print_autoCorr(1, 30);
 
-    Diagnostics_MCParamSample BstergmDiag2(Bstergm.getPosteriorSample_dissolution());
-    BstergmDiag2.print_mean(0);
-    BstergmDiag2.print_quantile(0, quantilePts);
-    BstergmDiag2.print_autoCorr(0, 30);
-    BstergmDiag2.print_mean(1);
-    BstergmDiag2.print_quantile(1, quantilePts);
-    BstergmDiag2.print_autoCorr(1, 30);
+    //Diagnostics_MCParamSample BstergmDiag2(Bstergm.getPosteriorSample_dissolution());
+    //BstergmDiag2.print_mean(0);
+    //BstergmDiag2.print_quantile(0, quantilePts);
+    //BstergmDiag2.print_autoCorr(0, 30);
+    //BstergmDiag2.print_mean(1);
+    //BstergmDiag2.print_quantile(1, quantilePts);
+    //BstergmDiag2.print_autoCorr(1, 30);
 
-    BstergmDiag1.writeToCsv_Sample("BSTERGM_formation.csv");
-    BstergmDiag2.writeToCsv_Sample("BSTERGM_dissolution.csv");
-    
-    //BSTERGM GOF
-    GoodnessOfFit_STERGM BstergmGoF (BstergmDiag1.get_mean(), BstergmDiag2.get_mean(), netSeq);
-    cout << "t=0 to t=1" << endl;
-    BstergmGoF.run(0, 500, 500);
-    netB.printSummary();
+    //BstergmDiag1.writeToCsv_Sample("BSTERGM_formation.csv");
+    //BstergmDiag2.writeToCsv_Sample("BSTERGM_dissolution.csv");
+    //
+    ////BSTERGM GOF
+    //GoodnessOfFit_STERGM BstergmGoF (BstergmDiag1.get_mean(), BstergmDiag2.get_mean(), netSeq);
+    //cout << "t=0 to t=1" << endl;
+    //BstergmGoF.run(0, 500, 500);
+    //netB.undirected_printSummary();
 
-    cout << "\n\nt=1 to t=2" << endl;
-    BstergmGoF.run(1, 500, 500);
-    netC.printSummary();
+    //cout << "\n\nt=1 to t=2" << endl;
+    //BstergmGoF.run(1, 500, 500);
+    //netC.undirected_printSummary();
 
-    //BERGM LAST Exchange Sampler diag
-    STERGMnet1TimeSampler_1EdgeMCMC lastExNetSampler = Bstergm.get_lastExchangeNetworkSampler();
-    Diagnostics_MCNetworkSample lastExNetDiag = Diagnostics_MCNetworkSample(lastExNetSampler.get_MCMCSampleVec());
-    lastExNetDiag.writeToCsv_Sample("BSTERGM_lastExNetSamplerNetworkStats.csv");
-    // lastExNetDiag.printResult();
+    ////BERGM LAST Exchange Sampler diag
+    //STERGMnet1TimeSampler_1EdgeMCMC lastExNetSampler = Bstergm.get_lastExchangeNetworkSampler();
+    //Diagnostics_MCNetworkSample lastExNetDiag = Diagnostics_MCNetworkSample(lastExNetSampler.get_MCMCSampleVec());
+    //lastExNetDiag.writeToCsv_Sample("BSTERGM_lastExNetSamplerNetworkStats.csv");
+    //// lastExNetDiag.printResult();
 
     //=================================================================================================
     //=================================================================================================

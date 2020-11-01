@@ -10,27 +10,35 @@ private:
     bool isDirected;
     int n_Node;
     int n_Edge;
-    Col<int> dist_nodeDegree;
 
-    void updateNetworkInfo();
-    int edgeNum();
+    int undirected_edgeNum();
+    int directed_edgeNum();
     
-    Col<int> nodeDegree();
-    Col<int> nodeDegreeDist();
-    double geoWeightedNodeDegree(double tau);
+    Col<int> undirected_nodeDegree();
+    Col<int> directed_nodeInDegree();
+    Col<int> directed_nodeOutDegree();
 
-    Mat<int> edgewiseSharedPartner();
-    Col<int> edgewiseSharedPartnerDist();
-    double geoWeightedESP(double tau);
+    Col<int> undirected_nodeDegreeDist();
+    Col<int> directed_nodeInDegreeDist();
+    Col<int> directed_nodeOutDegreeDist();
+
+    double undirected_geoWeightedNodeDegree(double tau);
+
+    Mat<int> undirected_edgewiseSharedPartner();
+    Mat<int> directed_edgewiseSharedPartner();
+    Col<int> undirected_edgewiseSharedPartnerDist();
+    Col<int> directed_edgewiseSharedPartnerDist();
+    double undirected_geoWeightedESP(double tau);
+    double directed_geoWeightedESP(double tau);
     
-    Mat<int> dyadwiseSharedPartner();
-    Col<int> dyadwiseSharedPartnerDist();
-    double geoWeightedDSP(double tau);
+    Mat<int> undirected_dyadwiseSharedPartner();
+    Col<int> undirected_dyadwiseSharedPartnerDist();
+    double undirected_geoWeightedDSP(double tau);
 
     int fact(int n);
     int nCr(int n, int r);
-    Col<int> k_starDist();
-    Col<int> n_triangleDist();
+    Col<int> undirected_k_starDist();
+    Col<int> undirected_n_triangleDist();
 
 
 public:
@@ -38,25 +46,27 @@ public:
     Network();
     Mat<int> get_netStructure();
     
+    bool is_directed_graph();
     int get_n_Node();
     int get_n_Edge();
     
-    int get_nodeDegreeDist(int degree);
-    Col<int> get_nodeDegreeDist();
-    double get_geoWeightedNodeDegree(double tau);
+    int get_undirected_nodeDegreeDist(int degree);
+    Col<int> get_undirected_nodeDegreeDist();
+    double get_undirected_geoWeightedNodeDegree(double tau);
     
-    int get_edgewiseSharedPartnerDist(int degree);
-    Col<int> get_edgewiseSharedPartnerDist();
-    double get_geoWeightedESP(double tau);
+    int get_undirected_edgewiseSharedPartnerDist(int degree);
+    Col<int> get_undirected_edgewiseSharedPartnerDist();
+    double get_undirected_geoWeightedESP(double tau);
 
-    int get_dyadwiseSharedPartnerDist(int degree);
-    Col<int> get_dyadwiseSharedPartnerDist();
-    double get_geoWeightedDSP(double tau);
+    int get_undirected_dyadwiseSharedPartnerDist(int degree);
+    Col<int> get_undirected_dyadwiseSharedPartnerDist();
+    double get_undirected_geoWeightedDSP(double tau);
 
-    int get_k_starDist(int degree_k);
-    Col<int> get_k_starDist();
-    int get_triangleDist(int degree);
-    Col<int> get_triangleDist();
+    int get_undirected_k_starDist(int degree_k);
+    Col<int> get_undirected_k_starDist();
+    int get_undirected_triangleDist(int degree);
+    Col<int> get_undirected_triangleDist();
 
-    void printSummary();
+    void undirected_printSummary();
+    void directed_printSummary();
 };

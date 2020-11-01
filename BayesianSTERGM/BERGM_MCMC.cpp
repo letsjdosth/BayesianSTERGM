@@ -44,7 +44,7 @@ double BERGM_MCMC::log_r(Col<double> lastParam, Col<double> proposedParam, Netwo
     //model specify 분리할 수 있으면 좋긴할듯 (어떻게?)
     //NOW: model : n_Edge
     Col<double> model_delta = { (double)exchangeNet.get_n_Edge() - observedNet.get_n_Edge() ,
-                                (double)exchangeNet.get_k_starDist(2) - observedNet.get_k_starDist(2) }; // <-model specify. s(y')-s(y)
+                                (double)exchangeNet.get_undirected_k_starDist(2) - observedNet.get_undirected_k_starDist(2) }; // <-model specify. s(y')-s(y)
     Col<double> log_r_col = (lastParam - proposedParam).t() * model_delta;
     double res = log_r_col(0) + log_paramPriorPDF(proposedParam) - log_paramPriorPDF(lastParam);
     return res;

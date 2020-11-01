@@ -60,7 +60,7 @@ Mat<double> ERGM_MCML::invInfoCal(Col<double> lastParam, vector<Col<double>> MCM
 Col<double> ERGM_MCML::netOne_modelVal(Network net) {
     // make Z(y)
     //NOW: model : n_Edge
-    Col<double> val = { (double)net.get_n_Edge(), (double)net.get_k_starDist(2) }; // <- model specify
+    Col<double> val = { (double)net.get_n_Edge(), (double)net.get_undirected_k_starDist(2) }; // <- model specify
     return val;
 }
 
@@ -227,7 +227,7 @@ void ERGM_MCML::testOut() {
     while (i < MCMCSampleVec.size()) {
         Network printedNet = MCMCSampleVec[i];
         cout << "#" << i << endl;
-        printedNet.printSummary();
+        printedNet.undirected_printSummary();
         i++;
     }
 

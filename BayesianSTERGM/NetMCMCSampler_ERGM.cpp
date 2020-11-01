@@ -18,13 +18,16 @@ pair<int, int> NetMCMCSampler_ERGM::selectRandom2Edges(int n_Node) {
 
 pair<Network, int> NetMCMCSampler_ERGM::proposeNet(Network lastNet) {
     int n_node = lastNet.get_n_Node();
+    bool isDirected = lastNet.is_directed_graph();
     pair<int, int> changeEdgeIndex = selectRandom2Edges(n_node);
     Mat<int> proposalNetStructure = lastNet.get_netStructure();
     int Y_ij = proposalNetStructure(changeEdgeIndex.first, changeEdgeIndex.second); //기존값
 
     proposalNetStructure(changeEdgeIndex.first, changeEdgeIndex.second) = 1 - Y_ij;
-    proposalNetStructure(changeEdgeIndex.second, changeEdgeIndex.first) = 1 - Y_ij;
-    Network proposalNet = Network(proposalNetStructure, false);
+    if (!isDirected) {
+        proposalNetStructure(changeEdgeIndex.second, changeEdgeIndex.first) = 1 - Y_ij;
+    }
+    Network proposalNet = Network(proposalNetStructure, isDirected);
 
     pair<Network, int> res = { proposalNet, Y_ij };
     return res;
@@ -34,10 +37,9 @@ double NetMCMCSampler_ERGM::log_r(Network lastNet, pair<Network, int> proposedNe
     //model specify 분리할 수 있으면 좋긴할듯 (어떻게?)
     //NOW: model : n_Edge
     Col<double> model_delta = { (double)proposedNetPair.first.get_n_Edge() - lastNet.get_n_Edge(),
-                                (double)proposedNetPair.first.get_k_starDist(2) - lastNet.get_k_starDist(2) }; // <-model specify
+                                (double)proposedNetPair.first.get_undirected_k_starDist(2) - lastNet.get_undirected_k_starDist(2) }; // <-model specify
     Col<double> log_r_col = (given_param * model_delta);
     double res = log_r_col(0);
-    // if (proposedNetPair.second == 1) res *= -1; //논문을다시보니 없어야하는게 맞는듯 (diff가 논문에선 무조건 1에서 0으로 갈 때임)
     return res;
 }
 
@@ -102,8 +104,8 @@ vector<Col<double>> NetMCMCSampler_ERGM::getDiagStatVec() {
             (double)net.get_n_Edge(),
             //(double)net.get_k_starDist(2),
             //(double)net.get_triangleDist(1),
-            net.get_geoWeightedNodeDegree(0.3),
-            net.get_geoWeightedESP(0.3)
+            net.get_undirected_geoWeightedNodeDegree(0.3),
+            net.get_undirected_geoWeightedESP(0.3)
         };
         res.push_back(netStat);
     }
@@ -115,7 +117,7 @@ void NetMCMCSampler_ERGM::testOut() {
     while (i < MCMCSampleVec.size()) {
         Network printedNet = MCMCSampleVec[i];
         cout << "#" << i << endl;
-        printedNet.printSummary();
+        printedNet.undirected_printSummary();
         i++;
     }
 }

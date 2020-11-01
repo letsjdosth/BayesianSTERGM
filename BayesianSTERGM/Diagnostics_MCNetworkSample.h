@@ -25,11 +25,11 @@ private:
     void make_diagStat() {
         for (int i = 0; i < networkSampleVec.size(); i++) {
             Network net = networkSampleVec[i];
-            Col<int> netNodeDegreeDist = net.get_nodeDegreeDist(); //1차원 높게나옴(n_Node+1)
-            Col<int> netESPDist = net.get_edgewiseSharedPartnerDist();
+            Col<int> netNodeDegreeDist = net.get_undirected_nodeDegreeDist(); //1차원 높게나옴(n_Node+1)
+            Col<int> netESPDist = net.get_undirected_edgewiseSharedPartnerDist();
             vector<double> userSpecific = { //<-추가로 얻고싶은 netStat을 집어넣을것. 이후 생성자에서 추가netStat 개수 설정
                 (double)net.get_n_Edge(),
-                (double)net.get_k_starDist(2)
+                (double)net.get_undirected_k_starDist(2)
             };
 
             for (int degree = 0; degree < n_Node; degree++) {
