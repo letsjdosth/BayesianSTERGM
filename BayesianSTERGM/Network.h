@@ -54,9 +54,21 @@ public:
     Col<int> get_undirected_nodeDegreeDist();
     double get_undirected_geoWeightedNodeDegree(double tau);
     
+    int get_directed_nodeInDegreeDist(int degree);
+    Col<int> get_directed_nodeInDegreeDist();
+    // double get_directed_geoWeightedNodeInDegree(double tau);
+
+    int get_directed_nodeOutDegreeDist(int degree);
+    Col<int> get_directed_nodeOutDegreeDist();
+    // double get_directed_geoWeightedNodeOutDegree(double tau);
+
     int get_undirected_edgewiseSharedPartnerDist(int degree);
     Col<int> get_undirected_edgewiseSharedPartnerDist();
     double get_undirected_geoWeightedESP(double tau);
+
+    int get_directed_edgewiseSharedPartnerDist(int degree);
+    Col<int> get_directed_edgewiseSharedPartnerDist();
+    double get_directed_geoWeightedESP(double tau);
 
     int get_undirected_dyadwiseSharedPartnerDist(int degree);
     Col<int> get_undirected_dyadwiseSharedPartnerDist();

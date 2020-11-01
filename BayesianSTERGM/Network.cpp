@@ -355,6 +355,27 @@ Col<int> Network::get_undirected_nodeDegreeDist() {
 double Network::get_undirected_geoWeightedNodeDegree(double tau) {
     return undirected_geoWeightedNodeDegree(tau);
 }
+int Network::get_directed_nodeInDegreeDist(int degree) {
+    return directed_nodeInDegreeDist()(degree);
+}
+Col<int> Network::get_directed_nodeInDegreeDist() {
+    return directed_nodeInDegreeDist();
+}
+//double Network::get_directed_geoWeightedNodeInDegree(double tau) {
+//    return directed_geoWeightedNodeInDegree(tau);
+//}
+int Network::get_directed_nodeOutDegreeDist(int degree) {
+    return directed_nodeOutDegreeDist()(degree);
+}
+Col<int> Network::get_directed_nodeOutDegreeDist() {
+    return directed_nodeOutDegreeDist();
+}
+//double Network::get_directed_geoWeightedNodeOutDegree(double tau) {
+//    return directed_geoWeightedNodeOutDegree(tau);
+//}
+
+
+
 int Network::get_undirected_edgewiseSharedPartnerDist(int degree) {
     return undirected_edgewiseSharedPartnerDist()(degree);
 }
@@ -364,6 +385,18 @@ Col<int> Network::get_undirected_edgewiseSharedPartnerDist() {
 double Network::get_undirected_geoWeightedESP(double tau) {
     return undirected_geoWeightedESP(tau);
 }
+int Network::get_directed_edgewiseSharedPartnerDist(int degree) {
+    return directed_edgewiseSharedPartnerDist()(degree);
+}
+Col<int> Network::get_directed_edgewiseSharedPartnerDist() {
+    return directed_edgewiseSharedPartnerDist();
+}
+double Network::get_directed_geoWeightedESP(double tau) {
+    return directed_geoWeightedESP(tau);
+}
+
+
+
 int Network::get_undirected_dyadwiseSharedPartnerDist(int degree) {
     return undirected_dyadwiseSharedPartnerDist()(degree);
 }

@@ -16,6 +16,7 @@ private:
     Col<double> formation_Param;
     Col<double> dissolution_Param;
     int n_Node;
+    bool isDirected;
 
     vector<Network> MCproposedNetVec;
 
@@ -35,7 +36,6 @@ private:
     }
 
     pair<Network, int> proposeNet(Network lastNet) {
-        bool isDirected = lastNet.is_directed_graph();
         pair<int, int> changeEdgeIndex = selectRandom2Edges(n_Node);
         Mat<int> proposalNetStructure = lastNet.get_netStructure();
         int Y_ij = proposalNetStructure(changeEdgeIndex.first, changeEdgeIndex.second); //±âÁ¸°ª
@@ -52,9 +52,9 @@ private:
     }
 
     double log_r(Network last, Network proposed, bool isDissolution) {
-        //NOW MODEL : n_edge + k2stardist
+        //NOW MODEL
         Col<double> model_delta = { (double)proposed.get_n_Edge() - last.get_n_Edge(),
-                                    (double)proposed.get_undirected_k_starDist(2) - last.get_undirected_k_starDist(2) }; // <-model specify
+                                    (double)proposed.get_directed_geoWeightedESP(0.5) - last.get_directed_geoWeightedESP(0.5) }; // <-model specify
         Col<double> param;
         if (isDissolution) {
             param = dissolution_Param;
@@ -97,8 +97,8 @@ private:
                 }
             }
         }
-        Network formationNet = Network(formationSt, 0);
-        Network dissolutionNet = Network(dissolutionSt, 0);
+        Network formationNet = Network(formationSt, isDirected);
+        Network dissolutionNet = Network(dissolutionSt, isDirected);
         next_formationSample = formationNet;
         next_dissolutionSample = dissolutionNet;
         next_combinedSample = MCproposedNetVec.back();
@@ -114,6 +114,7 @@ public:
         this->lastTimeNet = lastTimeNet;
         this->MCproposedNetVec.push_back(lastTimeNet);
         this->n_Node = lastTimeNet.get_n_Node();
+        this->isDirected = lastTimeNet.is_directed_graph();
     }
 
     void generateSample(int num_iter) {
