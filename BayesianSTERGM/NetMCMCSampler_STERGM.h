@@ -35,7 +35,7 @@ private:
 
     }
 
-    pair<Network, int> proposeNet(Network lastNet) {
+    pair<Network, int> proposeNet(Network& lastNet) {
         pair<int, int> changeEdgeIndex = selectRandom2Edges(n_Node);
         Mat<int> proposalNetStructure = lastNet.get_netStructure();
         int Y_ij = proposalNetStructure(changeEdgeIndex.first, changeEdgeIndex.second); //기존값
@@ -51,7 +51,7 @@ private:
         return res;
     }
 
-    double log_r(Network last, Network proposed, bool isDissolution) {
+    double log_r(Network& last, Network& proposed, bool isDissolution) {
         //NOW MODEL
         Col<double> model_delta = { (double)proposed.get_n_Edge() - last.get_n_Edge(),
                                     (double)proposed.get_directed_geoWeightedESP(0.5) - last.get_directed_geoWeightedESP(0.5) }; // <-model specify
@@ -87,7 +87,7 @@ private:
         Mat<int> dissolutionSt = lastTimeNet.get_netStructure();
 
         //나중에 논리연산으로 고쳐볼 것 (formationSt는 or임. dissolution은 모르겠음)
-        for (int r = 1; r < n_Node; r++) {
+        for (int r = 0; r < n_Node; r++) {
             for (int c = 0; c < n_Node; c++) {
                 if (combinedSt(r, c) == 1) {
                     formationSt(r, c) = 1;

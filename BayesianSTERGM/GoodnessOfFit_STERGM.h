@@ -155,7 +155,6 @@ private:
 
     void directed_cal(int startTime, int num_usingPosteriorSample, int num_for_each_iter) {
         for (int i = num_usingPosteriorSample; i > 0; i--) {
-            cout << "directed_cal" << i << endl;
             GoodnessOfFit_1time_STERGM gofRunner = GoodnessOfFit_1time_STERGM(posteriorParam_formation[i], posteriorParam_dissolution[i],
                 obsNetSeq[startTime], obsNetSeq[startTime + 1]);
             gofRunner.directed_run(num_for_each_iter);

@@ -665,15 +665,14 @@ int main()
     //Tsampler.printResult(3);
 
     //=================================================================================================
-    ////BSTERGM test
+    //BSTERGM test
     
-    Col<double> testParam1 = { 1, 0.13 };
-    Col<double> testParam2 = { -1, -0.05 };
+    Col<double> testParam1 = { 0.01 , 0.01 };
+    Col<double> testParam2 = { 0.2 , 0.01 };
     BSTERGM_MCMC_RandomLag Bstergm = BSTERGM_MCMC_RandomLag(testParam1, testParam2, net_1_seq);
-    Bstergm.generateSample(1000, 10);
-    Bstergm.cutBurnIn(100);
-    Bstergm.thinning(2);
-    Bstergm.testOut();
+    Bstergm.generateSample(30000, 30);
+    Bstergm.cutBurnIn(10000);
+    Bstergm.thinning(5);
 
     //BSTERGM posterior sample diagnostics
     Diagnostics_MCParamSample BstergmDiag1(Bstergm.getPosteriorSample_formation());
@@ -695,23 +694,23 @@ int main()
 
     BstergmDiag1.writeToCsv_Sample("BSTERGM_formation.csv");
     BstergmDiag2.writeToCsv_Sample("BSTERGM_dissolution.csv");
-    
-    //BSTERGM GOF
-    GoodnessOfFit_STERGM BstergmGoF0 (Bstergm.getPosteriorSample_formation(), Bstergm.getPosteriorSample_dissolution(), net_1_seq);
-    cout << "t=0 to t=1" << endl;
-    BstergmGoF0.directed_run(0, 200, 200);
-    BstergmGoF0.directed_printResult(0);
+    //
+    ////BSTERGM GOF
+    //GoodnessOfFit_STERGM BstergmGoF0 (Bstergm.getPosteriorSample_formation(), Bstergm.getPosteriorSample_dissolution(), net_1_seq);
+    //cout << "t=0 to t=1" << endl;
+    //BstergmGoF0.directed_run(0, 50, 100);
+    //BstergmGoF0.directed_printResult(0);
 
-    GoodnessOfFit_STERGM BstergmGoF1(Bstergm.getPosteriorSample_formation(), Bstergm.getPosteriorSample_dissolution(), net_1_seq);
-    cout << "\n\nt=1 to t=2" << endl;
-    BstergmGoF1.directed_run(1, 200, 200);
-    BstergmGoF1.directed_printResult(1);
+    //GoodnessOfFit_STERGM BstergmGoF1(Bstergm.getPosteriorSample_formation(), Bstergm.getPosteriorSample_dissolution(), net_1_seq);
+    //cout << "\n\nt=1 to t=2" << endl;
+    //BstergmGoF1.directed_run(1, 50, 100);
+    //BstergmGoF1.directed_printResult(1);
 
-    //BERGM LAST Exchange Sampler diag
-    STERGMnet1TimeSampler_1EdgeMCMC lastExNetSampler = Bstergm.get_lastExchangeNetworkSampler();
-    Diagnostics_MCNetworkSample lastExNetDiag = Diagnostics_MCNetworkSample(lastExNetSampler.get_MCMCSampleVec());
-    lastExNetDiag.writeToCsv_Sample("BSTERGM_lastExNetSamplerNetworkStats.csv");
-    // lastExNetDiag.printResult();
+    ////BERGM LAST Exchange Sampler diag
+    //STERGMnet1TimeSampler_1EdgeMCMC lastExNetSampler = Bstergm.get_lastExchangeNetworkSampler();
+    //Diagnostics_MCNetworkSample lastExNetDiag = Diagnostics_MCNetworkSample(lastExNetSampler.get_MCMCSampleVec());
+    //lastExNetDiag.writeToCsv_Sample("BSTERGM_lastExNetSamplerNetworkStats.csv");
+    //// lastExNetDiag.printResult();
 
     //=================================================================================================
     //=================================================================================================
