@@ -60,8 +60,6 @@ using namespace arma;
 // -> long-term dynamic 뽑아서 각 netStat ts.plot그리기 및 장기적인 duration/incidence/prevalence 계산
 // (prevalence ~ incidence * duration (근사적으로) <- 아니면그냥 sample에서 직접 계산해도될듯
 
-// 기타: NetMCMCSampler_STERGM 진단? 지금 세팅에서는 할필요 x 
-// (지금은 실상 indep mcmc임. edge를 formation/dissolution에서 하나씩 넣고뺄거면 할수도있겠는데...)
 
 //기타할일
 // 1. STERGMnetMCSampler 알고리즘체크후 후 헤더에서 CPP 분리
@@ -609,16 +607,20 @@ int main()
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
         {0,0,1,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,1,1,0,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
     };
-    Network net_f1 = Network(f1_19, true);
-    Network net_f2 = Network(f2_19, true);
-    Network net_f3 = Network(f3_19, true);
-    Network net_m1 = Network(m1_19, true);
-    Network net_m2 = Network(m2_19, true);
-    Network net_m3 = Network(m3_19, true);
-    Network net_w1 = Network(w1_19, true);
-    Network net_w2 = Network(w2_19, true);
-    Network net_w3 = Network(w3_19, true);
+    Network net_f1 = Network(f1_19, false);
+    Network net_f2 = Network(f2_19, false);
+    Network net_f3 = Network(f3_19, false);
+    Network net_m1 = Network(m1_19, false);
+    Network net_m2 = Network(m2_19, false);
+    Network net_m3 = Network(m3_19, false);
+    Network net_w1 = Network(w1_19, false);
+    Network net_w2 = Network(w2_19, false);
+    Network net_w3 = Network(w3_19, false);
     
+    //net_m1.undirected_printSummary();
+    //net_w1.undirected_printSummary();
+    //net_f1.undirected_printSummary();
+
     vector<Network> net_1_seq = { net_m1, net_w1, net_f1 };
     vector<Network> net_2_seq = { net_m2, net_w2, net_f2 };
     vector<Network> net_3_seq = { net_m3, net_w3, net_f3 };
@@ -667,12 +669,12 @@ int main()
     //=================================================================================================
     //BSTERGM test
     
-    Col<double> testParam1 = { 0.01 , 0.01 };
-    Col<double> testParam2 = { 0.2 , 0.01 };
-    BSTERGM_MCMC_RandomLag Bstergm = BSTERGM_MCMC_RandomLag(testParam1, testParam2, net_1_seq);
-    Bstergm.generateSample(30000, 30);
+    Col<double> initFormationParam = { 0.01 };
+    Col<double> initDissolutionParam = { -0.01 };
+    BSTERGM_MCMC_RandomLag Bstergm = BSTERGM_MCMC_RandomLag(initFormationParam, initDissolutionParam, net_1_seq);
+    Bstergm.generateSample(50000, 20);
     Bstergm.cutBurnIn(10000);
-    Bstergm.thinning(5);
+    Bstergm.thinning(50);
 
     //BSTERGM posterior sample diagnostics
     Diagnostics_MCParamSample BstergmDiag1(Bstergm.getPosteriorSample_formation());
@@ -680,37 +682,37 @@ int main()
     Col<double> quantilePts = { 0.1, 0.25, 0.5, 0.75, 0.9 };
     BstergmDiag1.print_quantile(0, quantilePts);
     BstergmDiag1.print_autoCorr(0, 30);
-    BstergmDiag1.print_mean(1);
+    /*BstergmDiag1.print_mean(1);
     BstergmDiag1.print_quantile(1, quantilePts);
-    BstergmDiag1.print_autoCorr(1, 30);
+    BstergmDiag1.print_autoCorr(1, 30);*/
 
     Diagnostics_MCParamSample BstergmDiag2(Bstergm.getPosteriorSample_dissolution());
     BstergmDiag2.print_mean(0);
     BstergmDiag2.print_quantile(0, quantilePts);
     BstergmDiag2.print_autoCorr(0, 30);
-    BstergmDiag2.print_mean(1);
+    /*BstergmDiag2.print_mean(1);
     BstergmDiag2.print_quantile(1, quantilePts);
-    BstergmDiag2.print_autoCorr(1, 30);
+    BstergmDiag2.print_autoCorr(1, 30);*/
 
     BstergmDiag1.writeToCsv_Sample("BSTERGM_formation.csv");
     BstergmDiag2.writeToCsv_Sample("BSTERGM_dissolution.csv");
-    //
-    ////BSTERGM GOF
-    //GoodnessOfFit_STERGM BstergmGoF0 (Bstergm.getPosteriorSample_formation(), Bstergm.getPosteriorSample_dissolution(), net_1_seq);
-    //cout << "t=0 to t=1" << endl;
-    //BstergmGoF0.directed_run(0, 50, 100);
-    //BstergmGoF0.directed_printResult(0);
+    
+    //BSTERGM GOF
+    GoodnessOfFit_STERGM BstergmGoF0 (Bstergm.getPosteriorSample_formation(), Bstergm.getPosteriorSample_dissolution(), net_1_seq);
+    cout << "t=0 to t=1" << endl;
+    BstergmGoF0.undirected_run(0, 100, 100);
+    BstergmGoF0.undirected_printResult(0);
 
-    //GoodnessOfFit_STERGM BstergmGoF1(Bstergm.getPosteriorSample_formation(), Bstergm.getPosteriorSample_dissolution(), net_1_seq);
-    //cout << "\n\nt=1 to t=2" << endl;
-    //BstergmGoF1.directed_run(1, 50, 100);
-    //BstergmGoF1.directed_printResult(1);
+    GoodnessOfFit_STERGM BstergmGoF1(Bstergm.getPosteriorSample_formation(), Bstergm.getPosteriorSample_dissolution(), net_1_seq);
+    cout << "\n\nt=1 to t=2" << endl;
+    BstergmGoF1.undirected_run(1, 100, 100);
+    BstergmGoF1.undirected_printResult(1);
 
-    ////BERGM LAST Exchange Sampler diag
-    //STERGMnet1TimeSampler_1EdgeMCMC lastExNetSampler = Bstergm.get_lastExchangeNetworkSampler();
-    //Diagnostics_MCNetworkSample lastExNetDiag = Diagnostics_MCNetworkSample(lastExNetSampler.get_MCMCSampleVec());
-    //lastExNetDiag.writeToCsv_Sample("BSTERGM_lastExNetSamplerNetworkStats.csv");
-    //// lastExNetDiag.printResult();
+    //BERGM LAST Exchange Sampler diag
+    STERGMnet1TimeSampler_1EdgeMCMC lastExNetSampler = Bstergm.get_lastExchangeNetworkSampler();
+    Diagnostics_MCNetworkSample lastExNetDiag = Diagnostics_MCNetworkSample(lastExNetSampler.get_MCMCSampleVec());
+    lastExNetDiag.writeToCsv_Sample("BSTERGM_lastExNetSamplerNetworkStats.csv");
+    // lastExNetDiag.printResult();
 
     //=================================================================================================
     //=================================================================================================

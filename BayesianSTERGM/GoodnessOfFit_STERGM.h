@@ -37,7 +37,7 @@ private:
         netESPDist = gofSample.get_undirected_edgewiseSharedPartnerDist();
         userSpecific = { //<-추가로 얻고싶은 netStat을 집어넣을것. 이후 생성자에서 추가netStat 개수 설정
             (double)gofSample.get_n_Edge(),
-            (double)gofSample.get_undirected_k_starDist(2)
+            (double)gofSample.get_undirected_geoWeightedESP(0.5)
         };
     }
 
@@ -117,9 +117,10 @@ private:
 
     void undirected_cal(int startTime, int num_usingPosteriorSample, int num_for_each_iter) {
         for (int i = num_usingPosteriorSample; i > 0; i--) {
-            GoodnessOfFit_1time_STERGM gofRunner = GoodnessOfFit_1time_STERGM(posteriorParam_formation[i], posteriorParam_dissolution[i],
+            GoodnessOfFit_1time_STERGM gofRunner (posteriorParam_formation[i], posteriorParam_dissolution[i],
                 obsNetSeq[startTime], obsNetSeq[startTime + 1]);
             gofRunner.undirected_run(num_for_each_iter);
+            
 
             //save
             Col<int> net_nodeDegreeDist = gofRunner.get_netNodeDegreeDist();

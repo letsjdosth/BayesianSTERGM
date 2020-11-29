@@ -428,15 +428,15 @@ void Network::undirected_printSummary() {
     cout << "n_edge : " << n_Edge << endl;
     cout << "node degree : " << undirected_nodeDegree().t() << endl;
     cout << "degree_dist : " << undirected_nodeDegreeDist().t() << endl;
-    cout << "geometrically weighted node degree : " << undirected_geoWeightedNodeDegree(0.3) << endl;
-    cout << "triangle_dist : " << undirected_n_triangleDist().t() << endl;
-    cout << "kstar_dist : " << undirected_k_starDist().t() << endl;
+    cout << "geometrically weighted node degree : " << undirected_geoWeightedNodeDegree(0.5) << endl;
+    // cout << "triangle_dist : " << undirected_n_triangleDist().t() << endl;
+    // cout << "kstar_dist : " << undirected_k_starDist().t() << endl;
     cout << "Edgewise Shared Partnership : \n" << undirected_edgewiseSharedPartner() << endl;
     cout << "Edgewise Shared Partnership Dist : " << undirected_edgewiseSharedPartnerDist().t() << endl;
     cout << "geometrically weighted Edgewise Shared Partnership : " << undirected_geoWeightedESP(0.3) << endl;
     cout << "Dyadwise Shared Partnership : \n" << undirected_dyadwiseSharedPartner() << endl;
     cout << "Dyadwise Shared Partnership Dist : " << undirected_dyadwiseSharedPartnerDist().t() << endl;
-    cout << "geometrically weighted Dyadwise Shared Partnership : " << undirected_geoWeightedDSP(0.3) << endl;
+    cout << "geometrically weighted Dyadwise Shared Partnership : " << undirected_geoWeightedDSP(0.5) << endl;
 
     cout << "===========================" << endl;
 }

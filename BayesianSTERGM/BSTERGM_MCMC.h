@@ -65,7 +65,7 @@ private:
 
     double log_r(Col<double> param_lastFormation, Col<double> param_lastDissolution,
         Col<double> param_newFormation, Col<double> param_newDissolution,
-        int lag_startTimePoint, Network exchange_Formation, Network exchange_Dissolution) {
+        int lag_startTimePoint, Network& exchange_Formation, Network& exchange_Dissolution) {
 
         double log_r_val = 0;
         Row<double> model_delta_exchangeFormation_1(n_paramDim, fill::zeros);
@@ -78,19 +78,19 @@ private:
         // now model
         model_delta_exchangeFormation_1 += {
             (double)exchange_Formation.get_n_Edge(),
-                (double)exchange_Formation.get_directed_geoWeightedESP(0.5)
+                // (double)exchange_Formation.get_undirected_geoWeightedESP(0.5)
         };
         model_delta_exchangeDissolution_2 += {
             (double)exchange_Dissolution.get_n_Edge(),
-                (double)exchange_Dissolution.get_directed_geoWeightedESP(0.5)
+                // (double)exchange_Dissolution.get_undirected_geoWeightedESP(0.5)
         };
         model_delta_obsFormation_3 += {
-            (double)observed_FormationSeq[lag_startTimePoint+1].get_n_Edge(),
-                (double)observed_FormationSeq[lag_startTimePoint+1].get_directed_geoWeightedESP(0.5)
+            (double)observed_FormationSeq[lag_startTimePoint + 1].get_n_Edge(),
+                // (double)observed_FormationSeq[lag_startTimePoint + 1].get_undirected_geoWeightedESP(0.5)
         };
         model_delta_obsDissolution_4 += {
-            (double)observed_DissolutionSeq[lag_startTimePoint+1].get_n_Edge(),
-                (double)observed_DissolutionSeq[lag_startTimePoint+1].get_directed_geoWeightedESP(0.5)
+            (double)observed_DissolutionSeq[lag_startTimePoint + 1].get_n_Edge(),
+                // (double)observed_DissolutionSeq[lag_startTimePoint + 1].get_undirected_geoWeightedESP(0.5)
         };
 
         log_r_val += dot(param_lastFormation - param_newFormation, model_delta_exchangeFormation_1 - model_delta_obsFormation_3);
