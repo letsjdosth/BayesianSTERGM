@@ -1,0 +1,123 @@
+%\parskip 0.1in
+
+
+\textheight 192mm %7.4 in
+\textwidth 135mm  %5.8 in
+\footskip 18mm
+
+\oddsidemargin 209mm%                     Calculations to
+\advance\oddsidemargin by -\textwidth%      center text
+\divide\oddsidemargin by 2%                horizontally
+\advance\oddsidemargin by -1in%            onto A4 sheet
+\evensidemargin \oddsidemargin
+%\renewcommand{\arraystretch}{2.0}
+
+%\parindent 0.5in
+
+\floatsep 6pt plus 2pt minus 4pt \textfloatsep 30pt plus 20pt minus 10pt
+
+\newcommand{\bp}[2]{\begin{minipage}[#1]{#2}}
+\newcommand{\ep}{\end{minipage}}
+\newcommand{\bc}{\begin{center}}
+\newcommand{\ec}{\end{center}}
+\newcommand{\arr}[4]{ \left\{ \begin{array}{ll} #1, & \mbox{#2} \\ #3, & \mbox{#4} \end{array} \right. }
+
+
+\def\maketitle{
+ \begingroup
+   \def\thefootnote{\fnsymbol{footnote}}
+   \def\@makefnmark{\hbox
+       to\z@{$\m@th^{\@thefnmark}$\hss}}
+   \if@twocolumn
+     \twocolumn[\@maketitle]
+     \else \newpage
+     \global\@topnum\z@
+     \@maketitle \fi\thispagestyle{empty}\@thanks
+ \endgroup
+ \setcounter{footnote}{0}%
+ \let\maketitle\relax
+ \let\@maketitle\relax
+ \gdef\@thanks{}\gdef\@author{}\gdef\@title{}\let\thanks\relax}
+
+
+\def\@maketitle{
+\newpage
+\null \thispagestyle{empty}
+\begin{center}
+{\fontsize{17pt}{18pt} \bf \@title \par} \vskip 6.0cm
+{\fontsize{13pt}{18pt} \bf
+ \begin{tabular}[t]{c}\@author
+ \end{tabular}\par}
+
+\vskip 5.5cm {\bf The Graduate School
+\vskip 1.3em Yonsei University \vskip 1.3em Department of Applied Statistics }
+
+\vskip 2.4em \vskip 5em
+
+
+\vskip 4em
+
+\newpage
+\null
+\begin{center}
+{\fontsize{17pt}{18pt} \bf \@title \par}
+%{\large \@title \par}
+
+%\vskip 3.5em
+%by
+\vskip 3.5em
+
+{\fontsize{13pt}{18pt} \bf
+ \begin{tabular}[t]{c}
+ \end{tabular}\par}
+
+\vskip 5em
+
+\normalsize A Master's Thesis \vskip 1.0em Submitted to the
+Department of Applied Statistics \vskip 1.0em and the Graduate
+School of Yonsei University \vskip 1.0em in partial fulfillment of
+the \vskip 1.0em requirements for the degree of \vskip 1.0em Master
+of Arts
+
+\vskip 4.0em
+\vskip 3.0em
+
+\vskip 1.0em Su Young Choi
+\vskip 1.0em
+{\large \@date}
+\end{center}
+\par
+\vskip 1.5em}
+
+
+\def\abbreviations{
+\chapter*{List of Abbreviations}
+\vspace {20.0mm}
+}
+\def\endabbreviations{}
+
+\def\abstract{
+\chapter*{ABSTRACT}
+\vspace {10.0mm}
+}
+\def\endabstract{}
+
+\def\appendix{
+\chapter*{APPENDIX}
+}
+\def\endappendix{}
+
+\def\theappendix{\Alph{appendix}.}
+
+
+\def\thebibliography#1{\chapter*{References\@mkboth
+ {REFERENCES}{REFERENCES}}\list
+ {[\arabic{enumi}]}{\settowidth\labelwidth{[#1]}\leftmargin\labelwidth
+ \advance\leftmargin\labelsep
+ \usecounter{enumi}}
+ \def\newblock{\hskip .11em plus .33em minus .07em}
+ \sloppy\clubpenalty4000\widowpenalty4000
+ \sfcode`\.=1000\relax}
+\let\endthebibliography=\endlist
+
+%\def\endthebibliography{}

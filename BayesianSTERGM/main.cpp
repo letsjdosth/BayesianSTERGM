@@ -669,12 +669,12 @@ int main()
     //=================================================================================================
     //BSTERGM test
     
-    Col<double> initFormationParam = { 0.01 };
-    Col<double> initDissolutionParam = { -0.01 };
-    BSTERGM_MCMC_RandomLag Bstergm = BSTERGM_MCMC_RandomLag(initFormationParam, initDissolutionParam, net_1_seq);
-    Bstergm.generateSample(50000, 20);
-    Bstergm.cutBurnIn(10000);
-    Bstergm.thinning(50);
+    Col<double> initFormationParam = { -0.01 };
+    Col<double> initDissolutionParam = { 0.01 };
+    BSTERGM_MCMC_RandomLag Bstergm = BSTERGM_MCMC_RandomLag(initFormationParam, initDissolutionParam, net_2_seq);
+    Bstergm.generateSample(10000, 500, 0.001);
+    Bstergm.cutBurnIn(1000);
+    Bstergm.thinning(20);
 
     //BSTERGM posterior sample diagnostics
     Diagnostics_MCParamSample BstergmDiag1(Bstergm.getPosteriorSample_formation());

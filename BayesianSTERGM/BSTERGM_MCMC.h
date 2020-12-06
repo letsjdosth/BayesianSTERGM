@@ -54,8 +54,13 @@ private:
         }
     }
     double log_paramPriorPDF(Col<double> param_formation, Col<double> param_dissolution) {
-        //NOW: model parameter prior : 1
-        return 0;
+        double log_prior_val;
+        double sigma2 = 100;
+        Mat<double> CovInv = eye(n_paramDim, n_paramDim)/(2*sigma2);
+        Col<double> formation_part = param_formation.t() * CovInv * param_formation;
+        Col<double> dissolution_part = param_dissolution.t() * CovInv * param_dissolution;
+        log_prior_val = formation_part(0) + dissolution_part(0);
+        return log_prior_val;
     }
     Col<double> proposeParam(Col<double> lastParam, double varRate) {
         Mat<double> proposalCov(n_paramDim, n_paramDim, fill::eye);
@@ -99,14 +104,13 @@ private:
         log_r_val -= log_paramPriorPDF(param_lastFormation, param_lastDissolution);
         return log_r_val;
     }
-    void sampler(int num_exchangeMCiter) {
+    void sampler(int num_exchangeMCiter, double proposalVarRate) {
         Col<double> param_lastFormation = paramVec_formation.back();
         Col<double> param_lastDissolution = paramVec_dissolution.back();
 
         //proposal
-        double varRate = 0.01;
-        Col<double> param_newFormation = proposeParam(param_lastFormation, varRate);
-        Col<double> param_newDissolution = proposeParam(param_lastDissolution, varRate);
+        Col<double> param_newFormation = proposeParam(param_lastFormation, proposalVarRate);
+        Col<double> param_newDissolution = proposeParam(param_lastDissolution, proposalVarRate);
 
         //select timeLag
         int lag_startTimePoint = randi<int>(distr_param(0, T_time - 2));
@@ -157,12 +161,12 @@ public:
         dissociateObservedSeq();
     }
 
-    void generateSample(int num_mainMCiter, int num_exchangeMCiter) {
+    void generateSample(int num_mainMCiter, int num_exchangeMCiter, double proposalVarRate) {
         for (int i = 0; i < num_mainMCiter; i++) {
             if (i % 200 == 0) {
                 cout << "MCMC : " << n_iterated << "/" << num_mainMCiter << endl;
             }
-            sampler(num_exchangeMCiter);
+            sampler(num_exchangeMCiter, proposalVarRate);
         }
         cout << "MCMC done: " << n_iterated << " posterior samples are generated." << endl;
         cout << "accepted: " << n_accepted << " :: acc.rate: " << (double)n_accepted / n_iterated << endl;

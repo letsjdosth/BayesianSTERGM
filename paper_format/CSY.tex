@@ -1,0 +1,591 @@
+\documentclass[a4paper, 11pt]{report}
+\usepackage{times,epsfig,calc,subfigure}
+\usepackage[authoryear,round]{natbib}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{multicol}
+%\usepackage[tablesfirst, nolists]{endfloat}
+\usepackage{amsbsy, epsfig, epsf, psfrag, booktabs, graphicx, amssymb, enumerate}
+\usepackage[hidelinks,bookmarks=false]{hyperref}
+\usepackage{lscape}
+\usepackage{bm}
+\usepackage{float}
+\floatplacement{table}{!htbp}
+\usepackage{adjustbox}
+\usepackage{color, colortbl}
+
+\definecolor{Gray}{gray}{0.9}
+
+\usepackage{makecell}
+\usepackage{changepage}%adjust
+\usepackage{setspace}%stretch
+\usepackage{booktabs} 
+\usepackage{multirow}
+%\usepackage{hypernat}
+\usepackage{authblk}
+\usepackage{rotating}
+\usepackage{multicol}
+\usepackage{epstopdf}
+\usepackage{tabularx, caption}
+\usepackage[flushleft]{threeparttable}
+\usepackage{grad}
+
+\usepackage{kotex}
+
+\usepackage{placeins}
+
+\makeatletter
+\newcommand{\distas}[1]{\mathbin{\overset{#1}{\kern\z@\sim}}}%
+\newsavebox{\mybox}\newsavebox{\mysim}
+\newcommand{\distras}[1]{%
+	\savebox{\mybox}{\hbox{\kern3pt$\scriptstyle#1$\kern3pt}}%
+	\savebox{\mysim}{\hbox{$\sim$}}%
+	\mathbin{\overset{#1}{\kern\z@\resizebox{\wd\mybox}{\ht\mysim}{$\sim$}}}%
+}
+\makeatother
+
+\renewcommand{\baselinestretch}{1}
+\linespread{1.4}
+\renewcommand{\arraystretch}{1.3}
+\newcommand{\cov}{\mathop{\rm cov}\nolimits} %covariance
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{defn}[thm]{Definition}
+\newcommand\defeq{\mathrel{\overset{\makebox[0pt]{\mbox{\normalfont\tiny\sffamily def}}}{=}}}
+\DeclareMathOperator*{\argmin}{argmin}
+
+%%%%%%%%%%%%%%%%%%%%%%%
+%   TITLE
+%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{Longitudinal Latent Space Item Response Model with the Applications to U.S. Congressional Votes}
+\author{Su Young Choi}
+\date{Dec 2020}
+
+\begin{document}	
+\maketitle \pagestyle{plain}
+
+\newpage
+\thispagestyle{empty}
+
+  \null
+  \begin{center}
+    \vskip -1.4cm
+    {\fontsize{14pt}{14pt}\selectfont This certifies that Master's thesis of Su Young Choi is approved.}
+    \vskip 4cm%
+    {\hskip 5cm\fontsize{12pt}{12pt}\selectfont \underline{\hskip 8cm}}\vspace*{0.2cm}\\
+    \hskip 5cm\fontsize{12pt}{12pt}\selectfont Thesis Supervisor: Prof. Ick Hoon Jin\\
+    \vskip 2cm
+    {\hskip 5cm\fontsize{12pt}{12pt}\selectfont \underline{\hskip 8cm}}\vspace*{0.2cm}\\
+    \hskip 5cm\fontsize{12pt}{12pt}\selectfont Committee Member: Prof. Jongho Im\\
+    \vskip 2cm
+    {\hskip 5cm\fontsize{12pt}{12pt}\selectfont \underline{\hskip 8cm}}\vspace*{0.2cm}\\
+    \hskip 5cm\fontsize{12pt}{12pt}\selectfont Committee Member: Prof. Jaewoo Park\\
+    \vskip 3cm%
+    {\fontsize{14pt}{14pt}\selectfont {The Graduate School \vskip 1.0em Yonsei University \vskip 1.0em Dec 2020}}%
+  \end{center}
+  \par
+\clearpage
+
+\pagestyle{plain}
+
+\clearpage \pagenumbering{roman} \tableofcontents \clearpage
+
+\clearpage \addcontentsline{toc}{chapter}{\protect\numberline{}
+	\hspace*{-0.29in} List of Figures}
+\listoffigures
+
+\clearpage \addcontentsline{toc}{chapter}{\protect\numberline{}
+    \hspace*{-0.29in} List of Tables}
+\listoftables
+
+\clearpage \addcontentsline{toc}{chapter}{\protect\numberline{}
+    \hspace*{-0.29in} Abstracts}
+
+%%%%%%%%%%%%
+% ABSTRACT %
+%%%%%%%%%%%%
+
+\begin{abstract}
+\begin{center}
+{\LARGE Longitudinal Latent Space Item Response Model  with the Applications to U.S. Congressional Votes}
+\end{center}
+\indent
+\vskip 0.8cm
+
+\noindent
+
+\vskip 0.2cm
+
+\vspace{\stretch{1}} \noindent
+\hrulefill\\
+{\bf Key words : }
+\parbox[t]{0.8\textwidth}
+{}
+\end{abstract}
+
+%--------------------------------------------------------------------------------%
+%--------------------------------------------------------------------------------%
+\clearpage
+\chapter{Introduction} \label{Intro}
+\pagenumbering{arabic}
+
+The main idea of this paper is applying LSRM to political data and showing the advantage of the model in aspect of visualization, interpretation, and usability. As for congressional votes data, it is suitable for LSRM because it consists of respondents (politician) and items (bill). Politicians' voting results are expressed as binary data.
+
+%--------------------------------------------------------------------------------%
+%--------------------------------------------------------------------------------%
+
+
+
+\newcommand{\indep}{\raisebox{0.05em}{\rotatebox[origin=c]{90}{$\models$}}}
+%--------------------------------------------------------------------------------%
+%--------------------------------------------------------------------------------%
+\chapter{Data Description} \label{Chapter2}
+\section{U.S. Congressional Votes Data} \label{data}
+
+We chose the votes data of the US house congress for our model. The data is collected from congressional votes database of govtrack.us. We selected the votes of the first quarter in 2016, 2018, and 2020. The reason of 2 years interval is that the election of the house of representatives are held in every even-numbered year. Since the data of each time points are made by new house members, it is meaningful to analysis this time series data. Among the bills, we deducted the bills which are passed or rejected by the overwhelming majority, over 95\% of the all seats, because it might induce biased results. Calculating the proportion of the vote result, we transformed the raw data to binary data consisting of 1 and 0. Considering that the vote of politicians are composed of agreement(yes), rejection(no), and abstention(Not voting), it is natural to set an agreement as 1, and, a rejection and an abstention as 0. Although an abstention is not a strong declaration of own intention, it can be interpreted that the agreement is not acceptable to them. As for each vote, the number of participants differs because of absent members. Then, identifying the seat number should be preceded. After this process, absents of representatives and vacant seats are detected and we regard it as a missing value.
+
+\quad Investigating politicians and congressional district, we found that Pennsylvania was under redistricting, and decided to remove Pennsylvania districts from the data. Redistricting is the process of redrawing electoral district boundaries, and because of this act, the congressional districts of Pennsylvania are not the same at three-time points. In consequence, objects of analysis are not identical in Pennsylvania, and it might distort the result. Thus, it is suitable to preclude the 18 districts of Pennsylvania from the analysis.
+
+\quad The number of politicians is 417 at all time points, and it is $n$, the number of respondents, in our model. The number of votes is 128, 114, and 95 at each 2016, 2018, and 2020. These are $p$, the number of items, in our model. Finally, we obtain 417 by 128, 417 by 114, 417 by 95 binary data matrices.
+
+\section{Data Collecting Method} \label{crawling}
+We used Selenium package of Python for crawling congressional data. Because there is one CSV file for one bill, we had to collect about 300 files. To make it work automatically, we built the crawling code with Selenium. Thanks to the crawling tool, the collecting process only took about 30 minutes. After that, we cleansed the collected data and integrated into one CSV file for each year using R program.
+%--------------------------------------------------------------------------------%
+
+
+%--------------------------------------------------------------------------------%
+\chapter{Background} \label{Cahpter3}
+\section{Item Response Theory}
+
+\section{Latent Space Model}
+
+\section{Latent Space Item Response Model}\label{network}
+
+Longitudinal latent space item response model is the time series expansion of Latent space Rasch model. Ahead of formulating the longitudinal version, we must define the standard LSRM. Latent space rasch model is based on the distance model of network analysis, in which the probability of a tie depends on the Euclidean distance between latent positions of a respondent and an item. There is the two types of nodes, the respondents and items, in the network of Rasch model while the original distance model only has one kind of node, actors.
+%% Notation
+\begin{itemize}
+\item Notation
+\begin{itemize}
+    \item ${\bf X}_t$: A binary item response dataset at time $t$.
+    \item $\boldsymbol\beta_t$ and $\boldsymbol\theta_t$: Item and respondent intercept parameters at time $t$, respectively.
+    \item $\gamma_t$: A scale parameter for the respondent and item latent positions.
+    \item ${\bf Z}_{t,n \times d}$: Latent positions for respondents at time $t$.
+    \item ${\bf W}_{t,p \times d}$: Latent positions for items at time $t$.
+\end{itemize}
+%% Rasch model
+We formulate the latent space Rasch model with respondent and item attribute effects as follows:
+\begin{equation}
+\label{lsrm}
+    \mbox{logit}\Big(X_{t,ki} = 1 \mid \beta_{t,i}, \theta_{t,k}, \gamma_t, {\bf z}_{t,k}, {\bf w}_{t,i}\Big)
+    = \beta_{t,i} + \theta_{t,k} - \gamma_t \Big|\Big|{\bf z}_{t,k} - {\bf w}_{t,i}\Big|\Big|
+\end{equation}
+where $k$ and $i$ are indexes for respondents and items, respectively. $\theta_{t,k}$ implies the willingness of the respondent to make a response as 1 for the item. $\beta_{t,i}$ means the easiness of the item to be responded as 1 by the respondent. We treats $\theta_{t,k}$ as a random effect but $\beta_{t,i}$ as a fixed effect, following the convention of item response modeling. For this model, we specify prior distributions for the model parameters as follows:
+\[\begin{split}
+    \beta_{t,i} \mid \tau_{\beta}^2 &\sim \mbox{N}\big(0, \tau_{\beta}^2\big), \quad \tau_{\beta}^2 > 0 \\
+    \theta_{t,k} \mid \sigma_t^2 &\sim \mbox{N}\big(0, \sigma_t^2\big), \quad \sigma_t^2 > 0 \\
+    \sigma_t^2 &\sim \mbox{Inv-Gamma}\big(a_{\sigma}, b_{\sigma}\big), \quad a_{\sigma} > 0, b_{\sigma} > 0 \\
+    {\bf z}_k &\sim \mbox{MVN}_d\big({\bf 0}, {\bf I}_d\big)\\
+    {\bf w}_i &\sim \mbox{MVN}_d\big({\bf 0}, {\bf I}_d\big)\\
+    \log \gamma_t &\sim \mbox{N}\big(\mu_{\gamma}, \tau_{\gamma}^2\big), \quad \mu_{\gamma} \in \mathbb{R}, \tau_{\gamma}^2 > 0,
+\end{split}\]
+where ${\bf 0}$ is a $d$-vector of zeros and ${\bf I}_d$ is the $d \times d$ identity matrix. Then, the full posterior of the proposed model is proportional to 
+\begin{equation}
+\label{lsrm.likelihood}
+\begin{split}
+&\pi\Big(\boldsymbol\beta_t, \boldsymbol\theta_t, \sigma_t^2, {\bf Z}_t, {\bf W}_t, \gamma_t \mid {\bf X}_t\Big)\\
+&\propto \pi\big(\sigma_t^2\big) \pi\big(\gamma_t\big) \prod_{k}\pi\big(\theta_{t,k} \mid \sigma_t^2\big) \prod_{i}\pi\big(\beta_{t,i}\big) \prod_{k}\pi\big({\bf z}_{t,k}\big) \prod_{i}\pi\big({\bf w}_{t,i}\big)\\
+&\times \prod_k \prod_i P\Big(x_{t,ki} \mid {\bf z}_{t,k}, {\bf w}_{t,i}, \theta_{t,k}, \beta_{t,i}\Big)^{x_{ki}}\\
+&\Big(1-P\big(x_{t,ki} \mid {\bf z}_{t,k}, {\bf w}_{t,i}, \theta_{t,k}, \beta_{t,i}\big)\Big)^{1-x_{ki}}
+\end{split}
+\end{equation}
+
+%--------------------------------------------------------------------------------%
+
+%--------------------------------------------------------------------------------%
+%--------------------------------------------------------------------------------%
+
+
+
+
+%--------------------------------------------------------------------------------%
+%--------------------------------------------------------------------------------%
+\chapter{Model} \label{Chapter4}
+\section{Longitudinal Latent Space Item Response Model}\label{llsrm}
+When we deal with longitudinal data with a discrete time sequence and there is not any time dependency, we can easily define longitudinal latent space item response model by multiplying the posterior of LSRM $\it{t}$ times where there are $\it{t}$ time periods in the data. The full posterior of the longitudinal LSRM without any time-dependent assumption is proportional to 
+\begin{equation}
+\label{longitudinal}
+\begin{split}
+&\pi\Big(\boldsymbol\beta, \boldsymbol\theta, \boldsymbol\sigma^2, {\bf Z}, {\bf W}, \boldsymbol\gamma \mid {\bf X}\Big)\\
+&= \prod_{t=1}^T \pi\Big(\boldsymbol\beta_t, \boldsymbol\theta_t, \sigma_t^2, {\bf Z}_t, {\bf W}_t, \gamma_t \mid {\bf X}_t\Big)\\ 
+&\propto \prod_{t=1}^T \Bigg\{\pi\big(\sigma_t^2\big) \pi\big(\gamma_t\big) \prod_{k}\pi\big(\theta_{t,k} \mid \sigma^2\big) \prod_{i}\pi\big(\beta_{t,i}\big)
+\prod_{k}\pi\big({\bf z}_{t,k}\big) \prod_{i}\pi\big({\bf w}_{t,i}\big)\\
+&\times \prod_k \prod_i P\Big(x_{t,ki} \mid {\bf z}_{t,k}, {\bf w}_{t,i}, \theta_{t,k}, \beta_{t,i}\Big)^{x_{ki}}\Big(1-P\big(x_{t,ki} \mid {\bf z}_{t,k}, {\bf w}_{t,i}, \theta_{t,k}, \beta_{t,i}\big)\Big)^{1-x_{ki}}\Bigg\}
+\end{split}
+\end{equation}
+
+where $\it{T}$ is the number of discrete time periods, and subscript $\it{t}$ of each variable represents corresponding time period.
+
+%% Longitudinal LSRM with Political data
+\section{Longitudinal Latent Space Item Response Model for Political Data}
+
+\quad Longitudinal LSRM described above assumes that nodes from each time point are independent. However, this assumption might be a obstacle to describing correct relations between nodes when there is a time dependency in reality. As for U.S. congressional data, it is the longitudinal data which has 3 time periods and a dependency structure in the time.
+
+\quad According to the U.S. congressional data, there are several types of politicians in 417 districts. First of all, there are 271 re-elected and unchanged senators during 3 time periods. This type occupies the largest proportion. Secondly, 81 senators were re-elected in November 2016, but the result could not be the same in November 2018. Third, someone could lose the election in November 2016, but win the following election and get back to the position. However, this third situation did not occur in our data and, then, we can ignore it in the estimation step. Fourth, there can be the situation that a new candidate was elected in November 2016, and keep the position in the next election. 53 districts are under this kind of situation. Finally, a senator might be changed in every time periods. 12 districts changed their representatives every election. (say about vacancy? move to data section?)
+
+\quad It is natural to say that the respondents(politicians) are time-dependent considering these changes of senators through 3 time periods. Therefore, we should take  time dependency into account for modeling. In the beginning, we need to split the whole politician into 5 cases under $T=3$ condition.
+%% Grouping
+\begin{itemize}
+    \item A=\{Same politician at $t=1,2,3$\}. It means ${\bf z}_{1,k}={\bf z}_{2,k}={\bf z}_{3,k}$, and, a prior is $\pi({\bf z}_{k})$.
+    \item B=\{Same politician at $t=1,2$\}. It means ${\bf z}_{1,k}={\bf z}_{2,k}\neq {\bf z}_{3,k}$, and, a prior is $\pi({\bf z}_{1,k})\pi({\bf z}_{3,k})$.
+    \item C=\{Same politician at $t=1,3$\}. It means ${\bf z}_{1,k}={\bf z}_{3,k}\neq{\bf z}_{2,k}$, and, a prior is $\pi({\bf z}_{1,k})\pi({\bf z}_{2,k})$.
+    \item D=\{Same politician at $t=2,3$\}. It means ${\bf z}_{2,k}={\bf z}_{3,k}\neq{\bf z}_{1,k}$, and, a prior is $\pi({\bf z}_{1,k})\pi({\bf z}_{2,k})$.
+    \item E=\{In all time period, different politicians are elected\}. It means ${\bf z}_{1,k}\neq{\bf z}_{2,k}\neq{\bf z}_{3,k}$, and, a prior is $\pi({\bf z}_{1,k})\pi({\bf z}_{2,k})\pi({\bf z}_{3,k})$.
+\end{itemize}
+
+\quad This grouping method assumes that the same person has the same latent position, and if person changes, the latent position also changes. Of course, a different latent variable has a different prior.
+
+\quad Taking this grouping and the posterior of longitudinal LSRM into account together, the full posterior is proportional to
+%% Full posterior
+\begin{equation}
+\label{full.posterior}
+\begin{split}
+\pi\Big(\boldsymbol\beta, \boldsymbol\theta, \boldsymbol\sigma^2, &{\bf Z}, {\bf W}, \boldsymbol\gamma \mid {\bf X}\Big) = \prod_{t=1}^T \pi\Big(\boldsymbol\beta_t, \boldsymbol\theta_t, \sigma_t^2, {\bf Z}_t, {\bf W}_t, \gamma_t \mid {\bf X}_t\Big)\\ 
+&\propto \prod_{t=1}^T \Bigg\{\pi\big(\sigma_t^2\big) \pi\big(\gamma_t\big) \prod_{k}\pi\big(\theta_{t,k} \mid \sigma^2\big) \prod_{i}\pi\big(\beta_{t,i}\big)
+\prod_{i}\pi\big({\bf w}_{t,i}\big) \Bigg\}\\
+&\times \prod_{K\in A}\Big \{\pi({\bf z}_{k}) L_{11} L_{12} L_{13} \Big \}\\
+&\times \prod_{K\in B}\Big \{\pi({\bf z}_{1,k}) \pi({\bf z}_{3,k}) L_{11} L_{12} L_{33}\Big \}\\
+&\times \prod_{K\in C}\Big \{\pi({\bf z}_{1,k}) \pi({\bf z}_{2,k}) L_{11} L_{13} L_{22} \Big \}\\
+&\times \prod_{K\in D}\Big \{\pi({\bf z}_{1,k}) \pi({\bf z}_{2,k}) L_{11} L_{22} L_{23} \Big \}\\
+&\times \prod_{K\in E}\Big \{\pi({\bf z}_{1,k}) \pi({\bf z}_{2,k}) \pi({\bf z}_{3,k}) L_{11} L_{22} L_{33} \Big \},
+\end{split}
+\end{equation}
+where
+\begin{equation}\notag
+\begin{split}
+&L_{t_1,t_2} = L({\bf z}_{t_1,k}, {\boldsymbol \phi}_{t_2,k,i})\\
+&= \prod_{k=1}^n\prod_{i=1}^p P\Big(x_{t_2,ki} \mid {\bf z}_{t_1,k}, {\bf w}_{t_2,i}, \theta_{t_2,k}, \beta_{t_2,i}\Big)^{x_{t_2,ki}}
+\Big(1-P\big(x_{t_2,ki} \mid {\bf z}_{t_1,k}, {\bf w}_{t_2,i}, \theta_{t_2,k}, \beta_{t_2,i}\big)\Big)^{1-x_{t_2,ki}}
+\end{split}
+\end{equation}
+
+\quad $\it{K}$ is the set of respondents in the certain group among the five. $\boldsymbol{\phi}_{t_2,k,i}$ represents the parameters, such as $x_{t_2,ki}, {\bf w}_{t_2,i}, \theta_{t_2,k},$ and $\beta_{t_2,i}$, except ${\bf z}_{t_1,k}$ . The subscripts of likelihood $L_{t_1,t_2}$ indicate the time points to which each parameter corresponds. $t_1$ and $t_2$ indicate the time of ${\bf z}_{t_1,k}$ and $\boldsymbol{\phi}_{t_2,k,i}$ each. Now, we can see that the prior part of ${\bf z}$ and the likelihood part are devided in five according to the politician grouping. $\prod_{K\in A}\Big \{\pi({\bf z}_{k}) L_{11} L_{12} L_{13} \Big \}$ is the prior and likelihood of the respondents in a group A. Politicians of this group keep own position all the time. Therefore, the latent position is unchanged, and it means there is the only one $\pi({\bf z}_{k})$ regardless of time. As for $L_{11} L_{12} L_{13}$, the parameter ${\bf z}_{t_1,k}$ is the same with ${\bf z}_{1,k}$ at the all three times when the subscript 1 of ${\bf z}_{1,k}$ indicates the first time point, 2016, but the other parameters change along with the time sequence. In case of group B, a person in 2016 and 2018 is the same, and only 2020's person is different. The former person has the ${\bf z}_{1,k}$ as a latent position, and the later has the ${\bf z}_{3,k}$ when subscript 3 indicates the third time point, 2020. During the first two sequences, the latent position ${\bf z}_{1,k}$ is unchanged, therefore, the first subscript of $L_{11}$ and $L_{12}$, indicating the time points of the latent position, is also unchanged. Unlike the latent position ${\bf z}$, the other parameters always changes in the all time points. The second subscript of all three $L$ is different, and, the same thing happens in the all group. In the same way, the likelihoods of group C and D also can be defined. In the last, group E is the simplest case. Politicians change every time, and it means that the latent positions also change. Therefore, the function contains all three prior, $\pi({\bf z}_{1,k})$, $\pi({\bf z}_{2,k})$, and $\pi({\bf z}_{3,k})$. Furthermore, the time of latent position and other parameters matches. Then, the function is like $\prod_{K\in E}\Big \{\pi({\bf z}_{1,k}) \pi({\bf z}_{2,k}) \pi({\bf z}_{3,k}) L_{11} L_{22} L_{33} \Big \}$.
+
+%--------------------------------------------------------------------------------%
+%--------------------------------------------------------------------------------%
+
+
+
+
+
+
+%--------------------------------------------------------------------------------%
+%--------------------------------------------------------------------------------%
+\chapter{Estimation} \label{Chapter5}
+We used a fully Bayesian approach based on Markov chain Monte Carlo (MCMC) sampling to estimate the proposed model using the Gibbs sampling and the Metropolis-Hastings algorithm. We specify prior distributions for the model parameters as follows:
+\[\begin{split}
+    \beta_{t,i} \mid \tau_{\beta}^2 &\sim \mbox{N}\big(0, \tau_{\beta}^2\big), \quad \tau_{\beta}^2 > 0 \\
+    \theta_{t,k} \mid \sigma^2_t &\sim \mbox{N}\big(0, \sigma_t^2\big), \quad \sigma_t^2 > 0 \\
+    \sigma_t^2 &\sim \mbox{Inv-Gamma}\big(a_{\sigma}, b_{\sigma}\big), \quad a_{\sigma} > 0, b_{\sigma} > 0 \\
+    \boldsymbol{z}_{t,k} &\sim \mbox{MVN}_d\big({\bf 0}, {\bf I}_d\big)\\
+    \boldsymbol{w}_{t,i} &\sim \mbox{MVN}_d\big({\bf 0}, {\bf I}_d\big),\\
+\end{split}\]
+where ${\bf 0}$ is a $d$-vector of zeros and ${\bf I}_d$ is the $d \times d$ identity matrix. We set the prior parameters like the following choices: $\tau_{\beta}^2 = 4$, $a_{\sigma} = b_{\sigma} = 0.001$. Also, we regard $\gamma_t$, a scale parameter for the respondent and item latent positions, as a constant 1 for the computational easiness.
+
+\quad The full posterior of the proposed model is proportional to (\ref{full.posterior}). Our MCMC sampler iterates over the model parameters with the priors given above. At iteration $l$, the MCMC sampling can be described as follows:
+
+\begin{enumerate}
+%% beta
+    \item Use Metropolis-Hastings steps to sample $\beta_{t,i}$ for each $i$ and $t$. Propose $\beta^\prime_{t,i}$ from a proposal distribution $\varphi(\cdot)$ and accept with probability equal to
+\begin{equation*}
+    r_\beta \Big( \beta^\prime_{t,i},\beta^{(l)}_{t,i} \Big) = \frac{\pi \Big( \beta^\prime_{t,i} \mid {\bf X}_t,{\bf Z}_t,{\bf W}_t,{\boldsymbol \theta}_t,\sigma^2_t \Big)}{\pi \big( \beta^{(l)}_{t,i} \mid {\bf X}_t,{\bf Z}_t,{\bf W}_t,{\boldsymbol \theta}_t,\sigma^2_t\Big)}\frac{\varphi \Big(\beta^\prime_{t,i}\rightarrow \beta^{(l)}_{t,i} \Big)}{\varphi \Big(\beta^{(l)}_{t,i}\rightarrow \beta^\prime_{t,i} \Big)}
+\end{equation*}
+where $\pi \Big( \beta_{t,i} \mid {\bf X}_t,{\bf Z}_t,{\bf W}_t,{\boldsymbol \theta}_t,\sigma^2_t \Big)$ is the full conditional posterior for $\beta_{t,i}$.
+%% theta
+\item Propose $\theta^\prime_{t,k}$ from a proposal distribution $\varphi(\cdot)$ and accept the proposed value with probability
+\begin{equation*}
+    r_\theta \Big( \theta^\prime_{t,k},\theta^{(l)}_{t,k} \Big) = \frac{\pi \Big( \theta^\prime_{t,k} \mid {\bf X}_t,{\bf Z}_t,{\bf W}_t,{\boldsymbol \beta}_t,\sigma^2_t \Big)}{\pi \big( \theta^{(l)}_{t,k} \mid {\bf X}_t,{\bf Z}_t,{\bf W}_t,{\boldsymbol \beta}_t,\sigma^2_t\Big)}\frac{\varphi \Big(\theta^\prime_{t,k}\rightarrow \theta^{(l)}_{t,k} \Big)}{\varphi \Big(\theta^{(l)}_{t,k}\rightarrow \theta^\prime_{t,k} \Big)}
+\end{equation*}
+where $\pi \Big( \theta_{t,k} \mid {\bf X}_t,{\bf Z}_t,{\bf W}_t,{\boldsymbol \beta}_t,\sigma^2_t \Big)$ is the full conditional posterior for $\theta_{t,k}$.
+%% W
+\item Propose ${\bf w}^\prime_{t,i}$ from a proposal distribution $\varphi(\cdot)$ and accept with probability equal to
+\begin{equation*}
+    r_w \Big( {\bf w}^\prime_{t,i},{\bf w}^{(l)}_{t,i} \Big) = \frac{\pi \Big( {\bf w}^\prime_{t,i} \mid {\bf X}_t,{\bf Z}_t,{\boldsymbol \beta}_t,{\boldsymbol \theta}_t,\sigma^2_t \Big)}{\pi \big( {\bf w}^{(l)}_{t,i} \mid {\bf X}_t,{\bf Z}_t,{\boldsymbol \beta}_t,{\boldsymbol \theta}_t,\sigma^2_t\Big)}\frac{\varphi \Big({\bf w}^\prime_{t,i}\rightarrow {\bf w}^{(l)}_{t,i} \Big)}{\varphi \Big({\bf w}^{(l)}_{t,i}\rightarrow {\bf w}^\prime_{t,i} \Big)}
+\end{equation*}
+where $\pi \Big( {\bf w}_{t,i} \mid {\bf X}_t,{\bf Z}_t,{\boldsymbol \beta}_t,{\boldsymbol \theta}_t,\sigma^2_t \Big)$ is the full conditional posterior for ${\bf w}_{t,i}$.
+%% Z
+\item Propose ${\bf z}^\prime_{t,k}$ from a proposal distribution $\varphi(\cdot)$ and accept the proposed value with probability equal to
+
+\begin{equation*}
+    r_z \Big( {\bf z}^\prime_{t,k},{\bf z}^{(l)}_{t,k} \Big) = \frac{\pi \Big( {\bf z}^\prime_{t,k} \mid {\bf X}_t,{\bf W}_t,{\boldsymbol \beta}_t,{\boldsymbol \theta}_t,\sigma^2_t \Big)}{\pi \big( {\bf z}^{(l)}_{t,k} \mid {\bf X}_t,{\bf W}_t,{\boldsymbol \beta}_t,{\boldsymbol \theta}_t,\sigma^2_t\Big)}\frac{\varphi \Big({\bf z}^\prime_{t,k}\rightarrow {\bf z}^{(l)}_{t,k} \Big)}{\varphi \Big({\bf z}^{(l)}_{t,k}\rightarrow {\bf z}^\prime_{t,k} \Big)}
+\end{equation*}
+where $\pi \Big( {\bf z}_{t,k} \mid {\bf X}_t,{\bf W}_t,{\boldsymbol \beta}_t,{\boldsymbol \theta}_t,\sigma^2_t \Big)$ is the full conditional posterior for ${\bf z}_{t,k}$. However, the MH ratio differs dependently on the group to which each ${\bf z}_{t,k}$ belongs.
+
+\begin{enumerate}
+%% Z_A
+    \item  If ${\bf z}_{t,k} \in A$, the acceptance rate is equal to
+    \begin{equation*}
+    r_z \Big( {\bf z}^\prime_{1,k},{\bf z}^{(l)}_{1,k} \Big) = \frac{\prod^3_{t=1} \Big[ \pi \Big( {\bf z}^\prime_{1,k} \mid {\bf X}_t,{\bf W}_t,{\boldsymbol \beta}_t,{\boldsymbol \theta}_t,\sigma^2_t \Big)\Big]}{\prod^3_{t=1} \Big[ \pi \big( {\bf z}^{(l)}_{1,k} \mid {\bf X}_t,{\bf W}_t,{\boldsymbol \beta}_t,{\boldsymbol \theta}_t,\sigma^2_t\Big) \Big]}\frac{\varphi \Big({\bf z}^\prime_{1,k}\rightarrow {\bf z}^{(l)}_{1,k} \Big)}{\varphi \Big({\bf z}^{(l)}_{1,k}\rightarrow {\bf z}^\prime_{1,k} \Big)},
+    \end{equation*}
+    where ${\bf z}_{1,k} = {\bf z}_{2,k} = {\bf z}_{3,k}$.
+    
+    %% Z_B
+    \item If ${\bf z}_{t,k} \in B$, the acceptance rate is equal to
+    \begin{equation*}
+    r_z \Big( {\bf z}^\prime_{1,k},{\bf z}^{(l)}_{1,k} \Big) = \frac{\prod^2_{t=1} \Big[ \pi \Big( {\bf z}^\prime_{1,k} \mid {\bf X}_t,{\bf W}_t,{\boldsymbol \beta}_t,{\boldsymbol \theta}_t,\sigma^2_t \Big)\Big]}{\prod^2_{t=1} \Big[ \pi \big( {\bf z}^{(l)}_{1,k} \mid {\bf X}_t,{\bf W}_t,{\boldsymbol \beta}_t,{\boldsymbol \theta}_t,\sigma^2_t\Big) \Big]}\frac{\varphi \Big({\bf z}^\prime_{1,k}\rightarrow {\bf z}^{(l)}_{1,k} \Big)}{\varphi \Big({\bf z}^{(l)}_{1,k}\rightarrow {\bf z}^\prime_{1,k} \Big)},
+    \end{equation*}
+    
+    \begin{equation*}
+    r_z \Big( {\bf z}^\prime_{3,k},{\bf z}^{(l)}_{3,k} \Big) = \frac{\pi \Big( {\bf z}^\prime_{3,k} \mid {\bf X}_3,{\bf W}_3,{\boldsymbol \beta}_3,{\boldsymbol \theta}_3,\sigma^2_3 \Big)}{\pi \big( {\bf z}^{(l)}_{3,k} \mid {\bf X}_3,{\bf W}_3,{\boldsymbol \beta}_3,{\boldsymbol \theta}_3,\sigma^2_3\Big) }\frac{\varphi \Big({\bf z}^\prime_{3,k}\rightarrow {\bf z}^{(l)}_{3,k} \Big)}{\varphi \Big({\bf z}^{(l)}_{3,k}\rightarrow {\bf z}^\prime_{3,k} \Big)},
+    \end{equation*}
+    where ${\bf z}_{1,k} = {\bf z}_{2,k} \neq {\bf z}_{3,k} $.
+    
+    %% Z_D
+    \item If ${\bf z}_{t,k} \in D$, the acceptance rate is equal to
+    \begin{equation*}
+    r_z \Big( {\bf z}^\prime_{1,k},{\bf z}^{(l)}_{1,k} \Big) = \frac{ \pi \Big( {\bf z}^\prime_{1,k} \mid {\bf X}_1,{\bf W}_1,{\boldsymbol \beta}_1,{\boldsymbol \theta}_1,\sigma^2_1 \Big)}{ \pi \big( {\bf z}^{(l)}_{1,k} \mid {\bf X}_1,{\bf W}_1,{\boldsymbol \beta}_1,{\boldsymbol \theta}_1,\sigma^2_1\Big) }\frac{\varphi \Big({\bf z}^\prime_{1,k}\rightarrow {\bf z}^{(l)}_{1,k} \Big)}{\varphi \Big({\bf z}^{(l)}_{1,k}\rightarrow {\bf z}^\prime_{1,k} \Big)},
+    \end{equation*}
+    
+    \begin{equation*}
+    r_z \Big( {\bf z}^\prime_{2,k},{\bf z}^{(l)}_{2,k} \Big) = \frac{\prod^3_{t=2} \Big[ \pi \Big( {\bf z}^\prime_{2,k} \mid {\bf X}_t,{\bf W}_t,{\boldsymbol \beta}_t,{\boldsymbol \theta}_t,\sigma^2_t \Big)\Big]}{\prod^3_{t=2} \Big[ \pi \big( {\bf z}^{(l)}_{2,k} \mid {\bf X}_t,{\bf W}_t,{\boldsymbol \beta}_t,{\boldsymbol \theta}_t,\sigma^2_t\Big) \Big]}\frac{\varphi \Big({\bf z}^\prime_{2,k}\rightarrow {\bf z}^{(l)}_{2,k} \Big)}{\varphi \Big({\bf z}^{(l)}_{2,k}\rightarrow {\bf z}^\prime_{2,k} \Big)},
+    \end{equation*}
+    where ${\bf z}_{1,k} \neq {\bf z}_{2,k} = {\bf z}_{3,k} $.
+    
+    %% Z_E
+    \item If ${\bf z}_{t,k} \in E$, the acceptance rate is equal to
+    \begin{equation*}
+    r_z \Big( {\bf z}^\prime_{t,k},{\bf z}^{(l)}_{t,k} \Big) = \frac{\pi \Big( {\bf z}^\prime_{t,k} \mid {\bf X}_t,{\bf W}_t,{\boldsymbol \beta}_t,{\boldsymbol \theta}_t,\sigma^2_t \Big)}{\pi \big( {\bf z}^{(l)}_{t,k} \mid {\bf X}_t,{\bf W}_t,{\boldsymbol \beta}_t,{\boldsymbol \theta}_t,\sigma^2_t\Big)}\frac{\varphi \Big({\bf z}^\prime_{t,k}\rightarrow {\bf z}^{(l)}_{t,k} \Big)}{\varphi \Big({\bf z}^{(l)}_{t,k}\rightarrow {\bf z}^\prime_{t,k} \Big)},
+    \end{equation*}
+    where ${\bf z}_{1,k} \neq {\bf z}_{2,k} \neq {\bf z}_{3,k} $.
+    
+\end{enumerate}
+
+%% sigma
+\item Update $\sigma^2_t$ from the Inverse Gamma distribution
+\begin{equation*}
+    \sigma^2_t \sim \text{Inv-Gamma} \Bigg( a_\sigma + \frac{N}{2}, b_\sigma + \frac{\sum_k\theta^2_{t,k}}{2} \Bigg)
+\end{equation*}
+
+%% imputation
+\item Impute missing value $x_{t,ki}$ from the binomial distribution with the probability of
+\begin{equation*}
+    \mbox{logit}\Big(X_{t,ki} = 1 \mid \beta_{t,i}^{(l+1)}, \theta_{t,k}^{(l+1)}, {\bf z}_{t,k}^{(l+1)}, {\bf w}_{t,i}^{(l+1)}\Big)
+    = \beta_{t,i}^{(l+1)} + \theta_{t,k}^{(l+1)} - \Big|\Big|{\bf z}_{t,k}^{(l+1)} - {\bf w}_{t,i}^{(l+1)}\Big|\Big|.
+\end{equation*}
+
+\end{enumerate}
+
+\quad All proposed values are drawn from normal distributions centered around the parameter values at iteration $l$ with tunable variance parameters. For instance, $\varphi \big(\theta_{t,i}^{(l)} \rightarrow \theta_{t,i}^{\prime}\big) \sim N\big(\theta_{t,i}^{(l)}, \sigma^2_{t,prop} \big)$. The convergence of the parameters is checked using trace plots.
+
+
+%--------------------------------------------------------------------------------%
+%--------------------------------------------------------------------------------%
+
+
+
+
+
+%--------------------------------------------------------------------------------%
+%--------------------------------------------------------------------------------%
+\chapter{Results} \label{Chapter6}
+\section{Estimated Latent Space}
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.5]{LS_ggplot_2.png}
+\caption{Latent positions of politicians and bills.}
+\label{fig:ls}
+\end{center}
+\end{figure}
+
+\quad After computation, we have had the estimates of $\bf{z}$ and $\bf{w}$ for 2016, 2018, and 2020. Now we can show the latent position of three periods of politicians and bills in a two-dimensional plane at once like Figure \ref{fig:ls}. In Figure \ref{fig:ls}, red spots represent the latent positions of republicans, and blue ones do those of democrats. Black spots are the latent positions of bills. If looking at the pattern of the latent positions,
+we can easily know that republicans and democrats are separated clearly. Furthermore, we can also see that the bills are grouped in three parts, one of which is close to the republican party, the other one close to the democrat party, and the another located between the two parties. According to the latent space item response model, a distance between latent positions is the measure of the correlation between them. Then, we can interpret that the bills positioned in the territory of a certain political party is only supported by that party, but not by the opposite party. On the other hand, the bills in the middle area are correlated to both parties at the same level. It means that most politicians supported or rejected the mid-area bills in the same regardless of their political stance. As for politicians comparatively located in the mid-area, we can say that they did not follow their party blindly.
+
+\begin{figure}
+  \begin{center}
+    \subfigure[2016]{\label{fig:annual-a}\includegraphics[scale=0.25]{LS_2016.png}}
+    \subfigure[2018]{\label{fig:annual-b}\includegraphics[scale=0.25]{LS_2018.png}}
+    \subfigure[2020]{\label{fig:annual-c}\includegraphics[scale=0.25]{LS_2020.png}}
+  \end{center}
+  \caption{Latent positions in 2016, 2018, and 2020. }
+  \label{fig:annual}
+\end{figure}
+
+\quad We depict the time of each point in Figure \ref{fig:ls} by differentiating the shape of a spot. A circle, a triangle, and a rectangle mean that the latent position belongs to 2016, 2018, and 2020. There is an overlapped politician's latent position through several time-periods, and it means that the politician took office multiple times. In other words, the same person takes the same latent position in the latent space. Because the same bill is not usually put to the vote twice at the congress, there are not identical latent positions among those of the bills.
+
+\quad As shown in Figure \ref{fig:ls}, our model succeeded in catching the political correlations between politicians and bills. The house of representatives is split in two parties, as we expected, and bills also show the correlation with the parties. Moreover, the time characteristic of the latent position is also included.
+
+\section{Politicians in the middle area}
+
+\quad Considering U.S. politicians' high loyalty toward their own political party, it is not hard to understand that politicians are clustered in a clean pattern.Therefore, it is meaningful to investigate the politicians who are positioned in the middle area, relatively far from their cluster. They are in such an area because of voting the opposite party's bill more frequently than other comrades. It means they have a moderate political attitude, and in U.S. politics, a politician who has this kind of stance is called "Bipartisan." Among the bipartisan, we pick the most evident people and look into the characteristics of their congressional districts and themselves. We chose 4 Democrats and 2 Republicans in the middle area. 
+
+\begin{table}[h!]
+\centering
+    \begin{tabular}{c | c | c | c | c}
+        ID & State & District & Name & Party  \\
+        \hline \hline
+        400316 & Minnesota & 7 & Collin Peterson & Democrat \\
+        412420 & Illinois & 10 & Bob Dold & Republican \\
+        412796 & New Jersey & 2 & Jefferson H. Van Drew & Republican  \\
+        412808 & Oklahoma & 5 & Kendra Horn & Democrat  \\
+        412814 & South Carolina & 1 & Joe Cunningham & Democrat  \\
+        412829 & Utah & 4 & Ben McAdams & Democrat  \\
+    \end{tabular}
+    \caption{Bipartisan far from the party}
+    \label{tab:data}
+\end{table}
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[scale=0.5]{districts.png}
+  \end{center}
+  \caption{Congressional districts of U.S. }
+  \label{fig:districts}
+\end{figure}
+
+\quad In the analysis, we accept several beliefs in political tendency. First, Republican is conservative, and Democrat is progressive. Second, an urban region, including the big city, is more politically progressive. Third, each state excepting the swing state supports a certain political party. Taking it into consideration, the analysis is undertaken.
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[scale=0.5]{mn.png}
+  \end{center}
+  \caption{Congressional districts of Minnesota }
+  \label{fig:mn}
+\end{figure}
+
+\quad Minnesota, having Minneapolis as a capital city, is a relatively progressive state. Among the districts of Minnesota, the 7th district covers almost all of the western side of Minnesota. In this region, the proportion of the rural area is larger than that of the urban area. Moreover, the district borders with North Dakota and South Dakota, which are conservative states. Considering this geographic characteristic, the 7th district is likely to be conservative. Therefore, it is natural that the district's representative, Collin Peterson, is a conservative Democrat, reflecting both the state's progressive personality and the conservative aspect of the district. Peterson is one of the founders of the Blue Dog Coalition, a group of moderate and conservative Democrats. Peterson has split from his party on issues such as gay marriage, healthcare, the estate tax, gun control, the environment, and abortion. It is no doubt that he successfully represented the district's opinion considering that he was first elected in 1990 and kept re-elected until 2018.
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[scale=0.5]{il.png}
+  \end{center}
+  \caption{Congressional districts of Illinois}
+  \label{fig:il}
+\end{figure}
+
+\quad Illinois is known as one of the progressive states, placing the large city of Chicago. Unlike our anticipation, the Republican politician was elected in the district of the progressive state. Bob Dold, the representative for Illinois's 10th congressional district in 2016, is a moderate Republican who supports gun control measures. Additionally, his predecessor, Brad Schneider, is also known as moderate Democrat. From the characteristic of representatives, it is possible to say that 10th district of Illinois prefers a moderate politician. We can deduce the reasons for the political position of this district from geographic factors as well. 10th district lies in the northeast corner of the state, and mostly comprises northern suburbs of Chicago. In this region, the district covers Lake county which is the second most wealthy county in Illinois. When it is believed that wealthy people tend to be more conservative in common sense, it is natural thinking that the 10th district is politically moderate despite it is near Chicago.
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[scale=0.5]{nj.png}
+  \end{center}
+  \caption{Congressional districts of New Jersey }
+  \label{fig:nj}
+\end{figure}
+
+\quad New Jersey is also a progressive state influenced by an adjacent state, New York. However, the 2nd district elected Republican representative. The district, based in Southern New Jersey, is a swing region with a history of supporting different parties. The proportion of the rural area is relatively high, and there is no metropolis in this district. Moreover, it is located most far from New York and less influenced by New York City. For this reason, the 2nd district seems to be more conservative than the average of New Jersey.
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[scale=0.5]{ok.png}
+  \end{center}
+  \caption{Congressional districts of Oklahoma }
+  \label{fig:ok}
+\end{figure}
+
+\quad Oklahoma is a state in the South Central region of the United States and it is a conservative state. However, the 5th district includes Oklahoma City, and it is likely to have a moderate political stance. The result of the election of Kendra Horn, the representative of Democrat, demonstrates this enough. The district's preference is obvious, seeing the fact that Horn was joining the Blue Dog Coalition, a group of moderate and conservative Democrats.
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[scale=0.5]{sc.png}
+  \end{center}
+  \caption{Congressional districts of South Carolina }
+  \label{fig:sc}
+\end{figure}
+
+\quad South Carolina is known as a conservative state. Conversely, the 1st district elected the Democrat politician. The 1st district has historically been based in Charleston, the largest city in South Carolina. The urban characteristic may influence the political position.
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[scale=0.5]{utah.png}
+  \end{center}
+  \caption{Congressional districts of Utah }
+  \label{fig:utah}
+\end{figure}
+
+\quad Utah is famous as conservative state because a little more than half of all Utahns are Mormons. The 4th district representative, Ben McAdams is the only Democratic member of Utah's congressional delegation, but a member of the Blue Dog Coalition, a group of a moderate politician. Despite the Mormons' headquarter, Salt Lake City, the most populous city in Utah, tends to affect progressive in a political position.
+
+\quad Interpreting the patterns found above, the commonality can be seen that Bipartisan is elected in the district of a moderate political position compared with that of the whole state. Moreover, we infer that the degree of the district's political orientation varies with the geographical feature. For the districts of the progressive state, the district with the broad rural area or covering wealthy county tends to be more conservative than other districts in the state. As for the districts of the conservative state, the district containing a large city is more progressive than others. In addition, the political atmosphere of neighboring states affects the residents' political ideas of the district.
+
+\section{The Bills in the Middle Area}
+
+\begin{figure}[h]
+  \begin{center}
+    \subfigure[2016]{\label{fig:bill-a}\includegraphics[scale=0.18]{vote_2016.png}}
+    \subfigure[2018]{\label{fig:bill-b}\includegraphics[scale=0.18]{vote_2018.png}}
+    \subfigure[2020]{\label{fig:bill-c}\includegraphics[scale=0.18]{vote_2020.png}}
+  \end{center}
+  \caption{Latent positions of bills and their numbers in 2016, 2018, and 2020. }
+  \label{fig:bill}
+\end{figure}
+
+\section{Outliers}
+
+
+\end{itemize}
+
+%--------------------------------------------------------------------------------%
+%--------------------------------------------------------------------------------%
+
+
+
+
+%--------------------------------------------------------------------------------%
+%--------------------------------------------------------------------------------%
+\chapter{Conclusion} \label{Chapter7}
+
+
+%--------------------------------------------------------------------------------%
+%--------------------------------------------------------------------------------%
+
+
+%--------------------------------------------------------------------------------%
+%--------------------------------------------------------------------------------%
+\chapter{Appendix}\label{Appendix}
+
+\section{Trace Plots}
+\subsection{$\theta_{t,k}$}
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[scale=0.4]{ts_theta_1.png}
+  \end{center}
+  \caption{Trace plot of $\theta_{t,1}$}
+  \label{fig:ts_theta}
+\end{figure}
+
+
+%----------------------------------------------------------
+\newpage
+
+\section*{국 문 요 약}
+\setstretch{1.8}
+\par
+\bigskip
+
+\begin{center}
+\large
+종단 잠재 공간 항목 반응 모형의 응용,\\
+미 하원 의회 투표 자료 분석을 중심으로
+\end{center}
+\setstretch{1.8}
+\par
+\bigskip
+\noindent
+
+
+\bigskip
+\noindent \hrulefill\\
+핵심 용어 :  \par
+
+%\pagebreak
+
+\newpage
+
+%--------------------------------------------------------------------------------%
+%--------------------------------------------------------------------------------%
+
+%\nocite{*}
+\bibliographystyle{apalike}
+\bibliography{References}
+
+
+\end{document}
