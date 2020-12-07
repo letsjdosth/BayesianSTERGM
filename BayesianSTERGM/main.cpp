@@ -669,12 +669,12 @@ int main()
     //=================================================================================================
     //BSTERGM test
     
-    Col<double> initFormationParam = { -0.01 };
-    Col<double> initDissolutionParam = { 0.01 };
+    Col<double> initFormationParam = { -2, 1 };
+    Col<double> initDissolutionParam = { -1, 2 };
     BSTERGM_MCMC_RandomLag Bstergm = BSTERGM_MCMC_RandomLag(initFormationParam, initDissolutionParam, net_2_seq);
-    Bstergm.generateSample(10000, 500, 0.001);
-    Bstergm.cutBurnIn(1000);
-    Bstergm.thinning(20);
+    Bstergm.generateSample(25000, 300, 0.001);
+    //Bstergm.cutBurnIn(1000);
+    //Bstergm.thinning();
 
     //BSTERGM posterior sample diagnostics
     Diagnostics_MCParamSample BstergmDiag1(Bstergm.getPosteriorSample_formation());
@@ -682,17 +682,17 @@ int main()
     Col<double> quantilePts = { 0.1, 0.25, 0.5, 0.75, 0.9 };
     BstergmDiag1.print_quantile(0, quantilePts);
     BstergmDiag1.print_autoCorr(0, 30);
-    /*BstergmDiag1.print_mean(1);
+    BstergmDiag1.print_mean(1);
     BstergmDiag1.print_quantile(1, quantilePts);
-    BstergmDiag1.print_autoCorr(1, 30);*/
+    BstergmDiag1.print_autoCorr(1, 30);
 
     Diagnostics_MCParamSample BstergmDiag2(Bstergm.getPosteriorSample_dissolution());
     BstergmDiag2.print_mean(0);
     BstergmDiag2.print_quantile(0, quantilePts);
     BstergmDiag2.print_autoCorr(0, 30);
-    /*BstergmDiag2.print_mean(1);
+    BstergmDiag2.print_mean(1);
     BstergmDiag2.print_quantile(1, quantilePts);
-    BstergmDiag2.print_autoCorr(1, 30);*/
+    BstergmDiag2.print_autoCorr(1, 30);
 
     BstergmDiag1.writeToCsv_Sample("BSTERGM_formation.csv");
     BstergmDiag2.writeToCsv_Sample("BSTERGM_dissolution.csv");

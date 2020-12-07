@@ -53,8 +53,8 @@ private:
 
     double log_r(Network& last, Network& proposed, bool isDissolution) {
         //NOW MODEL
-        Col<double> model_delta = { (double)proposed.get_n_Edge() - last.get_n_Edge(), };
-                                    // (double)proposed.get_undirected_geoWeightedESP(0.5) - last.get_undirected_geoWeightedESP (0.5) }; // <-model specify
+        Col<double> model_delta = { (double)proposed.get_n_Edge() - last.get_n_Edge(),
+                                     (double)proposed.get_undirected_geoWeightedESP(0.5) - last.get_undirected_geoWeightedESP (0.5) }; // <-model specify
         Col<double> param;
         if (isDissolution) {
             param = dissolution_Param;
