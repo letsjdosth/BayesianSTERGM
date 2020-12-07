@@ -669,10 +669,10 @@ int main()
     //=================================================================================================
     //BSTERGM test
     
-    Col<double> initFormationParam = { -2, 1 };
-    Col<double> initDissolutionParam = { -1, 2 };
-    BSTERGM_MCMC_RandomLag Bstergm = BSTERGM_MCMC_RandomLag(initFormationParam, initDissolutionParam, net_2_seq);
-    Bstergm.generateSample(25000, 300, 0.001);
+    Col<double> initFormationParam = { -0.2, 0.01 };
+    Col<double> initDissolutionParam = { -0.2, 0.01 };
+    BSTERGM_MCMC_RandomLag Bstergm = BSTERGM_MCMC_RandomLag(initFormationParam, initDissolutionParam, net_1_seq);
+    Bstergm.generateSample(30000, 400, 0.001);
     //Bstergm.cutBurnIn(1000);
     //Bstergm.thinning();
 
