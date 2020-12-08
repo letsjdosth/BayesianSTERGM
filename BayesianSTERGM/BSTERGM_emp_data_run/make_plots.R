@@ -1,6 +1,6 @@
 #traceplot
 
-formation_posterior_sample = read.csv("C:/gitProject/BayesianSTERGM/BayesianSTERGM/BSTERGM_emp_data_run/seq1_chain1_BSTERGM_formation.csv", header=FALSE)
+formation_posterior_sample = read.csv("C:/gitProject/BayesianSTERGM/BayesianSTERGM/BSTERGM_emp_data_run/seq1_chain2_BSTERGM_formation.csv", header=FALSE)
 mean(formation_posterior_sample$V1)
 mean(formation_posterior_sample$V2)
 par(mfrow=c(1,2))
@@ -13,7 +13,7 @@ acf(formation_posterior_sample$V2)
 
 
 
-dissolution_posterior_sample = read.csv("C:/gitProject/BayesianSTERGM/BayesianSTERGM/BSTERGM_emp_data_run/seq1_chain1_BSTERGM_dissolution.csv", header=FALSE)
+dissolution_posterior_sample = read.csv("C:/gitProject/BayesianSTERGM/BayesianSTERGM/BSTERGM_emp_data_run/seq1_chain2_BSTERGM_dissolution.csv", header=FALSE)
 mean(dissolution_posterior_sample$V1)
 mean(dissolution_posterior_sample$V2)
 par(mfrow=c(1,2))
@@ -25,7 +25,7 @@ acf(dissolution_posterior_sample$V2)
 
 
 
-network_diag_stats = read.csv("C:/gitProject/BayesianSTERGM/BayesianSTERGM/BSTERGM_emp_data_run/seq1_chain1_BSTERGM_lastExNetSamplerNetworkStats.csv", header=TRUE)
+network_diag_stats = read.csv("C:/gitProject/BayesianSTERGM/BayesianSTERGM/BSTERGM_emp_data_run/seq1_chain2_BSTERGM_lastExNetSamplerNetworkStats.csv", header=TRUE)
 
 # for(i in 1:length(network_diag_stats)){
 length(network_diag_stats) #11
