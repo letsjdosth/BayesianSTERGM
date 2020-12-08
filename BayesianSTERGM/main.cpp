@@ -669,10 +669,11 @@ int main()
     //=================================================================================================
     //BSTERGM test
     
-    Col<double> initFormationParam = { -0.2, 0.01 };
-    Col<double> initDissolutionParam = { -0.2, 0.01 };
-    BSTERGM_MCMC_RandomLag Bstergm = BSTERGM_MCMC_RandomLag(initFormationParam, initDissolutionParam, net_1_seq);
-    Bstergm.generateSample(30000, 400, 0.001);
+    Col<double> initFormationParam = { -0.1, 0.01 };
+    Col<double> initDissolutionParam = { -0.1, 0.01 };
+    BSTERGM_MCMC_RandomLag Bstergm = BSTERGM_MCMC_RandomLag(initFormationParam, initDissolutionParam, net_3_seq);
+    //아래 GOF seq도 바꿀 것!
+    Bstergm.generateSample(20000, 400, 0.001);
     //Bstergm.cutBurnIn(1000);
     //Bstergm.thinning();
 
@@ -698,12 +699,12 @@ int main()
     BstergmDiag2.writeToCsv_Sample("BSTERGM_dissolution.csv");
     
     //BSTERGM GOF
-    GoodnessOfFit_STERGM BstergmGoF0 (Bstergm.getPosteriorSample_formation(), Bstergm.getPosteriorSample_dissolution(), net_1_seq);
+    GoodnessOfFit_STERGM BstergmGoF0 (Bstergm.getPosteriorSample_formation(), Bstergm.getPosteriorSample_dissolution(), net_3_seq);
     cout << "t=0 to t=1" << endl;
     BstergmGoF0.undirected_run(0, 100, 100);
     BstergmGoF0.undirected_printResult(0);
 
-    GoodnessOfFit_STERGM BstergmGoF1(Bstergm.getPosteriorSample_formation(), Bstergm.getPosteriorSample_dissolution(), net_1_seq);
+    GoodnessOfFit_STERGM BstergmGoF1(Bstergm.getPosteriorSample_formation(), Bstergm.getPosteriorSample_dissolution(), net_3_seq);
     cout << "\n\nt=1 to t=2" << endl;
     BstergmGoF1.undirected_run(1, 100, 100);
     BstergmGoF1.undirected_printResult(1);
