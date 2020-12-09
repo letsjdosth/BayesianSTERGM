@@ -210,7 +210,7 @@ public:
 
 
 
-// old code block
+// old block
 //class BSTERGM_MCMC {
 //private:
 //    vector<Network> observedSeq;
