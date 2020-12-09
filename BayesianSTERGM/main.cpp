@@ -669,11 +669,11 @@ int main()
     //=================================================================================================
     //BSTERGM test
     
-    Col<double> initFormationParam = { -0.1, 0.01 };
-    Col<double> initDissolutionParam = { -0.1, 0.01 };
+    Col<double> initFormationParam = { -5, 1.5 };
+    Col<double> initDissolutionParam = { -5, 5 };
     BSTERGM_MCMC_RandomLag Bstergm = BSTERGM_MCMC_RandomLag(initFormationParam, initDissolutionParam, net_3_seq);
     //아래 GOF seq도 바꿀 것!
-    Bstergm.generateSample(20000, 400, 0.001);
+    Bstergm.generateSample(20000, 700, 0.002);
     //Bstergm.cutBurnIn(1000);
     //Bstergm.thinning();
 
