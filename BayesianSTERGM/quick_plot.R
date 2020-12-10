@@ -17,16 +17,16 @@ for(i in 1:2){
 
 
 
-# formation_posterior_sample = read.csv("C:/gitProject/BayesianSTERGM/BayesianSTERGM/BSTERGM_formation.csv", header=FALSE)
-# par(mfrow=c(1,2))
-# plot(1:nrow(formation_posterior_sample), formation_posterior_sample$V1, type="l")
-# plot(1:nrow(formation_posterior_sample), formation_posterior_sample$V2, type="l")
+formation_posterior_sample = read.csv("C:/gitProject/BayesianSTERGM/BayesianSTERGM/BSTERGM_formation.csv", header=FALSE)
+par(mfrow=c(1,2))
+plot(1:nrow(formation_posterior_sample), formation_posterior_sample$V1, type="l")
+plot(1:nrow(formation_posterior_sample), formation_posterior_sample$V2, type="l")
 
 
 
-# dissolution_posterior_sample = read.csv("C:/gitProject/BayesianSTERGM/BayesianSTERGM/BSTERGM_dissolution.csv", header=FALSE)
-# par(mfrow=c(1,2))
-# plot(1:nrow(dissolution_posterior_sample), dissolution_posterior_sample$V1, type="l")
-# plot(1:nrow(dissolution_posterior_sample), dissolution_posterior_sample$V2, type="l")
+dissolution_posterior_sample = read.csv("C:/gitProject/BayesianSTERGM/BayesianSTERGM/BSTERGM_dissolution.csv", header=FALSE)
+par(mfrow=c(1,2))
+plot(1:nrow(dissolution_posterior_sample), dissolution_posterior_sample$V1, type="l")
+plot(1:nrow(dissolution_posterior_sample), dissolution_posterior_sample$V2, type="l")
 
 

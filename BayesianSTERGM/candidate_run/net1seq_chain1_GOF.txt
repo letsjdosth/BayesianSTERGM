@@ -1,0 +1,843 @@
+t=0 to t=1
+#node degree 0 :
+data: 4
+at the param:         0        0        0   1.0000   1.0000
+
+#node degree 1 :
+data: 1
+at the param:         0        0   1.0000   2.0000   3.0000
+
+#node degree 2 :
+data: 0
+at the param:    1.0000   1.0000   2.0000   3.0000   4.0000
+
+#node degree 3 :
+data: 3
+at the param:    1.0000   2.0000   3.0000   4.0000   5.0000
+
+#node degree 4 :
+data: 1
+at the param:    1.0000   2.0000   3.0000   4.0000   6.0000
+
+#node degree 5 :
+data: 3
+at the param:    2.0000   3.0000   4.0000   5.0000   7.0000
+
+#node degree 6 :
+data: 3
+at the param:    2.0000   3.0000   5.0000   6.0000   8.0000
+
+#node degree 7 :
+data: 5
+at the param:    3.0000   4.0000   5.0000   7.0000   9.0000
+
+#node degree 8 :
+data: 9
+at the param:    3.0000   4.0000   6.0000   7.0000   9.0000
+
+#node degree 9 :
+data: 5
+at the param:    3.0000   4.0000   6.0000   7.0000   9.0000
+
+#node degree 10 :
+data: 4
+at the param:    2.0000   3.0000   5.0000   6.0000   8.0000
+
+#node degree 11 :
+data: 4
+at the param:    1.0000   2.0000   4.0000   5.0000   6.0000
+
+#node degree 12 :
+data: 4
+at the param:         0   1.0000   2.0000   3.0000   5.0000
+
+#node degree 13 :
+data: 2
+at the param:         0   1.0000   1.0000   2.0000   3.0000
+
+#node degree 14 :
+data: 1
+at the param:         0        0   1.0000   1.0000   2.0000
+
+#node degree 15 :
+data: 0
+at the param:         0        0        0   1.0000   2.0000
+
+#node degree 16 :
+data: 2
+at the param:         0        0        0   1.0000   1.0000
+
+#node degree 17 :
+data: 0
+at the param:         0        0        0   1.0000   1.0000
+
+#node degree 18 :
+data: 0
+at the param:         0        0        0   1.0000   1.0000
+
+#node degree 19 :
+data: 0
+at the param:         0        0        0        0   1.0000
+
+#node degree 20 :
+data: 0
+at the param:         0        0        0        0   1.0000
+
+#node degree 21 :
+data: 1
+at the param:         0        0        0        0        0
+
+#node degree 22 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 23 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 24 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 25 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 26 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 27 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 28 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 29 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 30 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 31 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 32 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 33 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 34 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 35 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 36 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 37 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 38 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 39 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 40 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 41 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 42 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 43 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 44 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 45 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 46 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 47 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 48 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 49 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 50 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 51 :
+data: 0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 0 :
+data:8
+at the param:    25.0000   28.0000   33.0000   37.0000   42.0000
+
+#Edgewise Shared Partner  degree 1 :
+data:10
+at the param:    29.0000   33.0000   38.0000   43.0000   48.0000
+
+#Edgewise Shared Partner  degree 2 :
+data:29
+at the param:    30.0000   33.0000   38.0000   43.0000   47.0000
+
+#Edgewise Shared Partner  degree 3 :
+data:27
+at the param:    28.0000   32.0000   36.0000   40.0000   44.0000
+
+#Edgewise Shared Partner  degree 4 :
+data:13
+at the param:    19.0000   23.0000   28.0000   32.0000   37.0000
+
+#Edgewise Shared Partner  degree 5 :
+data:37
+at the param:     9.0000   13.0000   17.0000   22.0000   26.0000
+
+#Edgewise Shared Partner  degree 6 :
+data:40
+at the param:     3.0000    5.0000    8.0000   11.0000   15.0000
+
+#Edgewise Shared Partner  degree 7 :
+data:20
+at the param:         0   1.0000   3.0000   5.0000   7.0000
+
+#Edgewise Shared Partner  degree 8 :
+data:14
+at the param:         0        0   1.0000   2.0000   3.0000
+
+#Edgewise Shared Partner  degree 9 :
+data:10
+at the param:         0        0        0        0   1.0000
+
+#Edgewise Shared Partner  degree 10 :
+data:4
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 11 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 12 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 13 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 14 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 15 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 16 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 17 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 18 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 19 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 20 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 21 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 22 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 23 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 24 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 25 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 26 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 27 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 28 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 29 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 30 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 31 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 32 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 33 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 34 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 35 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 36 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 37 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 38 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 39 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 40 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 41 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 42 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 43 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 44 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 45 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 46 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 47 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 48 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 49 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 50 :
+data:0
+at the param:         0        0        0        0        0
+
+#userSpecific index 0 :
+data:see yourself
+at the param:    1.8600e+02   1.9400e+02   2.0400e+02   2.1400e+02   2.2300e+02
+
+#userSpecific index 1 :
+data:see yourself
+at the param:    2.0891e+02   2.2344e+02   2.4256e+02   2.6167e+02   2.7657e+02
+
+
+
+t=1 to t=2
+#node degree 0 :
+data: 5
+at the param:         0        0        0        0   1.0000
+
+#node degree 1 :
+data: 0
+at the param:         0        0        0   1.0000   2.0000
+
+#node degree 2 :
+data: 2
+at the param:         0        0   1.0000   2.0000   2.0000
+
+#node degree 3 :
+data: 1
+at the param:         0   1.0000   2.0000   2.0000   3.0000
+
+#node degree 4 :
+data: 2
+at the param:    1.0000   1.0000   2.0000   3.0000   4.0000
+
+#node degree 5 :
+data: 5
+at the param:    1.0000   2.0000   3.0000   4.0000   5.0000
+
+#node degree 6 :
+data: 2
+at the param:    1.0000   3.0000   4.0000   5.0000   7.0000
+
+#node degree 7 :
+data: 3
+at the param:    2.0000   4.0000   5.0000   7.0000   8.0000
+
+#node degree 8 :
+data: 8
+at the param:    3.0000   4.0000   6.0000   7.0000   8.5000
+
+#node degree 9 :
+data: 4
+at the param:    3.0000   5.0000   6.0000   8.0000   9.0000
+
+#node degree 10 :
+data: 4
+at the param:    3.0000   4.0000   5.0000   7.0000   9.0000
+
+#node degree 11 :
+data: 5
+at the param:    2.0000   3.0000   5.0000   6.0000   8.0000
+
+#node degree 12 :
+data: 1
+at the param:    1.0000   2.0000   4.0000   5.0000   6.0000
+
+#node degree 13 :
+data: 3
+at the param:    1.0000   2.0000   2.0000   4.0000   5.0000
+
+#node degree 14 :
+data: 0
+at the param:         0   1.0000   2.0000   3.0000   4.0000
+
+#node degree 15 :
+data: 1
+at the param:         0        0   1.0000   2.0000   3.0000
+
+#node degree 16 :
+data: 1
+at the param:         0        0   1.0000   1.0000   2.0000
+
+#node degree 17 :
+data: 1
+at the param:         0        0        0   1.0000   1.0000
+
+#node degree 18 :
+data: 1
+at the param:         0        0        0   1.0000   1.0000
+
+#node degree 19 :
+data: 0
+at the param:         0        0        0        0   1.0000
+
+#node degree 20 :
+data: 1
+at the param:         0        0        0        0   1.0000
+
+#node degree 21 :
+data: 1
+at the param:         0        0        0        0        0
+
+#node degree 22 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 23 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 24 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 25 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 26 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 27 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 28 :
+data: 1
+at the param:         0        0        0        0        0
+
+#node degree 29 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 30 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 31 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 32 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 33 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 34 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 35 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 36 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 37 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 38 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 39 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 40 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 41 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 42 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 43 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 44 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 45 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 46 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 47 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 48 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 49 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 50 :
+data: 0
+at the param:         0        0        0        0        0
+
+#node degree 51 :
+data: 0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 0 :
+data:11
+at the param:    20.0000   24.0000   28.0000   32.0000   37.0000
+
+#Edgewise Shared Partner  degree 1 :
+data:12
+at the param:    32.0000   36.0000   41.0000   47.0000   51.5000
+
+#Edgewise Shared Partner  degree 2 :
+data:23
+at the param:    35.0000   39.0000   44.0000   49.0000   53.0000
+
+#Edgewise Shared Partner  degree 3 :
+data:52
+at the param:    32.0000   35.5000   40.0000   45.0000   49.0000
+
+#Edgewise Shared Partner  degree 4 :
+data:39
+at the param:    24.0000   28.0000   33.0000   37.0000   42.0000
+
+#Edgewise Shared Partner  degree 5 :
+data:24
+at the param:    13.0000   18.0000   22.0000   27.5000   32.0000
+
+#Edgewise Shared Partner  degree 6 :
+data:21
+at the param:     6.0000    9.0000   12.0000   17.0000   20.5000
+
+#Edgewise Shared Partner  degree 7 :
+data:16
+at the param:     2.0000    3.0000    5.0000    8.0000   12.0000
+
+#Edgewise Shared Partner  degree 8 :
+data:13
+at the param:         0   1.0000   2.0000   4.0000   6.0000
+
+#Edgewise Shared Partner  degree 9 :
+data:9
+at the param:         0        0        0   1.0000   2.0000
+
+#Edgewise Shared Partner  degree 10 :
+data:4
+at the param:         0        0        0        0   1.0000
+
+#Edgewise Shared Partner  degree 11 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 12 :
+data:2
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 13 :
+data:1
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 14 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 15 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 16 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 17 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 18 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 19 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 20 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 21 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 22 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 23 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 24 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 25 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 26 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 27 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 28 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 29 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 30 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 31 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 32 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 33 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 34 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 35 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 36 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 37 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 38 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 39 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 40 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 41 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 42 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 43 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 44 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 45 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 46 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 47 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 48 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 49 :
+data:0
+at the param:         0        0        0        0        0
+
+#Edgewise Shared Partner  degree 50 :
+data:0
+at the param:         0        0        0        0        0
+
+#userSpecific index 0 :
+data:see yourself
+at the param:    2.1300e+02   2.2200e+02   2.3200e+02   2.4300e+02   2.5300e+02
+
+#userSpecific index 1 :
+data:see yourself
+at the param:    2.5403e+02   2.7056e+02   2.9300e+02   3.1325e+02   3.3283e+02

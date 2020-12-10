@@ -7,6 +7,9 @@ formation_posterior_sample = read.csv(paste("BayesianSTERGM/candidate_run/",name
 formation_posterior_sample=formation_posterior_sample[10000:dim(formation_posterior_sample)[1],1]
 formation_posterior_sample=formation_posterior_sample[seq(1, length(formation_posterior_sample), by = 10)]
 write.table(formation_posterior_sample, paste("BayesianSTERGM/candidate_run/", name,"_aftercut_BSTERGM_formation.csv", sep=""), sep=",", row.names=FALSE, col.names=FALSE)
+mean(formation_posterior_sample)
+sd(formation_posterior_sample)
+
 
 traceplot_filename = paste("BayesianSTERGM/candidate_run/",name,"_BSTERGM_formation_traceplot.png",sep="")
 hist_filename = paste("BayesianSTERGM/candidate_run/",name,"_BSTERGM_formation_histogram.png",sep="")
@@ -29,6 +32,9 @@ dissolution_posterior_sample = read.csv(paste("BayesianSTERGM/candidate_run/",na
 dissolution_posterior_sample=dissolution_posterior_sample[10000:dim(dissolution_posterior_sample)[1],1]
 dissolution_posterior_sample=dissolution_posterior_sample[seq(1, length(dissolution_posterior_sample), by = 10)]
 write.table(dissolution_posterior_sample, paste("BayesianSTERGM/candidate_run/", name,"_aftercut_BSTERGM_dissolution.csv", sep=""), sep=",", row.names=FALSE, col.names=FALSE)
+mean(dissolution_posterior_sample)
+sd(dissolution_posterior_sample)
+
 
 traceplot_filename = paste("BayesianSTERGM/candidate_run/",name,"_BSTERGM_dissolution_traceplot.png",sep="")
 hist_filename = paste("BayesianSTERGM/candidate_run/",name,"_BSTERGM_dissolution_histogram.png",sep="")
@@ -55,7 +61,7 @@ length(network_diag_stats) #11
 # mean(network_diag_stats$userSpecific0)
 # mean(network_diag_stats$userSpecific1)
 # par(mfrow=c(1,2))
-ylabname= c("num of edges", "GWESP(0.5)")
+ylabname= c("num_edges", "GWESP(0.5)")
 for(i in 1:1){
     diagfilename = paste("BayesianSTERGM/candidate_run/",name,"_lastsampler_",ylabname[i],".png",sep="")
     plot(1:nrow(network_diag_stats), network_diag_stats[,i], type="l", xlab="iter", ylab=ylabname[i])
