@@ -199,7 +199,7 @@ where ${\bf 0}$ is a $d$-vector of zeros and ${\bf I}_d$ is the $d \times d$ ide
 &\Big(1-P\big(x_{t,ki} \mid {\bf z}_{t,k}, {\bf w}_{t,i}, \theta_{t,k}, \beta_{t,i}\big)\Big)^{1-x_{ki}}
 \end{split}
 \end{equation}
-
+\end{itemize}
 %--------------------------------------------------------------------------------%
 
 %--------------------------------------------------------------------------------%
@@ -389,26 +389,10 @@ where $\pi \Big( {\bf z}_{t,k} \mid {\bf X}_t,{\bf W}_t,{\boldsymbol \beta}_t,{\
 %--------------------------------------------------------------------------------%
 \chapter{Results} \label{Chapter6}
 \section{Estimated Latent Space}
-\begin{figure}
-\begin{center}
-\includegraphics[scale=0.5]{LS_ggplot_2.png}
-\caption{Latent positions of politicians and bills.}
-\label{fig:ls}
-\end{center}
-\end{figure}
 
 \quad After computation, we have had the estimates of $\bf{z}$ and $\bf{w}$ for 2016, 2018, and 2020. Now we can show the latent position of three periods of politicians and bills in a two-dimensional plane at once like Figure \ref{fig:ls}. In Figure \ref{fig:ls}, red spots represent the latent positions of republicans, and blue ones do those of democrats. Black spots are the latent positions of bills. If looking at the pattern of the latent positions,
 we can easily know that republicans and democrats are separated clearly. Furthermore, we can also see that the bills are grouped in three parts, one of which is close to the republican party, the other one close to the democrat party, and the another located between the two parties. According to the latent space item response model, a distance between latent positions is the measure of the correlation between them. Then, we can interpret that the bills positioned in the territory of a certain political party is only supported by that party, but not by the opposite party. On the other hand, the bills in the middle area are correlated to both parties at the same level. It means that most politicians supported or rejected the mid-area bills in the same regardless of their political stance. As for politicians comparatively located in the mid-area, we can say that they did not follow their party blindly.
 
-\begin{figure}
-  \begin{center}
-    \subfigure[2016]{\label{fig:annual-a}\includegraphics[scale=0.25]{LS_2016.png}}
-    \subfigure[2018]{\label{fig:annual-b}\includegraphics[scale=0.25]{LS_2018.png}}
-    \subfigure[2020]{\label{fig:annual-c}\includegraphics[scale=0.25]{LS_2020.png}}
-  \end{center}
-  \caption{Latent positions in 2016, 2018, and 2020. }
-  \label{fig:annual}
-\end{figure}
 
 \quad We depict the time of each point in Figure \ref{fig:ls} by differentiating the shape of a spot. A circle, a triangle, and a rectangle mean that the latent position belongs to 2016, 2018, and 2020. There is an overlapped politician's latent position through several time-periods, and it means that the politician took office multiple times. In other words, the same person takes the same latent position in the latent space. Because the same bill is not usually put to the vote twice at the congress, there are not identical latent positions among those of the bills.
 
@@ -434,94 +418,6 @@ we can easily know that republicans and democrats are separated clearly. Further
     \label{tab:data}
 \end{table}
 
-\begin{figure}[h]
-  \begin{center}
-    \includegraphics[scale=0.5]{districts.png}
-  \end{center}
-  \caption{Congressional districts of U.S. }
-  \label{fig:districts}
-\end{figure}
-
-\quad In the analysis, we accept several beliefs in political tendency. First, Republican is conservative, and Democrat is progressive. Second, an urban region, including the big city, is more politically progressive. Third, each state excepting the swing state supports a certain political party. Taking it into consideration, the analysis is undertaken.
-
-\begin{figure}[h]
-  \begin{center}
-    \includegraphics[scale=0.5]{mn.png}
-  \end{center}
-  \caption{Congressional districts of Minnesota }
-  \label{fig:mn}
-\end{figure}
-
-\quad Minnesota, having Minneapolis as a capital city, is a relatively progressive state. Among the districts of Minnesota, the 7th district covers almost all of the western side of Minnesota. In this region, the proportion of the rural area is larger than that of the urban area. Moreover, the district borders with North Dakota and South Dakota, which are conservative states. Considering this geographic characteristic, the 7th district is likely to be conservative. Therefore, it is natural that the district's representative, Collin Peterson, is a conservative Democrat, reflecting both the state's progressive personality and the conservative aspect of the district. Peterson is one of the founders of the Blue Dog Coalition, a group of moderate and conservative Democrats. Peterson has split from his party on issues such as gay marriage, healthcare, the estate tax, gun control, the environment, and abortion. It is no doubt that he successfully represented the district's opinion considering that he was first elected in 1990 and kept re-elected until 2018.
-
-\begin{figure}[h]
-  \begin{center}
-    \includegraphics[scale=0.5]{il.png}
-  \end{center}
-  \caption{Congressional districts of Illinois}
-  \label{fig:il}
-\end{figure}
-
-\quad Illinois is known as one of the progressive states, placing the large city of Chicago. Unlike our anticipation, the Republican politician was elected in the district of the progressive state. Bob Dold, the representative for Illinois's 10th congressional district in 2016, is a moderate Republican who supports gun control measures. Additionally, his predecessor, Brad Schneider, is also known as moderate Democrat. From the characteristic of representatives, it is possible to say that 10th district of Illinois prefers a moderate politician. We can deduce the reasons for the political position of this district from geographic factors as well. 10th district lies in the northeast corner of the state, and mostly comprises northern suburbs of Chicago. In this region, the district covers Lake county which is the second most wealthy county in Illinois. When it is believed that wealthy people tend to be more conservative in common sense, it is natural thinking that the 10th district is politically moderate despite it is near Chicago.
-
-\begin{figure}[h]
-  \begin{center}
-    \includegraphics[scale=0.5]{nj.png}
-  \end{center}
-  \caption{Congressional districts of New Jersey }
-  \label{fig:nj}
-\end{figure}
-
-\quad New Jersey is also a progressive state influenced by an adjacent state, New York. However, the 2nd district elected Republican representative. The district, based in Southern New Jersey, is a swing region with a history of supporting different parties. The proportion of the rural area is relatively high, and there is no metropolis in this district. Moreover, it is located most far from New York and less influenced by New York City. For this reason, the 2nd district seems to be more conservative than the average of New Jersey.
-
-\begin{figure}[h]
-  \begin{center}
-    \includegraphics[scale=0.5]{ok.png}
-  \end{center}
-  \caption{Congressional districts of Oklahoma }
-  \label{fig:ok}
-\end{figure}
-
-\quad Oklahoma is a state in the South Central region of the United States and it is a conservative state. However, the 5th district includes Oklahoma City, and it is likely to have a moderate political stance. The result of the election of Kendra Horn, the representative of Democrat, demonstrates this enough. The district's preference is obvious, seeing the fact that Horn was joining the Blue Dog Coalition, a group of moderate and conservative Democrats.
-
-\begin{figure}[h]
-  \begin{center}
-    \includegraphics[scale=0.5]{sc.png}
-  \end{center}
-  \caption{Congressional districts of South Carolina }
-  \label{fig:sc}
-\end{figure}
-
-\quad South Carolina is known as a conservative state. Conversely, the 1st district elected the Democrat politician. The 1st district has historically been based in Charleston, the largest city in South Carolina. The urban characteristic may influence the political position.
-
-\begin{figure}[h]
-  \begin{center}
-    \includegraphics[scale=0.5]{utah.png}
-  \end{center}
-  \caption{Congressional districts of Utah }
-  \label{fig:utah}
-\end{figure}
-
-\quad Utah is famous as conservative state because a little more than half of all Utahns are Mormons. The 4th district representative, Ben McAdams is the only Democratic member of Utah's congressional delegation, but a member of the Blue Dog Coalition, a group of a moderate politician. Despite the Mormons' headquarter, Salt Lake City, the most populous city in Utah, tends to affect progressive in a political position.
-
-\quad Interpreting the patterns found above, the commonality can be seen that Bipartisan is elected in the district of a moderate political position compared with that of the whole state. Moreover, we infer that the degree of the district's political orientation varies with the geographical feature. For the districts of the progressive state, the district with the broad rural area or covering wealthy county tends to be more conservative than other districts in the state. As for the districts of the conservative state, the district containing a large city is more progressive than others. In addition, the political atmosphere of neighboring states affects the residents' political ideas of the district.
-
-\section{The Bills in the Middle Area}
-
-\begin{figure}[h]
-  \begin{center}
-    \subfigure[2016]{\label{fig:bill-a}\includegraphics[scale=0.18]{vote_2016.png}}
-    \subfigure[2018]{\label{fig:bill-b}\includegraphics[scale=0.18]{vote_2018.png}}
-    \subfigure[2020]{\label{fig:bill-c}\includegraphics[scale=0.18]{vote_2020.png}}
-  \end{center}
-  \caption{Latent positions of bills and their numbers in 2016, 2018, and 2020. }
-  \label{fig:bill}
-\end{figure}
-
-\section{Outliers}
-
-
-\end{itemize}
 
 %--------------------------------------------------------------------------------%
 %--------------------------------------------------------------------------------%
@@ -542,50 +438,40 @@ we can easily know that republicans and democrats are separated clearly. Further
 %--------------------------------------------------------------------------------%
 \chapter{Appendix}\label{Appendix}
 
-\section{Trace Plots}
-\subsection{$\theta_{t,k}$}
-\begin{figure}[h]
-  \begin{center}
-    \includegraphics[scale=0.4]{ts_theta_1.png}
-  \end{center}
-  \caption{Trace plot of $\theta_{t,1}$}
-  \label{fig:ts_theta}
-\end{figure}
+
+% %----------------------------------------------------------
+% \newpage
+
+% \section*{국 문 요 약}
+% \setstretch{1.8}
+% \par
+% \bigskip
+
+% \begin{center}
+% \large
+% 종단 잠재 공간 항목 반응 모형의 응용,\\
+% 미 하원 의회 투표 자료 분석을 중심으로
+% \end{center}
+% \setstretch{1.8}
+% \par
+% \bigskip
+% \noindent
 
 
-%----------------------------------------------------------
-\newpage
+% \bigskip
+% \noindent \hrulefill\\
+% 핵심 용어 :  \par
 
-\section*{국 문 요 약}
-\setstretch{1.8}
-\par
-\bigskip
+% %\pagebreak
 
-\begin{center}
-\large
-종단 잠재 공간 항목 반응 모형의 응용,\\
-미 하원 의회 투표 자료 분석을 중심으로
-\end{center}
-\setstretch{1.8}
-\par
-\bigskip
-\noindent
+% \newpage
 
+% %--------------------------------------------------------------------------------%
+% %--------------------------------------------------------------------------------%
 
-\bigskip
-\noindent \hrulefill\\
-핵심 용어 :  \par
-
-%\pagebreak
-
-\newpage
-
-%--------------------------------------------------------------------------------%
-%--------------------------------------------------------------------------------%
-
-%\nocite{*}
-\bibliographystyle{apalike}
-\bibliography{References}
+% %\nocite{*}
+% \bibliographystyle{apalike}
+% \bibliography{References}
 
 
 \end{document}

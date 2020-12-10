@@ -122,16 +122,21 @@ Models which have such a form called the ERGM.
 Note that the form of the right-hand side is the canonical form of exponential family distributions.
 That is why the model is called exponential. Moreover, observe that the normalizing constant cannot be directly calculated
 because the size of $\mathcal{Y}$ grows exponentially as $n$ grows.
-This situation is said to doubly-intractable constant problem, and it causes serious challenge to estimate the parameter vector $\theta$
-in real data analysis. For more detail on fitting algorithm using MCMCMLE, see Hunter and Handcock(2006).% ref
+Thus in real data analysis, the calculation of $c(\theta)$ should be avoided.
+For example, see the detail on fitting algorithm using MCMCMLE. %see Hunter and Handcock(2006).% ref
+
 
 \subsection{BERGM: Bayesian ERGM}
 Caimo and Friel(2012) %ref
 extend ERGM to bayesian setting. Putting prior $p(\theta)$ to the parameter $\theta$, the model becomes
 \[p(\theta|y)=\frac{p(y|\theta)p(\theta)}{p(y)}=\frac{exp(\theta^T s(y))}{c(\theta)}\frac{p(\theta)}{p(y)}\]
-Since not only the doubly-intractable constant problem still exists but also the $p(y)$ cannot be evaluated directly,
-the estimation of $\theta$ needs more advanced algorithm than the standard MCMC procedure.
-The solution of Caimo and Friel is using the exchange algorithm.
+
+Observe that not only $c(\theta)$ but also the $p(y)$ cannot be evaluated directly
+because of the difficulty of summation when $n$ grows and of integration of $p(y)$.
+Moreover, the constant depends on the parameter $\theta$, so ordinary MCMC technique cannot be used and
+This situation is said to doubly-intractable constant problem, and causes serious challenge to estimate the parameter vector $\theta$..
+Thus, The estimation of $\theta$ needs more advanced algorithm than the standard MCMC procedure.
+The solution of Caimo and Friel is using the exchange algorithm. See %ref
 
 %exchange algorithm 설명
 
@@ -163,77 +168,145 @@ the higher value of $\theta$ increases both.
 These raise demand for modified models to remedy the degeneracy and enable separable interpretation.
 
 \subsection{STERGM: Separable-Temporal Exponential family Random Graphs Models}
-One solution to overcome the weak points of TERGM is STERGM. %ref
+One solution to remedy the problems of TERGM is 
+the Separable-Temporal Exponential family Random Graphs Models, or simply STERGM. %ref
+The key idea is to separate the formation models and dissolution model
+for decoupling an effect on edge's duration of model parameter from edge's incidence
+when setting a distribution on $\mathcal{Y}\times ... \times \mathcal{Y}$ ($T-1$ folds, $T\in\mathbb{N}$),
+where $\mathcal{Y}$ is a set of graphs with given $n$ nodes.
+
+Precisely,
+Let $Y_1=y_1 \in \mathcal{Y}$ be given and $Y_2,...,Y_T$ be random graphs (on $\mathcal{Y}$).
+Let $\mathcal{Y}^+|_t$ be a subset of $\mathcal{Y}$ consisting all graphs which have equal or additional edges comparing to $y_{t-1}$.
+Likewise, let $\mathcal{Y}^-|_t$ be a subset of $\mathcal{Y}$ consisting all graphs which have equal or sparse edges comparing to $y_{t-1}$.
+Next, for $Y_t^+: \Omega \to\mathcal{Y}^+|_t$, $Y_t^-: \Omega \to\mathcal{Y}^-|_t$, $y_t^+ \in \mathcal{Y}^+|_t$ and $y_t^- \in \mathcal{Y}^-|_t$, set
+\[P(Y_t^+=y_t^+|Y_{t-1}=y_{t-1};\theta^+) = \frac{exp((\theta^+)^{T}s(y_t^+, y_{t-1}))}{c(\theta^+, y_{t-1})}\]
+\[P(Y_t^-=y_t^-|Y_{t-1}=y_{t-1};\theta^-) = \frac{exp((\theta^-)^{T}s(y_t^-, y_{t-1}))}{c(\theta^-, y_{t-1})}\]
+for some $\theta^+,\theta^-\in\mathbb{R}^p$, $s(y_t^+, y_{t-1}), s(y_t^-, y_{t-1})\in\mathbb{R}^n$, which are parts of sufficient network statistics,
+and normalizers $c(\theta^+, y_{t-1})=\sum_{y^+\in\mathcal{Y}^+}exp((\theta^+)^{T}s(y^+, y_{t-1}))$, 
+and $c(\theta^-, y_{t-1})=\sum_{y^-\in\mathcal{Y}^-}exp((\theta^-)^{T}s(y^-, y_{t-1}))$.
+
+Then, defining operations $+,-$ on $\mathcal{Y}$ following the edgewise boolean algebra,
+(For detail, Define binary operations on the edge values $\{0,1\}$ by $+$ and $-$ 
+by $1+1=1, 1+0=0+1=1, 0+0=0$ and $1-1=0, 1-0=1, 0-1=0, 0-0=0$) 
+set the combined network $y_t$ to
+\[y_t=y_t^+ - (y_{t-1} - y_t^-) = y_t^- + (y_t^+ - y_{t-1})\]
+
+Additionally, assume the first-order Markov assumption
+\[P(Y_2,...,Y_T|Y_1)=P(Y_2|Y_1)...P(Y_T|Y_{T-1})\]
+and the conditional independence between $Y_t^+$ and $Y_t^-$ for all $t=2,...,T$, called the separability.
+Then we get
+\[P(Y_t=y_t|Y_{t-1}=y_{t-1};\theta^+,\theta^-)=P(Y_t^+=y_t^+|Y_{t-1}=y_{t-1};\theta^+) P(Y_t^-=y_t^-|Y_{t-1}=y_{t-1};\theta^-)\]
+Models which have a such form called the STERGM.
 
 
-\begin{defn}[STERGM: Separable-Temporal Exponential family Random Graphs Models]
-    Let $\mathcal{Y}$ be a set of graphs with $n$ nodes. 
-    Let $Y_1=y_1 \in \mathcal{Y}$ be given and $Y_2,...,Y_T (T\in\mathbb{N})$ be random graphs (on $\mathcal{Y}$).
-    Set a distribution on $\mathcal{Y}\times ... \times \mathcal{Y}$ ($T-1$ folds) by following way:
 
-    Let $\mathcal{Y}^+|_t$ be a subset of $\mathcal{Y}$ consisting all graphs which have equal or additional edges comparing to $y_{t-1}$.
-    Likewise, let $\mathcal{Y}^-|_t$ be a subset of $\mathcal{Y}$ consisting all graphs which have equal or sparse edges comparing to $y_{t-1}$.
-    Next, for $Y_t^+: \Omega \to\mathcal{Y}^+|_t$, $Y_t^-: \Omega \to\mathcal{Y}^-|_t$, $y_t^+ \in \mathcal{Y}^+|_t$ and $y_t^- \in \mathcal{Y}^-|_t$, set
-    \[P(Y_t^+=y_t^+|Y_{t-1}=y_{t-1};\theta^+) = \frac{exp((\theta^+)^{T}s(y_t^+, y_{t-1}))}{c(\theta^+, y_{t-1})}\]
-    \[P(Y_t^-=y_t^-|Y_{t-1}=y_{t-1};\theta^-) = \frac{exp((\theta^-)^{T}s(y_t^-, y_{t-1}))}{c(\theta^-, y_{t-1})}\]
-    for some $\theta^+,\theta^-\in\mathbb{R}^p$, $s(y_t^+, y_{t-1}), s(y_t^-, y_{t-1})\in\mathbb{R}^n$, which are parts of sufficient network statistics,
-    and normalizers $c(\theta^+, y_{t-1})=\sum_{y^+\in\mathcal{Y}^+}exp((\theta^+)^{T}s(y^+, y_{t-1})), c(\theta^-, y_{t-1})=\sum_{y^-\in\mathcal{Y}^-}exp((\theta^-)^{T}s(y^-, y_{t-1}))$.
-    
-    Then, defining operations $+,-$ on $\mathcal{Y}$ following the boolean algebra edgewise-ly, set $y_t$ to
-    \[y_t=y_t^+ - (y_{t-1} - y_t^-) = y_t^- + (y_t^+ - y_{t-1})\]
-    
-    Additionally, assume that
-    \begin{itemize}
-        \item The first-order Markov assumption: $P(Y_2,...,Y_T|Y_1)=P(Y_2|Y_1)...P(Y_T|Y_{T-1})$
-        \item The separability: the conditional independence between $Y_t^+$ and $Y_t^-$ for all $t=2,...,T$;
-            thus, \(P(Y_t=y_t|Y_{t-1}=y_{t-1};\theta^+,\theta^-)=P(Y_t^+=y_t^+|Y_{t-1}=y_{t-1};\theta^+)P(Y_t^-=y_t^-|Y_{t-1}=y_{t-1};\theta^-)\)
-    \end{itemize}
-    Models which have a such form called the STERGM.
-\end{defn}
+\subsection{Network Statistics for ERGM and its derivative models}
+Now, I briefly discuss the terms of network statistics.
+As a usual, $s(y)$ of ERGM or $s(y_{t}^.,y_{t-1})$ of TERGM and STERGM would 
+reflect the structure of given network without identifying each node index.
+Common candidates of the statistics are here.
+
+Let $y\in\mathcal{Y}$ and $n\in\mathbb{N}$ be the number of nodes of $y$.
+The simplest candidate is the number of edges, denoted by $|y|$.
+Another common candidates are distributions defined by some sense of structure of given graph.
+For a given $i, 1\leq i \leq n-1$, $D_i(y)$ is defined to be a number of nodes in y whose the number of edges incident to the node equals $i$,
+and called $i$-th order node degree distribution. 
+%David Hunter, Mark Handcock 2006 %ref
+For a given $i, 1\leq i \leq n-2$, $P_i(y)$ is defined to be a number of dyads $(j,k), 1\leq j,k \leq n$
+in y whose $j$ and $k$ have nodes connected by an edge each other and they share exactly $i$ connected nodes in common,
+and called $i$-th order edgewise shared partner distribution.
+Note that, the bundle of all order of node degree distribution and all order of edgewise shared partner distribution,
+\[(D_1(y),D_2(y),...,D_{n-1}(y),P_1(y),P_2(y),...,P_{n-2}(y))\] 
+forms sufficient statistics of a graph.
+And there are relation that
+\[n=D_0(y)+D_1(y)+...+D_{n-1}(y)\]
+and
+\[|y|=P_0(y)+P_1(y)+...+P_{n-2}(y)=\frac{1}{2}\sum_{i=1}^{n-1} iD_i(y)\]
 
 
-\subsection{Network Statistics for BSTERGM}
-As a usual, $s(y_{t}^.,y_{t-1})$ would be chosen by a difference of network statistics, $s'(y_t^.)-s'(y_{t-1})$.
-A common candidates of $s'$ are:
-\begin{itemize}
-    \item the number of edges
-    \item node degree distribution (each order)
-    \item edgewise shared partner distribution (each order)
-    \item dyadwise shared partner distribution (each order)
-    \item k-star distribution
-    \item triangle distribution
-\end{itemize}
-In fact, a bundle of all order of node degree distribution and all order of edgewise shared partner distribution form sufficient statistics of a graph.
-Also, we can set $s'$ by a function of these statistics.
+A function of the sufficient statistics can be candidates for the model statistics.
+%Snijders et al 2006 %ref
+They proposed graph statistics including $k$-star $S_k(y)$ for $1\leq k \leq n-1$ and $k$-triangles $T_k$ for $1\leq k \leq n-2$.
+The $k$-star consists of a node together with a set of $k$ of its connected nodes,
+and the $k$-triangle consists of $k$ triangles that share one common edge.
+They can be expressed by the definition of node degree distributions and edgewise shared partner distributions,
+\[S_1 = |y|, 
+S_k = \sum_{i=1}^{n-1} \binom{i}{k} D_i(y), k\geq 2\]
+and
+\[T_1 = \frac{1}{3}\sum_{i=1}^{n-2} iP_i(y),
+T_k = \sum_{i=1}^{n-2} \binom{i}{k} P_i(y), k\geq 2\]
+
+Another interesting statistics are geometrically weighted value of distributions defined earlier.
+%ref needed. adaptive exchange [17][19][42]
+For example, geometrically weighted (node) degree with parameter $\tau$ is defined by
+\[GWD(y;\tau)=e^{\tau} \sum_{k=1}^{n-2} (1-(1-e^{-\tau})^k)D_k(y)\]
+and geometrically weighted shared partner distribution with parameter $\tau$ is defined by
+\[GWESP(y;\tau)=e^{\tau} \sum_{k=1}^{n-2} (1-(1-e^{-\tau})^k)P_k(y)\]
+
+
+In the context of temporal models, parameters in the model take two network as a arguments like $s(y_t,y_{t-1})$.
+One of common choices for these statistics is the bundle of sufficient statistics of first argument $y_t$, or
+Although there are lots of other statistics related to ERGM, I omit them and end this subsection here.
 
 
 \section{Bayesian STERGM}
+A goal is to convert the STERGM to the Bayesian setting.
+With priors $p(\theta^+),p(\theta^-)$ over $\theta^+,\theta^-$,
+the bayesian model for STERGM can be made. I call this model Bayesian Separable Temporal Exponential family Random Graph Model,
+or BSTERGM. More explicitly, for given the number of nodes $n$, let $Y_1=y_1 \in \mathcal{Y}$ be given and $Y_2,...,Y_T$ be random graphs (of $\mathcal{Y}$).
+As STERGM, define $\mathcal{Y}^+|_t$, $\mathcal{Y}^-|_t$ be subsets of $\mathcal{Y}$ consisting all graphs which have equal or additional edges comparing to $y_{t-1}$,
+and which have equal or sparse edges comparing to $y_{t-1}$ respectively.
+Then, for $Y_t^+$ of $\mathcal{Y}^+|_t$ and $Y_t^-$ of $\mathcal{Y}^-|_t$, $y_t^+ \in \mathcal{Y}^+|_t$ and $y_t^- \in \mathcal{Y}^-|_t$, set
+\[P(Y_t^+=y_t^+|Y_{t-1}=y_{t-1};\theta^+) = \frac{exp((\theta^+)^{T}s(y_t^+, y_{t-1}))}{c(\theta^+, y_{t-1})}\]
+\[P(Y_t^-=y_t^-|Y_{t-1}=y_{t-1};\theta^-) = \frac{exp((\theta^-)^{T}s(y_t^-, y_{t-1}))}{c(\theta^-, y_{t-1})}\]
+for some $\theta^+,\theta^-\in\mathbb{R}^p$, $s(y_t^+, y_{t-1}), s(y_t^-, y_{t-1})\in\mathbb{R}^n$, which are parts of sufficient network statistics,
+and normalizers $c(\theta^+, y_{t-1})=\sum_{y^+\in\mathcal{Y}^+}exp((\theta^+)^{T}s(y^+, y_{t-1}))$, 
+and $c(\theta^-, y_{t-1})=\sum_{y^-\in\mathcal{Y}^-}exp((\theta^-)^{T}s(y^-, y_{t-1}))$.
 
-To convert the STERGM to the Bayesian setting, put priors $p(\theta^+),p(\theta^-)$ over $\theta^+,\theta^-$ and take the Bayes theorem as a inference rule.
-Then, the posterior of $\theta^+,\theta^-$ becomes
-\[P(\theta^+,\theta^-|y_t, y_{t-1}) = \frac{P(Y_t^+=y_t^+|y_{t-1},\theta^+) P(Y_t^-=y_t^-|y_{t-1},\theta^-)P(\theta^+),P(\theta^-)}{c(\theta^+,y_{t-1})c(\theta^-,y_{t-1})} \]
-where $y_t=y_t^+ - (y_{t-1} - y_t^-) = y_t^- + (y_t^+ - y_{t-1})$.
+Then, with the edgewise boolean algebra, set the combined network $y_t$ to
+\[y_t=y_t^+ - (y_{t-1} - y_t^-) = y_t^- + (y_t^+ - y_{t-1})\]
 
-Remarks:
-\begin{itemize}
-    \item We cannot compute the normalizing constants $c(\theta^+,y_{t-1})$, $c(\theta^-,y_{t-1})$ practically because we need to sum up too many terms.
-    \item The constants are doubly intractable: they depend on $\theta^+$,$\theta^-$, the parameters of a model.
-        Thus, we cannot use an ordinary MCMC algorithm to get the posterior sample.
-\end{itemize}
+and assume that the first-order Markov property
+\[P(Y_2,...,Y_T|Y_1)=P(Y_2|Y_1)...P(Y_T|Y_{T-1})\]
+and the conditional independence(separability) between $Y_t^+$ and $Y_t^-$ for all $t=2,...,T$.
+Then we get
+\[\theta^+ \sim p(\theta^+), \theta^- \sim p(\theta^-)\]
+\[P(Y_t=y_t|Y_{t-1}=y_{t-1};\theta^+,\theta^-)=P(Y_t^+=y_t^+|Y_{t-1}=y_{t-1};\theta^+) P(Y_t^-=y_t^-|Y_{t-1}=y_{t-1};\theta^-)\]
+
+The purpose of Bayesian inference is to get information of the posterior distribution of $\theta^+,\theta^-$.
+By the Bayes rule, the posterior can be expressed by
+\[P(\theta^+,\theta^-|y_t, y_{t-1}) = \frac{P(Y_t^+=y_t^+|y_{t-1},\theta^+) P(Y_t^-=y_t^-|y_{t-1},\theta^-)P(\theta^+),P(\theta^-)}{c(\theta^+,y_{t-1})c(\theta^-,y_{t-1})p(y_t|y_{t-1})} \]
+where $y_t=y_t^+ - (y_{t-1} - y_t^-) = y_t^- + (y_t^+ - y_{t-1})$ as set above.
+
+Note that, BSTERGM also have similar kinds of problems of BERGM.
+The normalizing constants $c(\theta^+,y_{t-1})$, $c(\theta^-,y_{t-1})$ practically cannot be computed because we need to sum up too many terms.
+The constants are doubly intractable: they depend on $\theta^+$,$\theta^-$, the parameters of a model.
+Thus, we cannot use an ordinary MCMC algorithm to get the posterior sample in this model,
+because the constant part remains when calculating the MCMC ratio.
 
 
 \section{Bayesian Estimation}
 
-Suppose that a sequence of graph samples $y_1,...,y_T$ is observed
-\\ (then, $y_2^+,...,y_T^+$ and $y_2^-,...,y_T^-$ are uniquely determined,) 
-\\ and we want to fit the observation using BSTERGM.
+Suppose that a sequence of graph samples $y_1,...,y_T$ is observed.
+(then, $y_2^+,...,y_T^+$ and $y_2^-,...,y_T^-$ are uniquely determined.) 
+Then how can we find the posterior distribution of $\theta^+,\theta^-$ with the observation using BSTERGM?
+To solve this doubly-intractable constant problem, I propose an algorithm using the exchange MCMC algorithm,
+one of the special MCMC techniques.
 
-How do we find the posterior distribution of $\theta^+,\theta^-$?
+The idea is running two MCMC chain to make independent sample to cancel the constant parts
+when calculating the MCMC accept-reject ratio.
+To begin with, consider the MCMC ratio in the BSTERGM context.
+With symmetric proposal distribution,
+\[\pi = \frac{P(y_t^+|y_{t-1},\theta_*^+)P(y_t^-|y_{t-1},\theta_*^-)p(\theta_*^+)p(\theta_*^-)}
+{P(y_t^+|y_{t-1},\theta_{m-1}^+)P(y_t^-|y_{t-1},\theta_{m-1}^-)p(\theta_{m-1}^+)p(\theta_{m-1}^-)}\]
+where $\theta^*$ is proposed parameter in an iteration of MCMC.
+Plugging specific model form to above equation,
+\[\pi=\] %start 12/10 here!!
 
-Note that an ordinary MCMC algorithm does not work in our situation, because the constant part remains when calculating the MCMC ratio.
-To solve this doubly-intractable constant problem, we should use more special MCMC technique, the exchange MCMC algorithm.
 
-Here is the algorithm of our main chain for the exchange algorithm.
+
+
 \begin{algo}[the main chain]
 Let $y_1,...,y_T$ be given. For $m=1,...,M$,
 \begin{enumerate}
@@ -352,7 +425,7 @@ in online social networks}
 testcite \cite{RN100}
 
 \nocite{*}
-\bibliographystyle{plain}
+\bibliographystyle{apalike}
 \bibliography{doc.bib}
 
 \end{document}
