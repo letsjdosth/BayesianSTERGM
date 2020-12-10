@@ -617,9 +617,9 @@ int main()
     Network net_w2 = Network(w2_19, false);
     Network net_w3 = Network(w3_19, false);
     
-    //net_m1.undirected_printSummary();
-    //net_w1.undirected_printSummary();
-    //net_f1.undirected_printSummary();
+    // net_m1.undirected_printSummary();
+    net_w3.undirected_printSummary();
+    net_f3.undirected_printSummary();
 
     vector<Network> net_1_seq = { net_m1, net_w1, net_f1 };
     vector<Network> net_2_seq = { net_m2, net_w2, net_f2 };
@@ -802,7 +802,7 @@ int main()
 
     
 
-
+    // =============================================================
     ////BSTERGM GOF from sample
     //vector<double> disSmpl = { 1 };
     //vector<double> forSmpl = {1 };
