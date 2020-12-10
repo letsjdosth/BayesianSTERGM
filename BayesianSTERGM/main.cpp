@@ -669,11 +669,11 @@ int main()
     //=================================================================================================
     //BSTERGM test
     
-    Col<double> initFormationParam = { -5, 1.5 };
-    Col<double> initDissolutionParam = { -5, 5 };
+    Col<double> initFormationParam = { -0.9 };
+    Col<double> initDissolutionParam = { -0.3 };
     BSTERGM_MCMC_RandomLag Bstergm = BSTERGM_MCMC_RandomLag(initFormationParam, initDissolutionParam, net_3_seq);
     //아래 GOF seq도 바꿀 것!
-    Bstergm.generateSample(20000, 700, 0.002);
+    Bstergm.generateSample(50000, 10000, 0.0004); //50000,1000,0.0004
     //Bstergm.cutBurnIn(1000);
     //Bstergm.thinning();
 
@@ -683,17 +683,17 @@ int main()
     Col<double> quantilePts = { 0.1, 0.25, 0.5, 0.75, 0.9 };
     BstergmDiag1.print_quantile(0, quantilePts);
     BstergmDiag1.print_autoCorr(0, 30);
-    BstergmDiag1.print_mean(1);
+    /*BstergmDiag1.print_mean(1);
     BstergmDiag1.print_quantile(1, quantilePts);
-    BstergmDiag1.print_autoCorr(1, 30);
+    BstergmDiag1.print_autoCorr(1, 30);*/
 
     Diagnostics_MCParamSample BstergmDiag2(Bstergm.getPosteriorSample_dissolution());
     BstergmDiag2.print_mean(0);
     BstergmDiag2.print_quantile(0, quantilePts);
     BstergmDiag2.print_autoCorr(0, 30);
-    BstergmDiag2.print_mean(1);
+    /*BstergmDiag2.print_mean(1);
     BstergmDiag2.print_quantile(1, quantilePts);
-    BstergmDiag2.print_autoCorr(1, 30);
+    BstergmDiag2.print_autoCorr(1, 30);*/
 
     BstergmDiag1.writeToCsv_Sample("BSTERGM_formation.csv");
     BstergmDiag2.writeToCsv_Sample("BSTERGM_dissolution.csv");
@@ -708,6 +708,7 @@ int main()
     cout << "\n\nt=1 to t=2" << endl;
     BstergmGoF1.undirected_run(1, 100, 100);
     BstergmGoF1.undirected_printResult(1);
+
 
     //BERGM LAST Exchange Sampler diag
     STERGMnet1TimeSampler_1EdgeMCMC lastExNetSampler = Bstergm.get_lastExchangeNetworkSampler();
