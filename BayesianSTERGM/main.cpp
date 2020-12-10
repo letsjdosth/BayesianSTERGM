@@ -673,7 +673,7 @@ int main()
     Col<double> initDissolutionParam = { -0.3 };
     BSTERGM_MCMC_RandomLag Bstergm = BSTERGM_MCMC_RandomLag(initFormationParam, initDissolutionParam, net_3_seq);
     //아래 GOF seq도 바꿀 것!
-    Bstergm.generateSample(50000, 10000, 0.0004); //50000,1000,0.0004
+    Bstergm.generateSample(50000, 1000, 0.0004); //50000,1000,0.0004
     //Bstergm.cutBurnIn(1000);
     //Bstergm.thinning();
 

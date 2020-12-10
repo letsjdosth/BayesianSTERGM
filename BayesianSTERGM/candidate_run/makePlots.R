@@ -1,5 +1,5 @@
-namevec = c("net1seq_chain1", "net2seq_chain1")
-name = namevec[2]
+namevec = c("net1seq_chain1", "net2seq_chain1", "net3seq_chain1")
+name = namevec[3]
 
 # ==================================================================================
 
