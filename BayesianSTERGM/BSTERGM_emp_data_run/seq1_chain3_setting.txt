@@ -1,0 +1,53 @@
+시작 16:27:20
+
+60iter/1분
+3600iter/1시간
+400분정도 예상(6시간40분)
+
+
+
+    Col<double> initFormationParam = { -2.3, 1 };
+    Col<double> initDissolutionParam = { -2, 1 };
+    BSTERGM_MCMC_RandomLag Bstergm = BSTERGM_MCMC_RandomLag(initFormationParam, initDissolutionParam, net_1_seq);
+    //아래 GOF seq도 바꿀 것!
+    Bstergm.generateSample(24000, 600, 0.002);
+    //Bstergm.cutBurnIn(1000);
+    //Bstergm.thinning();
+
+    //BSTERGM posterior sample diagnostics
+    Diagnostics_MCParamSample BstergmDiag1(Bstergm.getPosteriorSample_formation());
+    BstergmDiag1.print_mean(0);
+    Col<double> quantilePts = { 0.1, 0.25, 0.5, 0.75, 0.9 };
+    BstergmDiag1.print_quantile(0, quantilePts);
+    BstergmDiag1.print_autoCorr(0, 30);
+    BstergmDiag1.print_mean(1);
+    BstergmDiag1.print_quantile(1, quantilePts);
+    BstergmDiag1.print_autoCorr(1, 30);
+
+    Diagnostics_MCParamSample BstergmDiag2(Bstergm.getPosteriorSample_dissolution());
+    BstergmDiag2.print_mean(0);
+    BstergmDiag2.print_quantile(0, quantilePts);
+    BstergmDiag2.print_autoCorr(0, 30);
+    BstergmDiag2.print_mean(1);
+    BstergmDiag2.print_quantile(1, quantilePts);
+    BstergmDiag2.print_autoCorr(1, 30);
+
+    BstergmDiag1.writeToCsv_Sample("BSTERGM_formation.csv");
+    BstergmDiag2.writeToCsv_Sample("BSTERGM_dissolution.csv");
+    
+    //BSTERGM GOF
+    GoodnessOfFit_STERGM BstergmGoF0 (Bstergm.getPosteriorSample_formation(), Bstergm.getPosteriorSample_dissolution(), net_1_seq);
+    cout << "t=0 to t=1" << endl;
+    BstergmGoF0.undirected_run(0, 100, 100);
+    BstergmGoF0.undirected_printResult(0);
+
+    GoodnessOfFit_STERGM BstergmGoF1(Bstergm.getPosteriorSample_formation(), Bstergm.getPosteriorSample_dissolution(), net_1_seq);
+    cout << "\n\nt=1 to t=2" << endl;
+    BstergmGoF1.undirected_run(1, 100, 100);
+    BstergmGoF1.undirected_printResult(1);
+
+    //BERGM LAST Exchange Sampler diag
+    STERGMnet1TimeSampler_1EdgeMCMC lastExNetSampler = Bstergm.get_lastExchangeNetworkSampler();
+    Diagnostics_MCNetworkSample lastExNetDiag = Diagnostics_MCNetworkSample(lastExNetSampler.get_MCMCSampleVec());
+    lastExNetDiag.writeToCsv_Sample("BSTERGM_lastExNetSamplerNetworkStats.csv");
+    // lastExNetDiag.printResult();
