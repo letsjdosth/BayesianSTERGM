@@ -667,54 +667,54 @@ int main()
     //Tsampler.printResult(3);
 
     //=================================================================================================
-    //BSTERGM test
+    ////BSTERGM test
+    //
+    //Col<double> initFormationParam = { -0.9 };
+    //Col<double> initDissolutionParam = { -0.3 };
+    //BSTERGM_MCMC_RandomLag Bstergm = BSTERGM_MCMC_RandomLag(initFormationParam, initDissolutionParam, net_3_seq);
+    ////아래 GOF seq도 바꿀 것!
+    //Bstergm.generateSample(50000, 1000, 0.0004); //50000,1000,0.0004
+    ////Bstergm.cutBurnIn(1000);
+    ////Bstergm.thinning();
+
+    ////BSTERGM posterior sample diagnostics
+    //Diagnostics_MCParamSample BstergmDiag1(Bstergm.getPosteriorSample_formation());
+    //BstergmDiag1.print_mean(0);
+    //Col<double> quantilePts = { 0.1, 0.25, 0.5, 0.75, 0.9 };
+    //BstergmDiag1.print_quantile(0, quantilePts);
+    //BstergmDiag1.print_autoCorr(0, 30);
+    ///*BstergmDiag1.print_mean(1);
+    //BstergmDiag1.print_quantile(1, quantilePts);
+    //BstergmDiag1.print_autoCorr(1, 30);*/
+
+    //Diagnostics_MCParamSample BstergmDiag2(Bstergm.getPosteriorSample_dissolution());
+    //BstergmDiag2.print_mean(0);
+    //BstergmDiag2.print_quantile(0, quantilePts);
+    //BstergmDiag2.print_autoCorr(0, 30);
+    ///*BstergmDiag2.print_mean(1);
+    //BstergmDiag2.print_quantile(1, quantilePts);
+    //BstergmDiag2.print_autoCorr(1, 30);*/
+
+    //BstergmDiag1.writeToCsv_Sample("BSTERGM_formation.csv");
+    //BstergmDiag2.writeToCsv_Sample("BSTERGM_dissolution.csv");
     
-    Col<double> initFormationParam = { -0.9 };
-    Col<double> initDissolutionParam = { -0.3 };
-    BSTERGM_MCMC_RandomLag Bstergm = BSTERGM_MCMC_RandomLag(initFormationParam, initDissolutionParam, net_3_seq);
-    //아래 GOF seq도 바꿀 것!
-    Bstergm.generateSample(50000, 1000, 0.0004); //50000,1000,0.0004
-    //Bstergm.cutBurnIn(1000);
-    //Bstergm.thinning();
+    ////BSTERGM GOF
+    //GoodnessOfFit_STERGM BstergmGoF0 (Bstergm.getPosteriorSample_formation(), Bstergm.getPosteriorSample_dissolution(), net_3_seq);
+    //cout << "t=0 to t=1" << endl;
+    //BstergmGoF0.undirected_run(0, 100, 100);
+    //BstergmGoF0.undirected_printResult(0);
 
-    //BSTERGM posterior sample diagnostics
-    Diagnostics_MCParamSample BstergmDiag1(Bstergm.getPosteriorSample_formation());
-    BstergmDiag1.print_mean(0);
-    Col<double> quantilePts = { 0.1, 0.25, 0.5, 0.75, 0.9 };
-    BstergmDiag1.print_quantile(0, quantilePts);
-    BstergmDiag1.print_autoCorr(0, 30);
-    /*BstergmDiag1.print_mean(1);
-    BstergmDiag1.print_quantile(1, quantilePts);
-    BstergmDiag1.print_autoCorr(1, 30);*/
-
-    Diagnostics_MCParamSample BstergmDiag2(Bstergm.getPosteriorSample_dissolution());
-    BstergmDiag2.print_mean(0);
-    BstergmDiag2.print_quantile(0, quantilePts);
-    BstergmDiag2.print_autoCorr(0, 30);
-    /*BstergmDiag2.print_mean(1);
-    BstergmDiag2.print_quantile(1, quantilePts);
-    BstergmDiag2.print_autoCorr(1, 30);*/
-
-    BstergmDiag1.writeToCsv_Sample("BSTERGM_formation.csv");
-    BstergmDiag2.writeToCsv_Sample("BSTERGM_dissolution.csv");
-    
-    //BSTERGM GOF
-    GoodnessOfFit_STERGM BstergmGoF0 (Bstergm.getPosteriorSample_formation(), Bstergm.getPosteriorSample_dissolution(), net_3_seq);
-    cout << "t=0 to t=1" << endl;
-    BstergmGoF0.undirected_run(0, 100, 100);
-    BstergmGoF0.undirected_printResult(0);
-
-    GoodnessOfFit_STERGM BstergmGoF1(Bstergm.getPosteriorSample_formation(), Bstergm.getPosteriorSample_dissolution(), net_3_seq);
-    cout << "\n\nt=1 to t=2" << endl;
-    BstergmGoF1.undirected_run(1, 100, 100);
-    BstergmGoF1.undirected_printResult(1);
+    //GoodnessOfFit_STERGM BstergmGoF1(Bstergm.getPosteriorSample_formation(), Bstergm.getPosteriorSample_dissolution(), net_3_seq);
+    //cout << "\n\nt=1 to t=2" << endl;
+    //BstergmGoF1.undirected_run(1, 100, 100);
+    //BstergmGoF1.undirected_printResult(1);
 
 
-    //BERGM LAST Exchange Sampler diag
-    STERGMnet1TimeSampler_1EdgeMCMC lastExNetSampler = Bstergm.get_lastExchangeNetworkSampler();
-    Diagnostics_MCNetworkSample lastExNetDiag = Diagnostics_MCNetworkSample(lastExNetSampler.get_MCMCSampleVec());
-    lastExNetDiag.writeToCsv_Sample("BSTERGM_lastExNetSamplerNetworkStats.csv");
-    // lastExNetDiag.printResult();
+    ////BERGM LAST Exchange Sampler diag
+    //STERGMnet1TimeSampler_1EdgeMCMC lastExNetSampler = Bstergm.get_lastExchangeNetworkSampler();
+    //Diagnostics_MCNetworkSample lastExNetDiag = Diagnostics_MCNetworkSample(lastExNetSampler.get_MCMCSampleVec());
+    //lastExNetDiag.writeToCsv_Sample("BSTERGM_lastExNetSamplerNetworkStats.csv");
+    //// lastExNetDiag.printResult();
 
     //=================================================================================================
     //=================================================================================================
@@ -799,6 +799,34 @@ int main()
     //Diagnostics_MCNetworkSample lastExNetDiag = Diagnostics_MCNetworkSample(lastExNetSampler.getMCMCSampleVec());
     //lastExNetDiag.writeToCsv_Sample("lastExNetSamplerNetworkStats.csv");
     //// lastExNetDiag.printResult();
+
+    
+
+
+    ////BSTERGM GOF from sample
+    //vector<double> disSmpl = { 1 };
+    //vector<double> forSmpl = {1 };
+    //cout << disSmpl.size() << forSmpl.size() << endl;
+
+    //vector<Col<double>> forSmplColVec;
+    //vector<Col<double>> disSmplColVec;
+    //for (int i = 0; i < forSmpl.size(); i++) {
+    //    Col<double> forVal = { forSmpl[i] };
+    //    Col<double> disVal = { disSmpl[i] };
+    //    forSmplColVec.push_back(forVal);
+    //    disSmplColVec.push_back(disVal);
+    //}
+
+    //GoodnessOfFit_STERGM BstergmGoF0 (forSmplColVec, disSmplColVec, net_3_seq);
+    //cout << "t=0 to t=1" << endl;
+    //BstergmGoF0.undirected_run(0, 1000, 1000);
+    //BstergmGoF0.undirected_printResult(0);
+
+    //GoodnessOfFit_STERGM BstergmGoF1(forSmplColVec, disSmplColVec, net_3_seq);
+    //cout << "\n\nt=1 to t=2" << endl;
+    //BstergmGoF1.undirected_run(1, 1000, 1000);
+    //BstergmGoF1.undirected_printResult(1);
+
 
     return 0;
 }
