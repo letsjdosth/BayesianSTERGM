@@ -548,13 +548,14 @@ and
 where
 \(s(z_1,z_2)^T=(|z_1|-|z_2|)\)
 for $z_1,z_2\in\mathcal{Y}$ with 52 nodes. In other words, the network statistic in the model is
-difference of the number of edges for both the formation model and the disolution model.
+difference of the number of edges for both the formation model and the dissolution model.
 
-I use the ordinary normal prior $p(\theta^+)~\mathcal{N}(0,100)$ and $p(\theta^-)~\mathcal{N}(0,100)$,
-and set the proposal distribution of main chain $\epsilon~\mathcal{N}(0,0.02)$.
+I use the ordinary normal prior $p(\theta^+)\sim\mathcal{N}(0,100)$ and $p(\theta^-)\sim\mathcal{N}(0,100)$,
+and set the proposal distribution of main chain $\epsilon\sim\mathcal{N}(0,0.0004)$.
 The auxiliary chains consist of 1000 iterations and the main chain consists of 50000 iteration.
-After generating the chain, I cut first 10000 samples for a burn-in period and thin the sample by 10.
+In this setting, the BSTERGM fitting algorithm run 250 iteration of main chain per a minute on the intel i7-8700(3.20GHz) CPU.
 
+After generating the chain, I cut first 10000 samples for a burn-in period and thin the sample by 10.
 The posterior estimates for each network and histograms are follows.
 %mean, sd
 %hist
