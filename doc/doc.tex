@@ -532,13 +532,34 @@ These data consist of three sequence,
 and each sequence has three time points and for each time,
 there is a network with 52 nodes corresponding 29 scholar members and 23 faculty members.
 
-% \begin{figure}
-%     \begin{center}
-%     \includegraphics[scale=0.5]{LS_ggplot_2.png}
-%     \caption{Latent positions of politicians and bills.}
-%     \label{fig:ls}
-%     \end{center}
-% \end{figure}
+\begin{figure}[h]
+    \begin{center}
+    \includegraphics[scale=0.23]{pictures/m1_19_nework.png}
+    \includegraphics[scale=0.23]{pictures/w1_19_nework.png}
+    \includegraphics[scale=0.23]{pictures/f1_19_nework.png}
+    \caption{Sequence 1}
+    % \label{fig:ls}
+    \end{center}
+\end{figure}
+\begin{figure}[h]
+    \begin{center}
+    \includegraphics[scale=0.23]{pictures/m2_19_nework.png}
+    \includegraphics[scale=0.23]{pictures/w2_19_nework.png}
+    \includegraphics[scale=0.23]{pictures/f2_19_nework.png}
+    \caption{Sequence 2}
+    % \label{fig:ls}
+    \end{center}
+\end{figure}
+\begin{figure}[h]
+    \begin{center}
+    \includegraphics[scale=0.23]{pictures/m3_19_nework.png}
+    \includegraphics[scale=0.23]{pictures/w3_19_nework.png}
+    \includegraphics[scale=0.23]{pictures/f3_19_nework.png}
+    \caption{Sequence 3}
+    % \label{fig:ls}
+    \end{center}
+\end{figure}
+\clearpage
 
 I consider 2 dimentional model as follows.
 \[P(Y_t^+=y_t^+|Y_{t-1}=y_{t-1};\theta^+) = \frac{exp((\theta^+)^{T}s(y_t^+, y_{t-1}))}{c(\theta^+, y_{t-1})}\]
@@ -553,22 +574,110 @@ difference of the number of edges for both the formation model and the dissoluti
 I use the ordinary normal prior $p(\theta^+)\sim\mathcal{N}(0,100)$ and $p(\theta^-)\sim\mathcal{N}(0,100)$,
 and set the proposal distribution of main chain $\epsilon\sim\mathcal{N}(0,0.0004)$.
 The auxiliary chains consist of 1000 iterations and the main chain consists of 50000 iteration.
-In this setting, the BSTERGM fitting algorithm run 250 iteration of main chain per a minute on the intel i7-8700(3.20GHz) CPU.
+In this setting, the BSTERGM fitting algorithm run 2400 iterations of main chain per a minute on the intel i7-8700(3.20GHz) CPU.
 
 After generating the chain, I cut first 10000 samples for a burn-in period and thin the sample by 10.
 The posterior estimates for each network and histograms are follows.
 %mean, sd
+\begin{table}[h!]
+    \centering
+        \begin{tabular}{c | c | c | c }
+            Sequence & Parameter & Estimate & Std.Error \\
+            \hline \hline
+            1 & $\theta^+$ & -2.336387 & 0.1274921 \\
+            1 & $\theta^-$ & 1.043077 & 0.1722938 \\
+            2 & $\theta^+$ & -1.435648 & 0.1009999 \\
+            2 & $\theta^-$ & 0.9332358 & 0.1358161 \\
+            3 & $\theta^+$ & -5.02916 & 0.2097569 \\
+            3 & $\theta^-$ & 2.225616 & 0.1904817 \\
+        \end{tabular}
+        \caption{Fitted parameters summary}
+        % \label{tab:data}
+    \end{table}
+\clearpage
 %hist
+\begin{figure}[h]
+    \begin{center}
+        \includegraphics[scale=0.23]{pictures/net1seq_chain1_BSTERGM_formation_histogram.png}
+        \includegraphics[scale=0.23]{pictures/net1seq_chain1_BSTERGM_dissolution_histogram.png}
+    \caption{Sequence 1, left: formation, right: dissolution}
+    % \label{fig:ls}
+    \end{center}
+\end{figure}
+
+\begin{figure}[h]
+    \begin{center}
+        \includegraphics[scale=0.23]{pictures/net2seq_chain1_BSTERGM_formation_histogram.png}
+        \includegraphics[scale=0.23]{pictures/net2seq_chain1_BSTERGM_dissolution_histogram.png}
+    \caption{Sequence 2, left: formation, right: dissolution}
+    % \label{fig:ls}
+    \end{center}
+\end{figure}
+
+\begin{figure}[h]
+    \begin{center}
+        \includegraphics[scale=0.23]{pictures/net3seq_chain1_BSTERGM_formation_histogram.png}
+        \includegraphics[scale=0.23]{pictures/net3seq_chain1_BSTERGM_dissolution_histogram.png}
+    \caption{Sequence 3, left: formation, right: dissolution}
+    % \label{fig:ls}
+    \end{center}
+\end{figure}
+\clearpage
 
 For the diagnostics, I attach traceplots and autocorrelation plots.
-%traceplot
-%acf
+The autocorrelation of each chain decrease rapidly as lag increases.
+Moreover, traceplots shows that the MCMC samples are mixed well.
+\begin{figure}[h]
+    \begin{center}
+        \includegraphics[scale=0.23]{pictures/net1seq_chain1_BSTERGM_formation_traceplot.png}
+        \includegraphics[scale=0.23]{pictures/net1seq_chain1_BSTERGM_dissolution_traceplot.png} \\
+        \includegraphics[scale=0.23]{pictures/net1seq_chain1_BSTERGM_formation_acf.png}
+        \includegraphics[scale=0.23]{pictures/net1seq_chain1_BSTERGM_dissolution_acf.png}
+    \caption{Sequence 1, left: formation, right: dissolution}
+    % \label{fig:ls}
+    \end{center}
+\end{figure}
+\begin{figure}[h]
+    \begin{center}
+        \includegraphics[scale=0.23]{pictures/net2seq_chain1_BSTERGM_formation_traceplot.png}
+        \includegraphics[scale=0.23]{pictures/net2seq_chain1_BSTERGM_dissolution_traceplot.png} \\
+        \includegraphics[scale=0.23]{pictures/net2seq_chain1_BSTERGM_formation_acf.png}
+        \includegraphics[scale=0.23]{pictures/net2seq_chain1_BSTERGM_dissolution_acf.png}
+    \caption{Sequence 2, left: formation, right: dissolution}
+    % \label{fig:ls}
+    \end{center}
+\end{figure}
+\begin{figure}[h]
+    \begin{center}
+        \includegraphics[scale=0.23]{pictures/net3seq_chain1_BSTERGM_formation_traceplot.png}
+        \includegraphics[scale=0.23]{pictures/net3seq_chain1_BSTERGM_dissolution_traceplot.png} \\
+        \includegraphics[scale=0.23]{pictures/net3seq_chain1_BSTERGM_formation_acf.png}
+        \includegraphics[scale=0.23]{pictures/net3seq_chain1_BSTERGM_dissolution_acf.png}
+    \caption{Sequence 3, left: formation, right: dissolution}
+    % \label{fig:ls}
+    \end{center}
+\end{figure}
+\clearpage
+In addition, as a procedure of diagnostics for auxiliary chains,
+here are traceplots of the number of edges in last auxiliary chain.
+They shows that all chains are not degenerated at last parameter point during the iterations of auxiliary chain.
 
-In addition, here are traceplots of the number of edges in last auxiliary chain.
-They shows that all chains are not degenerated at last parameter point.
 %lastsampler
+\begin{figure}[h]
+    \begin{center}
+        \includegraphics[scale=0.23]{pictures/net1seq_chain1_lastsampler_num_edges.png}
+        \includegraphics[scale=0.23]{pictures/net2seq_chain1_lastsampler_num_edges.png}
+        \includegraphics[scale=0.23]{pictures/net3seq_chain1_lastsampler_num_edges.png}
+    \caption{Sequence 1, left: formation, right: dissolution}
+    % \label{fig:ls}
+    \end{center}
+\end{figure}
+\clearpage
+
 
 Finally, I append the results of goodness of fit.
+
+
 %GOF table
 
 \section{Summary and Discussion}
