@@ -73,9 +73,8 @@ class BSTERGM:
         cov_mat = np.identity(len(last_param))
         return self.random_gen.multivariate_normal(last_param, cov_mat)
 
-    def get_exchange_sample(self, start_time_lag, exchange_iter, proposed_formation_param, proposed_dissolution_param, rng_seed):
-        exchange_sampler = NetworkSampler(self.model, 
-            proposed_formation_param, proposed_dissolution_param,
+    def get_exchange_sample(self, start_time_lag, exchange_iter, proposed_param, rng_seed):
+        exchange_sampler = NetworkSampler(self.model, proposed_param,
             self.obs_network_seq[start_time_lag], rng_seed)
         exchange_sampler.run(exchange_iter)
         return exchange_sampler.network_samples[-1]
@@ -110,10 +109,12 @@ class BSTERGM:
         else:
             proposed_formation_param = self.propose_param(last_formation_param, proposal_cov_rate)
             proposed_dissolution_param = last_dissolution_param
-        
+        #comment1/13: 동시에 프로포즈하게 바꿀것
+
         #exchange
-        exchange_network = self.get_exchange_sample(start_time_lag, exchange_iter, proposed_formation_param, proposed_dissolution_param, rng_seed)
-        exchange_formation, exchange_dissolution = self.dissociate_network(self.obs_network_seq[start_time_lag], exchange_network)
+        exchange_formation = self.get_exchange_sample(start_time_lag, exchange_iter, proposed_formation_param, rng_seed)
+        exchange_dissolution = self.get_exchange_sample(start_time_lag, exchange_iter, proposed_dissolution_param, rng_seed)
+        #comment1/13: 여기를 이렇게 쪼개는것이 아니라, exchange chain을 그냥 두개 만들어서 각각 생성해야함
 
         #MCMC
         log_r_val = self.log_r(start_time_lag, last_formation_param, last_dissolution_param,
@@ -227,7 +228,7 @@ if __name__=="__main__":
     initial_formation_param = np.array([0.1, 0.1])
     initial_dissolution_param = np.array([0.1, 0.1])
     test_BSTERGM_sampler = BSTERGM(model_netStat, initial_formation_param, initial_dissolution_param, test_obs_seq, 2021)
-    test_BSTERGM_sampler.run(30000, exchange_iter=30)
+    test_BSTERGM_sampler.run(30000, exchange_iter=50)
     # print(test_BSTERGM_sampler.MC_formation_samples)
     # print(test_BSTERGM_sampler.MC_dissolution_samples)
     test_BSTERGM_sampler.show_traceplot()

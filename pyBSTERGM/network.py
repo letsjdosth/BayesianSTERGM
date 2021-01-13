@@ -66,4 +66,4 @@ if __name__ == "__main__":
     print(test_net.statCal_edgeNum())
     # print(test_net.statCal_EdgewiseSharedPartner())
     print(test_net.statCal_EdgewiseSharedPartnerDist())
-    print(test_net.statCal_geoWeightedESP())
+    print(test_net.statCal_geoWeightedESP()) #5.393469 (R과 cross check 완료)
