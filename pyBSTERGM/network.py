@@ -2,11 +2,15 @@ import numpy as np
 
 
 class UndirectedNetwork:
-    node_num = 0
-    structure = np.array(0)
-    stat_nodeDegree = np.array(0)
+    
 
     def __init__(self, structure):
+        #variables
+        self.node_num = 0
+        self.structure = np.array(0)
+        self.stat_nodeDegree = np.array(0)
+
+        #initialize
         if not np.allclose(structure, structure.T, rtol=1e-05, atol=1e-08):
             raise ValueError("The structure is not symmetric matrix.")
         
@@ -62,8 +66,8 @@ if __name__ == "__main__":
     test_net = UndirectedNetwork(test_structure)
     # print(test_net.node_num, test_net.structure)
     # print(test_net.statCal_nodeDegree())
-    print(test_net.statCal_nodeDegreeDist())
-    print(test_net.statCal_edgeNum())
+    print(test_net.statCal_nodeDegreeDist()) #true: 0,1,1,3,0
+    print(test_net.statCal_edgeNum()) #true: 6
     # print(test_net.statCal_EdgewiseSharedPartner())
-    print(test_net.statCal_EdgewiseSharedPartnerDist())
-    print(test_net.statCal_geoWeightedESP()) #5.393469 (R과 cross check 완료)
+    print(test_net.statCal_EdgewiseSharedPartnerDist()) #true: 1,4,1,0
+    print(test_net.statCal_geoWeightedESP()) #true: 5.393469 (R과 cross check 완료)
