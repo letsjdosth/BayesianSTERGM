@@ -7,16 +7,13 @@ from network import UndirectedNetwork
 
 class NetworkSampler:
     initial_network = 0
-    formation_param = np.array(0)
-    dissolution_param = np.array(0)
+    param = np.array(0)
     network_samples = []
     node_num = 0
-
     random_gen = 0
 
-    def __init__(self, model_fn, formation_param, dissolution_param, init_network: UndirectedNetwork, rng_seed=2021):
-        self.formation_param = formation_param
-        self.dissolution_param = dissolution_param
+    def __init__(self, model_fn, param, init_network: UndirectedNetwork, rng_seed=2021):
+        self.param = param
         self.initial_network = init_network
         self.network_samples.append(init_network)
         self.model = model_fn
@@ -32,28 +29,20 @@ class NetworkSampler:
     def propose_network(self, last_network: UndirectedNetwork):
         proposed_structure = last_network.structure.copy()
         edge_idx = self.choose_edge()
-        is_dissolution = (proposed_structure[edge_idx[0], edge_idx[1]] == 1)
         proposed_structure[edge_idx[0], edge_idx[1]] = 1 - proposed_structure[edge_idx[0], edge_idx[1]]
         proposed_structure[edge_idx[1], edge_idx[0]] = proposed_structure[edge_idx[0], edge_idx[1]]
-        return (UndirectedNetwork(proposed_structure), is_dissolution)
+        return (UndirectedNetwork(proposed_structure))
 
-    def log_r(self, last_network, proposed_network, is_dissolution):
+    def log_r(self, last_network, proposed_network):
         proposed_network_netStat = self.model(proposed_network)
         last_network_netStat = self.model(last_network)
-
-        param = np.array(0)
-        if is_dissolution:
-            param = self.dissolution_param
-        else:
-            param = self.formation_param
-
-        return np.dot(proposed_network_netStat - last_network_netStat, param)
+        return np.dot(proposed_network_netStat - last_network_netStat, self.param)
 
 
     def sampler(self):
         last_network = self.network_samples[-1]
-        proposed_network, is_dissolution = self.propose_network(last_network)
-        log_r_val = self.log_r(last_network, proposed_network, is_dissolution)
+        proposed_network = self.propose_network(last_network)
+        log_r_val = self.log_r(last_network, proposed_network)
         unif_sample = self.random_gen.random()
         if np.log(unif_sample) < log_r_val:
             self.network_samples.append(proposed_network)
@@ -66,7 +55,7 @@ class NetworkSampler:
 
     def netStat_trace(self):
         netStat = []
-        for _ in range(len(self.formation_param)):
+        for _ in range(len(self.param)):
             netStat.append([])
 
         for network in self.network_samples:
@@ -114,6 +103,6 @@ if __name__ == "__main__":
         ]
         )
     test_initnet = UndirectedNetwork(test_structure)
-    test_netSampler = NetworkSampler(model_netStat, np.array([0, 0]), np.array([-0.2, -0.2]), test_initnet)
+    test_netSampler = NetworkSampler(model_netStat, np.array([0, 0]), test_initnet)
     test_netSampler.run(30000)
     test_netSampler.show_traceplot()
