@@ -7,28 +7,26 @@ import matplotlib.pyplot as plt
 from network import UndirectedNetwork
 from network_sampler import NetworkSampler
 
-def model_netStat(network : UndirectedNetwork):
-    model = []
-    #define model
-    model.append(network.statCal_edgeNum())
-    model.append(network.statCal_geoWeightedESP(0.5))
-    return np.array(model)
-
-
 class BSTERGM:
-    obs_network_seq = []
-    initial_formation_param = np.array(0)
-    initial_dissolution_param = np.array(0)
-    MC_formation_samples = []
-    MC_dissolution_samples = []
-    node_num = 0
-    
-    random_seed = 2021
-    random_gen = 0
-    obs_network_formation_seq = []
-    obs_network_dissolution_seq = []
-
     def __init__(self, model_fn, initial_formation_param, initial_dissolution_param, obs_network_seq, rng_seed=2021):
+        #variables
+        self.obs_network_seq = []
+        self.initial_formation_param = np.array(0)
+        self.initial_dissolution_param = np.array(0)
+        self.MC_formation_samples = []
+        self.MC_dissolution_samples = []
+        self.node_num = 0
+        
+        self.random_seed = 2021
+        self.random_gen = 0
+        self.obs_network_formation_seq = []
+        self.obs_network_dissolution_seq = []
+
+        self.latest_exchange_formation_sampler = 0
+        self.latest_exchange_dissolution_sampler = 0
+
+        
+        #initialize
         self.obs_network_seq = obs_network_seq
         self.initial_formation_param = initial_formation_param
         self.initial_dissolution_param = initial_dissolution_param
@@ -73,11 +71,11 @@ class BSTERGM:
         cov_mat = np.identity(len(last_param))
         return self.random_gen.multivariate_normal(last_param, cov_mat)
 
-    def get_exchange_sample(self, start_time_lag, exchange_iter, proposed_param, rng_seed):
+    def get_exchange_sampler(self, start_time_lag, exchange_iter, proposed_param, rng_seed):
         exchange_sampler = NetworkSampler(self.model, proposed_param,
             self.obs_network_seq[start_time_lag], rng_seed)
         exchange_sampler.run(exchange_iter)
-        return exchange_sampler.network_samples[-1]
+        return exchange_sampler
 
     def log_prior(self, last_formation_param, last_dissolution_param,
             proposed_formation_param, proposed_dissolution_param):
@@ -112,14 +110,15 @@ class BSTERGM:
         #comment1/13: 동시에 프로포즈하게 바꿀것
 
         #exchange
-        exchange_formation = self.get_exchange_sample(start_time_lag, exchange_iter, proposed_formation_param, rng_seed)
-        exchange_dissolution = self.get_exchange_sample(start_time_lag, exchange_iter, proposed_dissolution_param, rng_seed)
-        #comment1/13: 여기를 이렇게 쪼개는것이 아니라, exchange chain을 그냥 두개 만들어서 각각 생성해야함
+        self.latest_exchange_formation_sampler = self.get_exchange_sampler(start_time_lag, exchange_iter, proposed_formation_param, rng_seed)
+        exchange_formation_sample = self.latest_exchange_formation_sampler.network_samples[-1]
+        self.latest_exchange_dissolution_sampler = self.get_exchange_sampler(start_time_lag, exchange_iter, proposed_dissolution_param, rng_seed*10)
+        exchange_dissolution_sample = self.latest_exchange_dissolution_sampler.network_samples[-1]
 
         #MCMC
         log_r_val = self.log_r(start_time_lag, last_formation_param, last_dissolution_param,
             proposed_formation_param, proposed_dissolution_param,
-            exchange_formation, exchange_dissolution)
+            exchange_formation_sample, exchange_dissolution_sample)
 
         unif_sample = self.random_gen.random()
         if np.log(unif_sample) < log_r_val:
@@ -173,9 +172,21 @@ class BSTERGM:
         if show:
             plt.show()
 
+    def show_latest_exchangeSampler_netStat_traceplot(self, show=True):
+        self.latest_exchange_formation_sampler.show_traceplot()
+        self.latest_exchange_dissolution_sampler.show_traceplot()
 
 
 if __name__=="__main__":
+    
+    def model_netStat(network : UndirectedNetwork):
+        model = []
+        #define model
+        model.append(network.statCal_edgeNum())
+        model.append(network.statCal_geoWeightedESP(0.5))
+        return np.array(model)
+
+
     test_structure1 = np.array(
     [
         [0,1,1,0,0,0,0,0,0,0],
@@ -228,7 +239,8 @@ if __name__=="__main__":
     initial_formation_param = np.array([0.1, 0.1])
     initial_dissolution_param = np.array([0.1, 0.1])
     test_BSTERGM_sampler = BSTERGM(model_netStat, initial_formation_param, initial_dissolution_param, test_obs_seq, 2021)
-    test_BSTERGM_sampler.run(30000, exchange_iter=50)
+    test_BSTERGM_sampler.run(10000, exchange_iter=200)
     # print(test_BSTERGM_sampler.MC_formation_samples)
     # print(test_BSTERGM_sampler.MC_dissolution_samples)
     test_BSTERGM_sampler.show_traceplot()
+    test_BSTERGM_sampler.show_latest_exchangeSampler_netStat_traceplot()
