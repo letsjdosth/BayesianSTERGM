@@ -1,5 +1,5 @@
 import time
-
+import csv
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,7 +8,7 @@ from network import UndirectedNetwork
 from network_sampler import NetworkSampler
 
 class BSTERGM:
-    def __init__(self, model_fn, initial_formation_param, initial_dissolution_param, obs_network_seq, rng_seed=2021):
+    def __init__(self, model_fn, initial_formation_param, initial_dissolution_param, obs_network_seq, rng_seed=2021, pid=None):
         #variables
         self.obs_network_seq = []
         self.initial_formation_param = np.array(0)
@@ -24,6 +24,7 @@ class BSTERGM:
 
         self.latest_exchange_formation_sampler = 0
         self.latest_exchange_dissolution_sampler = 0
+        self.pid = None
 
         
         #initialize
@@ -40,6 +41,8 @@ class BSTERGM:
         self.node_num = obs_network_seq[0].node_num
         self.random_seed = rng_seed
         self.random_gen = np.random.default_rng(seed=rng_seed)
+        if pid is not None:
+            self.pid = pid
 
     
     def __str__(self):
@@ -94,22 +97,20 @@ class BSTERGM:
             proposed_formation_param, proposed_dissolution_param)        
         return log_r_val
 
-    def sampler(self, start_time_lag, dissolution_propose:bool, exchange_iter, rng_seed, proposal_cov_rate):
+    def sampler(self, start_time_lag, exchange_iter, rng_seed, proposal_cov_rate):
         last_formation_param = self.MC_formation_samples[-1]
         last_dissolution_param = self.MC_dissolution_samples[-1]
         
         #proposal
         proposed_formation_param = 0
         proposed_dissolution_param = 0
-        if dissolution_propose:
-            proposed_formation_param = last_formation_param
-            proposed_dissolution_param = self.propose_param(last_dissolution_param, proposal_cov_rate)
-        else:
-            proposed_formation_param = self.propose_param(last_formation_param, proposal_cov_rate)
-            proposed_dissolution_param = last_dissolution_param
+        
+        proposed_dissolution_param = self.propose_param(last_dissolution_param, proposal_cov_rate)
+        proposed_formation_param = self.propose_param(last_formation_param, proposal_cov_rate)
         #comment1/13: 동시에 프로포즈하게 바꿀것
 
         #exchange
+        #comment1/13: 체인을2개만들어야함
         self.latest_exchange_formation_sampler = self.get_exchange_sampler(start_time_lag, exchange_iter, proposed_formation_param, rng_seed)
         exchange_formation_sample = self.latest_exchange_formation_sampler.network_samples[-1]
         self.latest_exchange_dissolution_sampler = self.get_exchange_sampler(start_time_lag, exchange_iter, proposed_dissolution_param, rng_seed*10)
@@ -132,12 +133,18 @@ class BSTERGM:
         start_time = time.time()
         for i in range(iter):
             start_time_lag = self.random_gen.integers(len(self.obs_network_seq)-1)
-            dissolution_propose = i % 2
             rng_seed = self.random_seed + i
-            self.sampler(start_time_lag, dissolution_propose, exchange_iter, rng_seed, proposal_cov_rate)
+            self.sampler(start_time_lag, exchange_iter, rng_seed, proposal_cov_rate)
             if i%200==0:
-                print("iter: ", i, "/", iter, " time elapsed(second):", round(time.time()-start_time,1))
-        print(iter,"/",iter, "time elapsed(second):", round(time.time()-start_time,1))
+                if self.pid is not None:
+                    print("pid:",self.pid, " iter: ", i, "/", iter, " time elapsed(second):", round(time.time()-start_time,1))
+                else:
+                    print("iter: ", i, "/", iter, " time elapsed(second):", round(time.time()-start_time,1))
+                
+        if self.pid is not None:
+            print("pid:",self.pid," iter:", iter,"/",iter, "time elapsed(second):", round(time.time()-start_time,1))
+        else:
+            print(iter,"/",iter, "time elapsed(second):", round(time.time()-start_time,1))
 
     def MC_sample_trace(self):
         formation_trace = []
@@ -175,6 +182,25 @@ class BSTERGM:
     def show_latest_exchangeSampler_netStat_traceplot(self, show=True):
         self.latest_exchange_formation_sampler.show_traceplot()
         self.latest_exchange_dissolution_sampler.show_traceplot()
+    
+    def write_posterior_samples(self, filename: str):
+        # print(self.MC_dissolution_samples)
+        with open("pyBSTERGM/" + filename + '.csv', 'w', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            for sample_formation, sample_dissolution in zip(self.MC_formation_samples, self.MC_dissolution_samples):
+                csv_row = sample_formation.tolist() + sample_dissolution.tolist()
+                writer.writerow(csv_row)
+
+    def write_latest_exchangeSampler_netStat(self, filename: str):
+        formation_netStat = self.latest_exchange_formation_sampler.netStat_trace()
+        dissolution_netStat = self.latest_exchange_dissolution_sampler.netStat_trace()
+
+        netStat_list = (np.array(formation_netStat + dissolution_netStat).T).tolist()
+
+        with open("pyBSTERGM/" + filename + '.csv', 'w', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            for csv_row in netStat_list:
+                writer.writerow(csv_row)
 
 
 if __name__=="__main__":
@@ -239,8 +265,10 @@ if __name__=="__main__":
     initial_formation_param = np.array([0.1, 0.1])
     initial_dissolution_param = np.array([0.1, 0.1])
     test_BSTERGM_sampler = BSTERGM(model_netStat, initial_formation_param, initial_dissolution_param, test_obs_seq, 2021)
-    test_BSTERGM_sampler.run(10000, exchange_iter=200)
+    test_BSTERGM_sampler.run(100, exchange_iter=30)
     # print(test_BSTERGM_sampler.MC_formation_samples)
     # print(test_BSTERGM_sampler.MC_dissolution_samples)
-    test_BSTERGM_sampler.show_traceplot()
-    test_BSTERGM_sampler.show_latest_exchangeSampler_netStat_traceplot()
+    # test_BSTERGM_sampler.show_traceplot()
+    # test_BSTERGM_sampler.show_latest_exchangeSampler_netStat_traceplot()
+    # test_BSTERGM_sampler.write_posterior_samples("test")
+    # test_BSTERGM_sampler.write_latest_exchangeSampler_netStat("test_netStat")
