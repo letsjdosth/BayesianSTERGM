@@ -40,14 +40,14 @@ if __name__=="__main__":
     #     UndirectedNetwork(np.array(Jdata.w1_19_structure)),
     #     UndirectedNetwork(np.array(Jdata.f1_19_structure))
     # ]
-    sequence2 = [UndirectedNetwork(np.array(Jdata.m2_19_structure)),
-        UndirectedNetwork(np.array(Jdata.w2_19_structure)),
-        UndirectedNetwork(np.array(Jdata.f2_19_structure))
-    ]
-    # sequence3 = [UndirectedNetwork(np.array(Jdata.m3_19_structure)),
-    #     UndirectedNetwork(np.array(Jdata.w3_19_structure)),
-    #     UndirectedNetwork(np.array(Jdata.f3_19_structure))
+    # sequence2 = [UndirectedNetwork(np.array(Jdata.m2_19_structure)),
+    #     UndirectedNetwork(np.array(Jdata.w2_19_structure)),
+    #     UndirectedNetwork(np.array(Jdata.f2_19_structure))
     # ]
+    sequence3 = [UndirectedNetwork(np.array(Jdata.m3_19_structure)),
+        UndirectedNetwork(np.array(Jdata.w3_19_structure)),
+        UndirectedNetwork(np.array(Jdata.f3_19_structure))
+    ]
 
 
     #core
@@ -78,14 +78,13 @@ if __name__=="__main__":
 
     for i in range(core_num):
         process_unit = mp.Process(target=procedure, 
-        args=(proc_queue, sequence2, initial_formation_vec[i], initial_dissolution_vec[i], "seq2_"+str(i)+"chain", 2021+i*10, 30000, 50))
+        args=(proc_queue, sequence3, initial_formation_vec[i], initial_dissolution_vec[i], "seq3_"+str(i)+"chain", 2021+i*10, 30000, 50))
         # def procedure(result_queue, network_sequence, initial_formation_param, initial_dissolution_param, result_string, rng_seed=2021, main_iter=30000, ex_iter=50)
         
         process_vec.append(process_unit)
     
     for unit_proc in process_vec:
         unit_proc.start()
-    
     
     mp_result_vec = []
     for _ in range(core_num):
