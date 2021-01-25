@@ -123,6 +123,40 @@ class BSTERGM_posterior_work:
             plt.show()
 
 
+class BSTERGM_latest_exchangeSampler_work:
+    def __init__(self):
+        self.netstat_vec = []
+    
+    def read_from_csv(self, file_name):
+        with open("pyBSTERGM/" + file_name + '.csv', 'r', newline='', encoding='utf-8') as csvfile:
+            reader = csv.reader(csvfile)
+            for csv_row in reader:
+                csv_row = [float(elem) for elem in csv_row]
+                self.netstat_vec.append(csv_row)
+
+    def netstat_trace(self):
+        trace = []
+        
+        for _ in range(len(self.netstat_vec[0])):
+            trace.append([])
+        for sample in self.netstat_vec:
+            for i, param_val in enumerate(sample):
+                trace[i].append(param_val)
+
+        return trace
+
+    def show_traceplot(self, show=True):
+        trace = self.netstat_trace()
+        grid_column = 1
+        # grid_row = int(len(netStat)/2+0.51)
+        grid_row = len(trace)
+        plt.figure(figsize=(5*grid_column, 3*grid_row))
+        for i, statSeq in enumerate(trace):
+            plt.subplot(grid_row, grid_column, i+1)
+            plt.plot(range(len(statSeq)), statSeq)
+        
+        if show:
+            plt.show()
 
 
 
@@ -130,8 +164,11 @@ if __name__ == "__main__":
     reader_inst = BSTERGM_posterior_work()
     reader_inst.read_from_csv("results/seq1_0chain", 2, 2)
     # print(reader_inst.MC_formation_samples[0:10])
-    # reader_inst.show_traceplot()
-    # reader_inst.show_histogram()
-
+    reader_inst.show_traceplot()
+    reader_inst.show_histogram()
     reader_inst.show_acfplot()
 
+
+    netstat_reader_inst = BSTERGM_latest_exchangeSampler_work()
+    netstat_reader_inst.read_from_csv("results/seq1_0chain_statNet")
+    netstat_reader_inst.show_traceplot()
