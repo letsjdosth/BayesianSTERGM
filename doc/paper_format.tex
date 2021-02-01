@@ -64,7 +64,7 @@
 %   TITLE
 %%%%%%%%%%%%%%%%%%%%%%%
 
-\title{BSTERGMs: Bayesian Separable-Temporal Exponential family Graph Models}
+\title{BSTERGMs: Bayesian Separable-Temporal Exponential family Random Graph Models}
 \author{Seokjun Choi}
 \date{December 2020}
 
@@ -528,7 +528,7 @@ Let $y_1,...,y_T$ be given. For $m=1,...,M$,
 \begin{enumerate}
     \item Propose candidates $\theta_*^+,\theta_*^-$ from a proposal distribution $\epsilon(.|\theta_{m-1}^+,\theta_{m-1}^-)$.
     \item Select a lag $(t-1,t)$ randomly on $2 \leq t \leq T$.
-    \item Generate an exchange graph $y_{ex} \in\mathcal{Y}|_t$ (with $y_{ex}^+, y_{ex}^-$) at the $\theta_*^+,\theta_*^-$.
+    \item Generate exchange graphs $y_{ex}^+, y_{ex}^-$ in $\mathcal{Y}^+|_t, \mathcal{Y}^-|_t$ at the $\theta_*^+,\theta_*^-$, respectively.
     \item Calculate network statistics $s(y_t^+,y_{t-1}), s(y_{ex}^+,y_{t-1}), s(y_t^-,y_{t-1}), s(y_{ex}^-,y_{t-1})$.
     \item Calculate the exchange MCMC ratio $\pi$ at the lag,
         \[\pi = \frac{P(y_t^+|y_{t-1},\theta_*^+)P(y_t^-|y_{t-1},\theta_*^-)p(\theta_*^+)p(\theta_*^-)\epsilon(\theta_{m-1}|\theta_*)}
@@ -550,14 +550,14 @@ we cannot get the generative algorithm directly using the model's expression.
 Thus, I use one more MCMC chain.
 
 \begin{algo}[the auxiliary chain]
-Let $\theta^+,\theta^-,y_{t-1}$ be given. For $k=1,...,K$,
+Let $\theta_*$ be given. For $k=1,...,K$,
 \begin{enumerate}
     \item Select one edge randomly from the $y_{k-1}$, say, $y_{k-1;ij}$.
     \item Propose a new graph $y_*$ with switching the $y_{ij}$ value from $y_{k-1}$: 
     \\ If $y_{k-1;ij}=1$, then set $y_{*;ij}=0$ (dissolution case.) 
     \\ Otherwise, If $y_{k-1;ij}=0$, then set $y_{*;ij}=1$ (formation case.)
     \\ (If sample graphs are undirected, switch $y_{ji}$ simultaneously.)
-    \item Take $\theta$ as $\theta^+$ or $\theta^-$ according to the case. Calculate the MCMC ratio $\phi$,
+    \item Calculate the MCMC ratio $\phi$,
     \[\phi = \frac{P(Y_t=y_*|y_{t-1},\theta)}{P(Y_t=y_{k-1}|y_{t-1},\theta)}= exp(\theta^T (s(y_{*},y_{t-1}) - s(y_{k-1},y_{t-1})))\]
     \item With probability $min(\phi,1)$, accept the proposal and put $y_k=y_*$.\\
         Otherwise, reject the proposal and put $y_k=y_{k-1}$.

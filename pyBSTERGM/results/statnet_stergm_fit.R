@@ -1,7 +1,7 @@
 library(statnet)
 
 
-name_vec = c("m2.19", "w2.19", "f2.19")
+name_vec = c("m3.19", "w3.19", "f3.19")
 
 sequence = list()
 for(i in 1:length(name_vec)){

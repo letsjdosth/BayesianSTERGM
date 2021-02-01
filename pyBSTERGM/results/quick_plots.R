@@ -1,11 +1,11 @@
-posterior_chain0 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq1_0chain.csv", header=FALSE)
-posterior_chain1 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq1_1chain.csv", header=FALSE)
-posterior_chain2 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq1_2chain.csv", header=FALSE)
-posterior_chain3 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq1_3chain.csv", header=FALSE)
-posterior_chain4 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq1_4chain.csv", header=FALSE)
-posterior_chain5 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq1_5chain.csv", header=FALSE)
-posterior_chain6 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq1_6chain.csv", header=FALSE)
-posterior_chain7 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq1_7chain.csv", header=FALSE)
+posterior_chain0 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq2_0chain.csv", header=FALSE)
+posterior_chain1 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq2_1chain.csv", header=FALSE)
+posterior_chain2 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq2_2chain.csv", header=FALSE)
+posterior_chain3 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq2_3chain.csv", header=FALSE)
+posterior_chain4 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq2_4chain.csv", header=FALSE)
+posterior_chain5 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq2_5chain.csv", header=FALSE)
+posterior_chain6 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq2_6chain.csv", header=FALSE)
+posterior_chain7 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq2_7chain.csv", header=FALSE)
 
 
 #for each chain
@@ -51,20 +51,21 @@ hist(posterior_chain7$V1)
 
 
 #netstat
-networkStat_chain0 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq1_0chain_statNet.csv", header=FALSE)
-networkStat_chain1 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq1_1chain_statNet.csv", header=FALSE)
-networkStat_chain2 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq1_2chain_statNet.csv", header=FALSE)
-networkStat_chain3 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq1_3chain_statNet.csv", header=FALSE)
-networkStat_chain4 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq1_4chain_statNet.csv", header=FALSE)
-networkStat_chain5 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq1_5chain_statNet.csv", header=FALSE)
-networkStat_chain6 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq1_6chain_statNet.csv", header=FALSE)
-networkStat_chain7 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq1_7chain_statNet.csv", header=FALSE)
+networkStat_chain0 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq3_0chain_statNet.csv", header=FALSE)
+networkStat_chain1 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq3_1chain_statNet.csv", header=FALSE)
+networkStat_chain2 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq3_2chain_statNet.csv", header=FALSE)
+networkStat_chain3 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq3_3chain_statNet.csv", header=FALSE)
+networkStat_chain4 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq3_4chain_statNet.csv", header=FALSE)
+networkStat_chain5 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq3_5chain_statNet.csv", header=FALSE)
+networkStat_chain6 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq3_6chain_statNet.csv", header=FALSE)
+networkStat_chain7 = read.csv("C:/gitProject/BayesianSTERGM/pyBSTERGM/results/seq3_7chain_statNet.csv", header=FALSE)
 
 netStat_sample = networkStat_chain1 #set chain
 mean(netStat_sample$V1) #edge
 mean(netStat_sample$V2) #GWESP(0.5)
-par(mfrow=c(2,1))
+par(mfrow=c(4,1))
 plot(1:nrow(netStat_sample), netStat_sample$V1, type="l")
 plot(1:nrow(netStat_sample), netStat_sample$V2, type="l")
-
+plot(1:nrow(netStat_sample), netStat_sample$V3, type="l")
+plot(1:nrow(netStat_sample), netStat_sample$V4, type="l")
 
