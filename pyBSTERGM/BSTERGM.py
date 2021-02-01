@@ -4,7 +4,7 @@ import csv
 import numpy as np
 import matplotlib.pyplot as plt
 
-from network import UndirectedNetwork
+from network import UndirectedNetwork, DirectedNetwork
 from network_sampler import NetworkSampler
 
 class BSTERGM:
@@ -16,7 +16,8 @@ class BSTERGM:
         self.MC_formation_samples = []
         self.MC_dissolution_samples = []
         self.node_num = 0
-        
+        self.isDirected = False
+
         self.random_seed = 2021
         self.random_gen = 0
         self.obs_network_formation_seq = []
@@ -39,10 +40,16 @@ class BSTERGM:
 
         self.model = model_fn
         self.node_num = obs_network_seq[0].node_num
+        if isinstance(obs_network_seq[0], DirectedNetwork):
+            self.isDirected = True
+        else:
+            self.isDirected = False
+        
         self.random_seed = rng_seed
         self.random_gen = np.random.default_rng(seed=rng_seed)
         if pid is not None:
             self.pid = pid
+
 
     
     def __str__(self):
@@ -60,7 +67,12 @@ class BSTERGM:
                     y_plus[row,col]=1
                 if y_now_structure[row,col]==0:
                     y_minus[row,col]=0
-        return (UndirectedNetwork(y_plus), UndirectedNetwork(y_minus))
+        result = 0
+        if self.isDirected:
+            result = (DirectedNetwork(y_plus), DirectedNetwork(y_minus))
+        else:
+            result = (UndirectedNetwork(y_plus), UndirectedNetwork(y_minus))
+        return result
 
     def dissociate_obsSeq(self):
         for i in range(1, len(self.obs_network_seq)):
@@ -268,7 +280,7 @@ if __name__=="__main__":
     test_BSTERGM_sampler.run(100, exchange_iter=30)
     # print(test_BSTERGM_sampler.MC_formation_samples)
     # print(test_BSTERGM_sampler.MC_dissolution_samples)
-    # test_BSTERGM_sampler.show_traceplot()
-    # test_BSTERGM_sampler.show_latest_exchangeSampler_netStat_traceplot()
+    test_BSTERGM_sampler.show_traceplot()
+    test_BSTERGM_sampler.show_latest_exchangeSampler_netStat_traceplot()
     # test_BSTERGM_sampler.write_posterior_samples("test")
     # test_BSTERGM_sampler.write_latest_exchangeSampler_netStat("test_netStat")

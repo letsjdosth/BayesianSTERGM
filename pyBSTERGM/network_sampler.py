@@ -1,12 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from network import UndirectedNetwork
+from network import UndirectedNetwork, DirectedNetwork
 
 
 
 class NetworkSampler:
-    def __init__(self, model_fn, param, init_network: UndirectedNetwork, rng_seed=2021):
+    def __init__(self, model_fn, param, init_network, rng_seed=2021):
         #variables
         self.initial_network = 0
         self.param = np.array(0)
@@ -28,18 +28,23 @@ class NetworkSampler:
             edge_idx = self.random_gen.integers(low=0, high=self.node_num - 1, size=2)
         return edge_idx
 
-    def propose_network(self, last_network: UndirectedNetwork):
+    def propose_network(self, last_network):
         proposed_structure = last_network.structure.copy()
         edge_idx = self.choose_edge()
-        proposed_structure[edge_idx[0], edge_idx[1]] = 1 - proposed_structure[edge_idx[0], edge_idx[1]]
-        proposed_structure[edge_idx[1], edge_idx[0]] = proposed_structure[edge_idx[0], edge_idx[1]]
-        return UndirectedNetwork(proposed_structure)
+        result_network = 0
+        if isinstance(last_network, UndirectedNetwork):
+            proposed_structure[edge_idx[0], edge_idx[1]] = 1 - proposed_structure[edge_idx[0], edge_idx[1]]
+            proposed_structure[edge_idx[1], edge_idx[0]] = proposed_structure[edge_idx[0], edge_idx[1]]
+            result_network = UndirectedNetwork(proposed_structure)
+        elif isinstance(last_network, DirectedNetwork):
+            proposed_structure[edge_idx[0], edge_idx[1]] = 1 - proposed_structure[edge_idx[0], edge_idx[1]]
+            result_network = DirectedNetwork(proposed_structure)
+        return result_network
 
     def log_r(self, last_network, proposed_network):
         proposed_network_netStat = self.model(proposed_network)
         last_network_netStat = self.model(last_network)
         return np.dot(proposed_network_netStat - last_network_netStat, self.param)
-
 
     def sampler(self):
         last_network = self.network_samples[-1]
@@ -106,6 +111,12 @@ if __name__ == "__main__":
         ]
         )
     test_initnet = UndirectedNetwork(test_structure)
+    test_netSampler = NetworkSampler(model_netStat, np.array([0, 0]), test_initnet)
+    test_netSampler.run(30000)
+    test_netSampler.show_traceplot()
+
+
+    test_initnet2 = DirectedNetwork(test_structure)
     test_netSampler = NetworkSampler(model_netStat, np.array([0, 0]), test_initnet)
     test_netSampler.run(30000)
     test_netSampler.show_traceplot()

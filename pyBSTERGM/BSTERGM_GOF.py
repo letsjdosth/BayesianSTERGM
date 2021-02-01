@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from network import UndirectedNetwork
+from network import UndirectedNetwork, DirectedNetwork
 from network_sampler import NetworkSampler
 from BSTERGM import BSTERGM
 
@@ -16,6 +16,11 @@ class BSTERGM_GOF:
         self.random_seed = rng_seed
         self.random_gen = np.random.default_rng(seed=rng_seed)
         self.netstat_list = []
+        self.isDirected = False
+        if isinstance(init_network, DirectedNetwork):
+            self.isDirected = True
+        else:
+            self.isDirected = False
 
     def choose_samples(self):
         num_posterior_sample = len(self.formation_samples)
@@ -38,7 +43,12 @@ class BSTERGM_GOF:
                 if y_last_minus_ydis_structure[row,col]==1:
                     y_now_structure[row,col] = 0
         
-        return UndirectedNetwork(y_now_structure)
+        result_network = 0
+        if self.isDirected:
+            result_network = DirectedNetwork(y_now_structure)
+        else:
+            result_network = UndirectedNetwork(y_now_structure)
+        return result_network
 
 
     def gof_sampler(self, formation_parameter, dissolution_parameter, exchange_iter, rng_seed):
@@ -139,7 +149,7 @@ if __name__ == "__main__":
 
     def gof_netStat(network: UndirectedNetwork):
         gof_netstat = []
-        node_degree_dist = network.statCal_nodeDegreeDist()
+        node_degree_dist = network.statCal_nodeInDegreeDist()
         ESP_dist = network.statCal_EdgewiseSharedPartnerDist()
 
         for val in node_degree_dist:

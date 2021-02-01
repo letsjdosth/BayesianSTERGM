@@ -2,8 +2,6 @@ import numpy as np
 
 
 class UndirectedNetwork:
-    
-
     def __init__(self, structure):
         #variables
         self.node_num = 0
@@ -55,6 +53,68 @@ class UndirectedNetwork:
             val += (1 - nested) * ESPdist[k] * np.exp(tau)
         return val
 
+
+
+
+class DirectedNetwork:
+    def __init__(self, structure):
+        #variables
+        self.node_num = 0
+        self.structure = np.array(0)
+        self.stat_nodeDegree = np.array(0)
+
+        #initialize
+        self.structure = structure
+        self.node_num = structure.shape[0]    
+
+    def __str__(self):
+        string_val = "<network.DirectedNetwork object>\n" + self.structure.__str__()
+        return string_val
+
+    def statCal_edgeNum(self):
+        return np.sum(self.structure)
+    def statCal_nodeOutDegree(self):
+        return np.sum(self.structure, axis=1) #rowsum
+    def statCal_nodeInDegree(self):
+        return np.sum(self.structure, axis=0) #rowsum
+    
+    def statCal_nodeOutDegreeDist(self):
+        node_degree_dist = np.zeros(self.node_num)
+        node_degree = self.statCal_nodeOutDegree()
+        for i in node_degree:
+            node_degree_dist[i] += 1
+        return node_degree_dist
+    def statCal_nodeInDegreeDist(self):
+        node_degree_dist = np.zeros(self.node_num)
+        node_degree = self.statCal_nodeInDegree()
+        for i in node_degree:
+            node_degree_dist[i] += 1
+        return node_degree_dist
+    
+    def statCal_EdgewiseSharedPartner(self):
+        ESP = np.zeros((self.node_num, self.node_num))
+        for row_ind in range(self.node_num):
+            for col_ind in range(self.node_num):
+                if self.structure[row_ind, col_ind] == 1:
+                    ESP[row_ind, col_ind] = np.dot(self.structure[row_ind,:].T, self.structure[col_ind,:])
+        return ESP
+    def statCal_EdgewiseSharedPartnerDist(self):
+        fullESP= self.statCal_EdgewiseSharedPartner()
+        ESP_dist = np.zeros(self.node_num-1)
+        for row_ind in range(self.node_num):
+            for col_ind in range(self.node_num):
+                ESP_dist[int(fullESP[row_ind,col_ind])] += 1
+        ESP_dist[0] = self.statCal_edgeNum() - np.sum(ESP_dist[1:])
+        return ESP_dist
+    def statCal_geoWeightedESP(self, tau=0.5):
+        val = 0
+        ESPdist = self.statCal_EdgewiseSharedPartnerDist()
+        for k in range(1, self.node_num - 1):
+            nested = (-np.expm1(-tau))**k
+            val += (1 - nested) * ESPdist[k] * np.exp(tau)
+        return val
+
+
 if __name__ == "__main__":
     test_structure = np.array(
         [[0,1,1,0,0],
@@ -71,3 +131,17 @@ if __name__ == "__main__":
     # print(test_net.statCal_EdgewiseSharedPartner())
     print(test_net.statCal_EdgewiseSharedPartnerDist()) #true: 1,4,1,0
     print(test_net.statCal_geoWeightedESP()) #true: 5.393469 (R과 cross check 완료)
+
+    test_structure_2 = np.array(
+        [[0,1,1,0,0],
+        [1,0,0,0,1],
+        [1,1,0,1,0],
+        [0,0,0,0,1],
+        [1,0,0,1,0]]
+    )
+    test_net_2 = DirectedNetwork(test_structure_2)
+    print(test_net_2.statCal_edgeNum())
+    print(test_net_2.statCal_nodeOutDegreeDist()) #true [0,1,3,1,0]
+    print(test_net_2.statCal_nodeInDegreeDist()) #true [0,1,3,1,0]
+    print(test_net_2.statCal_EdgewiseSharedPartnerDist()) #true [6,4,0,0]
+    print(test_net_2.statCal_geoWeightedESP(0.5)) #true 4.0
