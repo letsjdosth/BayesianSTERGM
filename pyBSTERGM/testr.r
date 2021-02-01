@@ -9,7 +9,7 @@ test_structure = matrix(c(0,1,1,0,0,1,0,0,0,1,1,1,0,1,0,0,0,0,0,1,1,0,0,1,0),5,5
 test_network = as.network(test_structure)
 plot(test_network)
 
-summary(test_network~edges+desp(0)+desp(1)+desp(2)+desp(3)+dgwesp(0.5, fixed=TRUE)) #5.393469
+summary(test_network~edges+odegree(0)+odegree(1)+odegree(2)+odegree(3)+odegree(4)) #5.393469
 fit = ergm(test_network~gwesp)
 ?gwesp
 

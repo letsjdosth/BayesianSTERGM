@@ -3,7 +3,7 @@ from os import getpid
 
 import numpy as np
 
-import Jdata
+import data_Jdata
 from network import UndirectedNetwork
 from network_sampler import NetworkSampler
 from BSTERGM import BSTERGM
@@ -36,17 +36,17 @@ def procedure(result_queue, network_sequence, initial_formation_param, initial_d
 
 
 if __name__=="__main__":
-    # sequence1 = [UndirectedNetwork(np.array(Jdata.m1_19_structure)),
-    #     UndirectedNetwork(np.array(Jdata.w1_19_structure)),
-    #     UndirectedNetwork(np.array(Jdata.f1_19_structure))
+    # sequence1 = [UndirectedNetwork(np.array(data_Jdata.m1_19_structure)),
+    #     UndirectedNetwork(np.array(data_Jdata.w1_19_structure)),
+    #     UndirectedNetwork(np.array(data_Jdata.f1_19_structure))
     # ]
-    # sequence2 = [UndirectedNetwork(np.array(Jdata.m2_19_structure)),
-    #     UndirectedNetwork(np.array(Jdata.w2_19_structure)),
-    #     UndirectedNetwork(np.array(Jdata.f2_19_structure))
+    # sequence2 = [UndirectedNetwork(np.array(data_Jdata.m2_19_structure)),
+    #     UndirectedNetwork(np.array(data_Jdata.w2_19_structure)),
+    #     UndirectedNetwork(np.array(data_Jdata.f2_19_structure))
     # ]
-    sequence3 = [UndirectedNetwork(np.array(Jdata.m3_19_structure)),
-        UndirectedNetwork(np.array(Jdata.w3_19_structure)),
-        UndirectedNetwork(np.array(Jdata.f3_19_structure))
+    sequence3 = [UndirectedNetwork(np.array(data_Jdata.m3_19_structure)),
+        UndirectedNetwork(np.array(data_Jdata.w3_19_structure)),
+        UndirectedNetwork(np.array(data_Jdata.f3_19_structure))
     ]
 
 
