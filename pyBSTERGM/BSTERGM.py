@@ -30,6 +30,11 @@ class BSTERGM:
         
         #initialize
         self.obs_network_seq = obs_network_seq
+        if isinstance(obs_network_seq[0], DirectedNetwork):
+            self.isDirected = True
+        else:
+            self.isDirected = False
+        
         self.initial_formation_param = initial_formation_param
         self.initial_dissolution_param = initial_dissolution_param
         self.MC_formation_samples.append(initial_formation_param)
@@ -37,13 +42,8 @@ class BSTERGM:
         self.obs_network_formation_seq.append(initial_formation_param)
         self.obs_network_dissolution_seq.append(initial_dissolution_param)
         self.dissociate_obsSeq()
-
         self.model = model_fn
         self.node_num = obs_network_seq[0].node_num
-        if isinstance(obs_network_seq[0], DirectedNetwork):
-            self.isDirected = True
-        else:
-            self.isDirected = False
         
         self.random_seed = rng_seed
         self.random_gen = np.random.default_rng(seed=rng_seed)
