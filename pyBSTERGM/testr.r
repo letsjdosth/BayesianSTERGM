@@ -10,8 +10,12 @@ test_network = as.network(test_structure)
 plot(test_network)
 
 summary(test_network~edges+odegree(0)+odegree(1)+odegree(2)+odegree(3)+odegree(4)) #5.393469
+summary(test_network~edges+mutual+transitiveties++cyclicalties)
+
 fit = ergm(test_network~gwesp)
 ?gwesp
+
+
 
 
 # elem1 = matrix(c(

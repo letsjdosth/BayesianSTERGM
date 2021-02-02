@@ -53,6 +53,45 @@ class UndirectedNetwork:
             val += (1 - nested) * ESPdist[k] * np.exp(tau)
         return val
 
+    def statCal_MinGeodesic(self):
+        # Dijkstra algorithm
+        def dijkstra(self,source):
+            from math import inf
+            visited_node = [False for _ in range(self.node_num)]
+            dist_vec = [inf for i in range(self.node_num)]
+            prev = [None for i in range(self.node_num)]
+            
+            dist_vec[source]=0
+
+            while not all(visited_node):
+                unvisited = [(i, dist) for i, dist in enumerate(dist_vec) if visited_node[i]==False]
+                chosen_node = min(unvisited, key=lambda tup:tup[1])[0]
+
+                visited_node[chosen_node] = True
+                neighbors = [i for i, val in enumerate(self.structure[chosen_node,:]) if val==1]
+                for nb_node in neighbors:
+                    alt = dist_vec[chosen_node] + 1 #length = 1
+                    if alt < dist_vec[nb_node]:
+                        dist_vec[nb_node] = alt
+                        prev[nb_node] = chosen_node
+
+            return (dist_vec, prev)
+        min_geodesic_vec = []
+        for i in range(self.node_num):
+            dist, _ = dijkstra(self, i)
+            min_geodesic_vec.append(dist)
+        return min_geodesic_vec
+    
+    def statCal_MinGeodesicDist(self):
+        min_geodesic = self.statCal_MinGeodesic()
+        distrib_vec = [0 for _ in range(self.node_num)]
+        for from_source_node in min_geodesic:
+            for val in from_source_node:
+                distrib_vec[val] += 1
+        distrib_vec[0] = 0
+        undirected_distrib_vec = [val/2 for val in distrib_vec]
+        return undirected_distrib_vec[1:] #dist0 = node itself
+
 
 
 
@@ -113,6 +152,103 @@ class DirectedNetwork:
             nested = (-np.expm1(-tau))**k
             val += (1 - nested) * ESPdist[k] * np.exp(tau)
         return val
+    
+    
+    def statCal_MinGeodesic(self):
+        # Dijkstra algorithm
+        def dijkstra(self,source):
+            from math import inf
+            visited_node = [False for _ in range(self.node_num)]
+            dist_vec = [inf for i in range(self.node_num)]
+            prev = [None for i in range(self.node_num)]
+            
+            dist_vec[source]=0
+
+            while not all(visited_node):
+                unvisited = [(i, dist) for i, dist in enumerate(dist_vec) if visited_node[i]==False]
+                chosen_node = min(unvisited, key=lambda tup:tup[1])[0]
+
+                visited_node[chosen_node] = True
+                neighbors = [i for i, val in enumerate(self.structure[chosen_node,:]) if val==1]
+                for nb_node in neighbors:
+                    alt = dist_vec[chosen_node] + 1 #length = 1
+                    if alt < dist_vec[nb_node]:
+                        dist_vec[nb_node] = alt
+                        prev[nb_node] = chosen_node
+
+            return (dist_vec, prev)
+        min_geodesic_vec = []
+        for i in range(self.node_num):
+            dist, _ = dijkstra(self, i)
+            min_geodesic_vec.append(dist)
+        return min_geodesic_vec
+    
+    def statCal_MinGeodesicDist(self):
+        min_geodesic = self.statCal_MinGeodesic()
+        distrib_vec = [0 for _ in range(self.node_num)]
+        for from_source_node in min_geodesic:
+            for val in from_source_node:
+                distrib_vec[val] += 1
+        distrib_vec[0] = 0
+        return distrib_vec[1:] #dist0 = node itself
+    
+    def statCal_mutuality(self):
+        mutual = 0
+        for i in range(self.node_num):
+            for j in range(i):
+                if self.structure[i,j]==1 and self.structure[j,i]==1:
+                    mutual +=1
+        return mutual
+
+    def statCal_existTwoPath(self):
+        existance = np.zeros((self.node_num, self.node_num))
+        for start_node in range(self.node_num):
+            for end_node in range(self.node_num):
+                if start_node == end_node:
+                    pass
+                else:
+                    idx_set = [i for i in range(self.node_num) if i != start_node and i != end_node]
+                    # print(start_node, end_node, idx_set)
+                    for inter_node in idx_set:
+                        if self.structure[start_node, inter_node]==1 and self.structure[inter_node,end_node]==1:
+                            existance[start_node, end_node] = 1
+                            break
+        return existance
+
+    def statCal_transitiveTies(self):
+        result = 0
+        twoPath = self.statCal_existTwoPath()
+        for start_node in range(self.node_num):
+            for end_node in range(self.node_num):
+                if self.structure[start_node, end_node]==1 and twoPath[start_node, end_node]==1:
+                    result += 1
+        return result
+    
+    def statCal_cyclicalTies(self):
+        result = 0
+        twoPath = self.statCal_existTwoPath()
+        for start_node in range(self.node_num):
+            for end_node in range(self.node_num):
+                if twoPath[start_node, end_node]==1 and self.structure[end_node, start_node]==1 :
+                    result += 1
+        return result
+
+
+# class InterNetwork_Statistics:
+#     @classmethod
+#     def stability(cls, network_t1, network_t2):
+#         #number of edges not changed from t1 to t2
+#         network_
+
+#     @classmethod
+#     def reciprocity(cls, network_t1, network_t2):
+#         #number of edges that become reversed from t1 to t2
+
+#     @classmethod
+#     def transitivity(cls, network_t1, network_t2):
+#         #number of pair of nodes that have dist 2 at t1 but dist 1 at t2
+
+
 
 
 if __name__ == "__main__":
@@ -131,9 +267,12 @@ if __name__ == "__main__":
     # print(test_net.statCal_EdgewiseSharedPartner())
     print(test_net.statCal_EdgewiseSharedPartnerDist()) #true: 1,4,1,0
     print(test_net.statCal_geoWeightedESP()) #true: 5.393469 (R과 cross check 완료)
+    print(test_net.statCal_MinGeodesic())
+    print(test_net.statCal_MinGeodesicDist())
 
     test_structure_2 = np.array(
-        [[0,1,1,0,0],
+        [
+        [0,1,1,0,0],
         [1,0,0,0,1],
         [1,1,0,1,0],
         [0,0,0,0,1],
@@ -145,3 +284,10 @@ if __name__ == "__main__":
     print(test_net_2.statCal_nodeInDegreeDist()) #true [0,1,3,1,0]
     print(test_net_2.statCal_EdgewiseSharedPartnerDist()) #true [6,4,0,0]
     print(test_net_2.statCal_geoWeightedESP(0.5)) #true 4.0
+    print(test_net_2.statCal_MinGeodesic())
+    print(test_net_2.statCal_MinGeodesicDist())
+    print(test_net_2.statCal_mutuality()) #true 3
+
+    print(test_net_2.statCal_existTwoPath())
+    print(test_net_2.statCal_transitiveTies())#true 4
+    print(test_net_2.statCal_cyclicalTies()) #true 6
