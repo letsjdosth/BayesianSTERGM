@@ -51,21 +51,21 @@ if __name__=="__main__":
     #     UndirectedNetwork(np.array(data_Jdata.f3_19_structure))
     # ]
 
-    # #samplk
-    # samplk_sequence = [
-    #     DirectedNetwork(np.array(data_samplk.samplk1)),
-    #     DirectedNetwork(np.array(data_samplk.samplk2)),
-    #     DirectedNetwork(np.array(data_samplk.samplk3))
-    # ]
-
-
-    # knecht_friendship
-    friendship_sequence = [
-        DirectedNetwork(np.array(data_knecht_friendship.friendship_t1)),
-        DirectedNetwork(np.array(data_knecht_friendship.friendship_t2)),
-        DirectedNetwork(np.array(data_knecht_friendship.friendship_t3)),
-        DirectedNetwork(np.array(data_knecht_friendship.friendship_t4))
+    #samplk
+    samplk_sequence = [
+        DirectedNetwork(np.array(data_samplk.samplk1)),
+        DirectedNetwork(np.array(data_samplk.samplk2)),
+        DirectedNetwork(np.array(data_samplk.samplk3))
     ]
+
+
+    # # knecht_friendship
+    # friendship_sequence = [
+    #     DirectedNetwork(np.array(data_knecht_friendship.friendship_t1)),
+    #     DirectedNetwork(np.array(data_knecht_friendship.friendship_t2)),
+    #     DirectedNetwork(np.array(data_knecht_friendship.friendship_t3)),
+    #     DirectedNetwork(np.array(data_knecht_friendship.friendship_t4))
+    # ]
 
 
     #core
@@ -96,7 +96,7 @@ if __name__=="__main__":
 
     for i in range(core_num):
         process_unit = mp.Process(target=procedure, 
-        args=(proc_queue, friendship_sequence, initial_formation_vec[i], initial_dissolution_vec[i], "friendship_"+str(i)+"chain", 2021+i*10, 30000, 50))
+        args=(proc_queue, samplk_sequence, initial_formation_vec[i], initial_dissolution_vec[i], "samplk_sequence_iter20000_ex100_"+str(i)+"chain", 2021+i*10, 20000, 100))
         # def procedure(result_queue, network_sequence, initial_formation_param, initial_dissolution_param, result_string, rng_seed=2021, main_iter=30000, ex_iter=50)
         
         process_vec.append(process_unit)

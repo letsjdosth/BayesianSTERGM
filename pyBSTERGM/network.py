@@ -220,25 +220,42 @@ class DirectedNetwork:
                     # print(start_node, end_node, idx_set)
                     for inter_node in idx_set:
                         if self.structure[start_node, inter_node]==1 and self.structure[inter_node,end_node]==1:
-                            existance[start_node, end_node] = 1
-                            break
+                            existance[start_node, end_node] += 1
         return existance
 
+    def statCal_transitiveTriples(self):
+        result = 0
+        twoPath = self.statCal_existTwoPath()
+        for start_node in range(self.node_num):
+            for end_node in range(self.node_num):
+                if self.structure[start_node, end_node]==1 and twoPath[start_node, end_node]>0:
+                    result += twoPath[start_node, end_node]
+        return result/3
+    
     def statCal_transitiveTies(self):
         result = 0
         twoPath = self.statCal_existTwoPath()
         for start_node in range(self.node_num):
             for end_node in range(self.node_num):
-                if self.structure[start_node, end_node]==1 and twoPath[start_node, end_node]==1:
+                if self.structure[start_node, end_node]==1 and twoPath[start_node, end_node]>0:
                     result += 1
         return result
+
+    def statCal_cyclicTriples(self):
+        result = 0
+        twoPath = self.statCal_existTwoPath()
+        for start_node in range(self.node_num):
+            for end_node in range(self.node_num):
+                if twoPath[start_node, end_node]>1 and self.structure[end_node, start_node]==1 :
+                    result += twoPath[start_node, end_node]
+        return result/3
     
     def statCal_cyclicalTies(self):
         result = 0
         twoPath = self.statCal_existTwoPath()
         for start_node in range(self.node_num):
             for end_node in range(self.node_num):
-                if twoPath[start_node, end_node]==1 and self.structure[end_node, start_node]==1 :
+                if twoPath[start_node, end_node]>1 and self.structure[end_node, start_node]==1 :
                     result += 1
         return result
 
@@ -300,3 +317,6 @@ if __name__ == "__main__":
     print(test_net_2.statCal_existTwoPath())
     print(test_net_2.statCal_transitiveTies())#true 4
     print(test_net_2.statCal_cyclicalTies()) #true 6
+
+    print(test_net_2.statCal_transitiveTriples())#true 4
+    print(test_net_2.statCal_cyclicTriples())#true 2
