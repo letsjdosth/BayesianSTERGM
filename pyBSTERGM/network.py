@@ -83,11 +83,15 @@ class UndirectedNetwork:
         return min_geodesic_vec
     
     def statCal_MinGeodesicDist(self):
+        from math import inf
         min_geodesic = self.statCal_MinGeodesic()
-        distrib_vec = [0 for _ in range(self.node_num)]
+        distrib_vec = [0 for _ in range(self.node_num+1)]
         for from_source_node in min_geodesic:
             for val in from_source_node:
-                distrib_vec[val] += 1
+                if val is inf:
+                    distrib_vec[-1] += 1
+                else:
+                    distrib_vec[val] += 1
         distrib_vec[0] = 0
         undirected_distrib_vec = [val/2 for val in distrib_vec]
         return undirected_distrib_vec[1:] #dist0 = node itself
@@ -184,11 +188,16 @@ class DirectedNetwork:
         return min_geodesic_vec
     
     def statCal_MinGeodesicDist(self):
+        from math import inf
         min_geodesic = self.statCal_MinGeodesic()
-        distrib_vec = [0 for _ in range(self.node_num)]
+        distrib_vec = [0 for _ in range(self.node_num + 1)]
+        # print(min_geodesic)
         for from_source_node in min_geodesic:
             for val in from_source_node:
-                distrib_vec[val] += 1
+                if val is inf:
+                    distrib_vec[-1] += 1
+                else:
+                    distrib_vec[val] += 1
         distrib_vec[0] = 0
         return distrib_vec[1:] #dist0 = node itself
     
