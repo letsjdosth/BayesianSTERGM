@@ -230,7 +230,7 @@ class DirectedNetwork:
             for end_node in range(self.node_num):
                 if self.structure[start_node, end_node]==1 and twoPath[start_node, end_node]>0:
                     result += twoPath[start_node, end_node]
-        return result/3
+        return result
     
     def statCal_transitiveTies(self):
         result = 0
@@ -246,7 +246,7 @@ class DirectedNetwork:
         twoPath = self.statCal_existTwoPath()
         for start_node in range(self.node_num):
             for end_node in range(self.node_num):
-                if twoPath[start_node, end_node]>1 and self.structure[end_node, start_node]==1 :
+                if twoPath[start_node, end_node]>0 and self.structure[end_node, start_node]==1 :
                     result += twoPath[start_node, end_node]
         return result/3
     
@@ -255,7 +255,7 @@ class DirectedNetwork:
         twoPath = self.statCal_existTwoPath()
         for start_node in range(self.node_num):
             for end_node in range(self.node_num):
-                if twoPath[start_node, end_node]>1 and self.structure[end_node, start_node]==1 :
+                if twoPath[start_node, end_node]>0 and self.structure[end_node, start_node]==1 :
                     result += 1
         return result
 
