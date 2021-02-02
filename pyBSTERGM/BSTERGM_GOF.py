@@ -91,6 +91,9 @@ class BSTERGM_GOF:
 
 
 if __name__ == "__main__":
+
+
+    
     test_structure1 = np.array(
     [
         [0,1,1,0,0,0,0,0,0,0],
@@ -140,14 +143,14 @@ if __name__ == "__main__":
     test_obs_seq = [test_initnet1, test_initnet2, test_initnet3]
 
 
-    def model_netStat(network : UndirectedNetwork):
+    def model_netStat(network):
         model = []
         #define model
         model.append(network.statCal_edgeNum())
         model.append(network.statCal_geoWeightedESP(0.5))
         return np.array(model)
 
-    def gof_netStat(network: UndirectedNetwork):
+    def gof_netStat(network):
         gof_netstat = []
         node_degree_dist = network.statCal_nodeInDegreeDist()
         ESP_dist = network.statCal_EdgewiseSharedPartnerDist()

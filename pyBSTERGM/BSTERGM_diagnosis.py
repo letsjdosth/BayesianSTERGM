@@ -162,13 +162,16 @@ class BSTERGM_latest_exchangeSampler_work:
 
 if __name__ == "__main__":
     reader_inst = BSTERGM_posterior_work()
-    reader_inst.read_from_csv("results/seq1_0chain", 2, 2)
+    reader_inst.read_from_csv("friendship_results/friendship_1chain", 2, 2)
     # print(reader_inst.MC_formation_samples[0:10])
+    reader_inst.MC_dissolution_samples = reader_inst.MC_dissolution_samples[10000::10]
+    reader_inst.MC_formation_samples = reader_inst.MC_formation_samples[10000::10]
+    print(np.mean(reader_inst.MC_sample_trace()[0][0]), np.mean(reader_inst.MC_sample_trace()[0][1]),
+        np.mean(reader_inst.MC_sample_trace()[1][0]), np.mean(reader_inst.MC_sample_trace()[1][1]))
     reader_inst.show_traceplot()
     reader_inst.show_histogram()
     reader_inst.show_acfplot()
 
-
     netstat_reader_inst = BSTERGM_latest_exchangeSampler_work()
-    netstat_reader_inst.read_from_csv("results/seq1_0chain_statNet")
+    netstat_reader_inst.read_from_csv("friendship_results/friendship_1chain_NetworkStat")
     netstat_reader_inst.show_traceplot()

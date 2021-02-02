@@ -30,10 +30,10 @@ names(sex) <- 1:length(sex)
 friendship <- handleMissings(friendship, na = 10, method = "remove")
 friendship <- handleMissings(friendship, na = NA, method = "fillmode")
 
-friendship$t1
-friendship$t2
-friendship$t3
-friendship$t4
+length(friendship$t1)
+length(friendship$t2)
+length(friendship$t3)
+length(friendship$t4)
 
 write.table(friendship$t1, row.names=FALSE, col.names=FALSE, file="pyBSTERGM/knecht_friendship_t1.txt", sep=",")
 write.table(friendship$t2, row.names=FALSE, col.names=FALSE, file="pyBSTERGM/knecht_friendship_t2.txt", sep=",")
