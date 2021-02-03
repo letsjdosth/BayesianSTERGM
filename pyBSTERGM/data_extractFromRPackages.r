@@ -1,5 +1,6 @@
 library(statnet)
 data(samplk)
+?samplk
 as.matrix(samplk1)
 as.matrix(samplk2)
 as.matrix(samplk3)

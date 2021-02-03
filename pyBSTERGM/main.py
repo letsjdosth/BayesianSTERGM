@@ -9,11 +9,13 @@ from network_sampler import NetworkSampler
 from BSTERGM import BSTERGM
 
 
-def model_netStat(network : UndirectedNetwork):
+def model_netStat(network):
     model = []
     #define model
     model.append(network.statCal_edgeNum())
-    model.append(network.statCal_geoWeightedESP(0.5))
+    model.append(network.statCal_mutuality())
+    model.append(network.statCal_cyclicTriples())
+    model.append(network.statCal_transitiveTriples())
     return np.array(model)
 
 def procedure(result_queue, network_sequence, initial_formation_param, initial_dissolution_param, result_string, rng_seed=2021, main_iter=30000, ex_iter=50):
@@ -74,29 +76,29 @@ if __name__=="__main__":
     proc_queue = mp.Queue()
 
     initial_formation_vec = [
-        np.array([0,0]), 
-        np.array([-0.05, -0.05]), 
-        np.array([0.05, 0.05]), 
-        np.array([-0.1, -0.1]), 
-        np.array([0.1, 0.1]), 
-        np.array([-0.2, -0.2]), 
-        np.array([0.2, 0.2]), 
-        np.array([-0.1, 0.1])
+        np.array([0, 0, 0, 0]), 
+        np.array([-0.05, -0.05, -0.05, -0.05]), 
+        np.array([0.05, 0.05, 0.05, 0.05]), 
+        np.array([-0.1, -0.1, -0.1, -0.1]), 
+        np.array([0.1, 0.1, 0.1, 0.1]), 
+        np.array([-0.2, -0.2, -0.2, -0.2]), 
+        np.array([0.2, 0.2, 0.2, 0.2]), 
+        np.array([-0.1, 0.1, -0.1, 0.1])
     ]
     initial_dissolution_vec = [
-        np.array([0,0]), 
-        np.array([-0.05, -0.05]), 
-        np.array([0.05, 0.05]), 
-        np.array([-0.1, -0.1]), 
-        np.array([0.1, 0.1]), 
-        np.array([-0.2, -0.2]), 
-        np.array([0.2, 0.2]), 
-        np.array([-0.1, 0.1])
+        np.array([0, 0, 0, 0]), 
+        np.array([-0.05, -0.05, -0.05, -0.05]), 
+        np.array([0.05, 0.05, 0.05, 0.05]), 
+        np.array([-0.1, -0.1, -0.1, -0.1]), 
+        np.array([0.1, 0.1, 0.1, 0.1]), 
+        np.array([-0.2, -0.2, -0.2, -0.2]), 
+        np.array([0.2, 0.2, 0.2, 0.2]), 
+        np.array([-0.1, 0.1, -0.1, 0.1])
     ]
 
     for i in range(core_num):
         process_unit = mp.Process(target=procedure, 
-        args=(proc_queue, samplk_sequence, initial_formation_vec[i], initial_dissolution_vec[i], "samplk_sequence_iter20000_ex100_"+str(i)+"chain", 2021+i*10, 20000, 100))
+        args=(proc_queue, samplk_sequence, initial_formation_vec[i], initial_dissolution_vec[i], "samplk_sequence_ex_model_"+str(i)+"chain", 2021+i*10, 8000, 30))
         # def procedure(result_queue, network_sequence, initial_formation_param, initial_dissolution_param, result_string, rng_seed=2021, main_iter=30000, ex_iter=50)
         
         process_vec.append(process_unit)
