@@ -5,13 +5,19 @@ library(statnet)
 # plot(test_network)
 
 
-test_structure = matrix(c(0,1,1,0,0,1,0,0,0,1,1,1,0,1,0,0,0,0,0,1,1,0,0,1,0),5,5,byrow=T)
+test_structure = matrix(c(
+    0,1,1,0,0,
+    1,0,0,0,1,
+    1,1,0,1,0,
+    0,0,0,0,1,
+    1,0,0,1,0),5,5,byrow=T)
 test_network = as.network(test_structure)
 plot(test_network)
 
 summary(test_network~edges+odegree(0)+odegree(1)+odegree(2)+odegree(3)+odegree(4)) #5.393469
 summary(test_network~edges+mutual+transitiveties++cyclicalties)
 summary(test_network~edges+ctriple+ttriple)
+summary(test_network~edges+istar(2)+ostar(2))
 
 fit = ergm(test_network~gwesp)
 ?gwesp

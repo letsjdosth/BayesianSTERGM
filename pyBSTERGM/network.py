@@ -52,6 +52,18 @@ class UndirectedNetwork:
             nested = (-np.expm1(-tau))**k
             val += (1 - nested) * ESPdist[k] * np.exp(tau)
         return val
+    
+    def statCal_k_star(self, order):
+        if order==1:
+            return self.statCal_edgeNum()
+        else:
+            node_degree_dist = self.statCal_nodeDegreeDist()
+            k_star = 0
+            from math import comb #added for python 3.8
+            for i,degree in enumerate(node_degree_dist):
+                k_star += comb(i, order)*degree
+            return k_star
+    
 
     def statCal_MinGeodesic(self):
         # Dijkstra algorithm
@@ -157,7 +169,29 @@ class DirectedNetwork:
             val += (1 - nested) * ESPdist[k] * np.exp(tau)
         return val
     
+    def statCal_k_out_star(self, order):
+        if order==1:
+            return self.statCal_edgeNum()
+        else:
+            node_degree_dist = self.statCal_nodeOutDegreeDist()
+            k_star = 0
+            from math import comb #added for python 3.8
+            for i,degree in enumerate(node_degree_dist):
+                k_star += comb(i, order)*degree
+            return k_star
     
+    def statCal_k_in_star(self, order):
+        if order==1:
+            return self.statCal_edgeNum()
+        else:
+            node_degree_dist = self.statCal_nodeInDegreeDist()
+            k_star = 0
+            from math import comb #added for python 3.8
+            for i,degree in enumerate(node_degree_dist):
+                k_star += comb(i, order)*degree
+            return k_star
+    
+
     def statCal_MinGeodesic(self):
         # Dijkstra algorithm
         def dijkstra(self,source):
@@ -320,3 +354,6 @@ if __name__ == "__main__":
 
     print(test_net_2.statCal_transitiveTriples())#true 4
     print(test_net_2.statCal_cyclicTriples())#true 2
+
+    print(test_net_2.statCal_k_in_star(2)) #true 6
+    print(test_net_2.statCal_k_out_star(2)) #true 6

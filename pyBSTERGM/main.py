@@ -3,19 +3,27 @@ from os import getpid
 
 import numpy as np
 
-import data_samplk, data_knecht_friendship
+import data_samplk, data_knecht_friendship, data_tailor
 from network import UndirectedNetwork, DirectedNetwork
 from network_sampler import NetworkSampler
 from BSTERGM import BSTERGM
 
 
+# def model_netStat(network):
+#     model = []
+#     #define model
+#     model.append(network.statCal_edgeNum())
+#     model.append(network.statCal_mutuality())
+#     model.append(network.statCal_cyclicTriples())
+#     model.append(network.statCal_transitiveTriples())
+#     return np.array(model)
+
 def model_netStat(network):
     model = []
     #define model
     model.append(network.statCal_edgeNum())
-    model.append(network.statCal_mutuality())
-    model.append(network.statCal_cyclicTriples())
-    model.append(network.statCal_transitiveTriples())
+    model.append(network.statCal_k_star(2))
+    model.append(network.statCal_geoWeightedESP(tau=0.30102999566)) #log2
     return np.array(model)
 
 def procedure(result_queue, network_sequence, initial_formation_param, initial_dissolution_param, result_string, rng_seed=2021, main_iter=30000, ex_iter=50):
@@ -39,7 +47,6 @@ def procedure(result_queue, network_sequence, initial_formation_param, initial_d
 
 if __name__=="__main__":
     #Jdata
-
     # sequence1 = [UndirectedNetwork(np.array(data_Jdata.m1_19_structure)),
     #     UndirectedNetwork(np.array(data_Jdata.w1_19_structure)),
     #     UndirectedNetwork(np.array(data_Jdata.f1_19_structure))
@@ -54,14 +61,14 @@ if __name__=="__main__":
     # ]
 
     #samplk
-    samplk_sequence = [
-        DirectedNetwork(np.array(data_samplk.samplk1)),
-        DirectedNetwork(np.array(data_samplk.samplk2)),
-        DirectedNetwork(np.array(data_samplk.samplk3))
-    ]
+    # samplk_sequence = [
+    #     DirectedNetwork(np.array(data_samplk.samplk1)),
+    #     DirectedNetwork(np.array(data_samplk.samplk2)),
+    #     DirectedNetwork(np.array(data_samplk.samplk3))
+    # ]
 
 
-    # # knecht_friendship
+    # knecht_friendship
     # friendship_sequence = [
     #     DirectedNetwork(np.array(data_knecht_friendship.friendship_t1)),
     #     DirectedNetwork(np.array(data_knecht_friendship.friendship_t2)),
@@ -69,36 +76,42 @@ if __name__=="__main__":
     #     DirectedNetwork(np.array(data_knecht_friendship.friendship_t4))
     # ]
 
+    #tailor shop
+    # instrumental_interactions = [
+    #     DirectedNetwork(np.array(data_tailor.KAPFTI1)),
+    #     DirectedNetwork(np.array(data_tailor.KAPFTI2)),
+    # ]
+    
+    sociational_interactions = [
+        UndirectedNetwork(np.array(data_tailor.KAPFTS1)),
+        UndirectedNetwork(np.array(data_tailor.KAPFTS2))
+    ]
 
     #core
-    core_num = 8
+    core_num = 6
     process_vec = []
     proc_queue = mp.Queue()
 
     initial_formation_vec = [
-        np.array([0, 0, 0, 0]), 
-        np.array([-0.05, -0.05, -0.05, -0.05]), 
-        np.array([0.05, 0.05, 0.05, 0.05]), 
-        np.array([-0.1, -0.1, -0.1, -0.1]), 
-        np.array([0.1, 0.1, 0.1, 0.1]), 
-        np.array([-0.2, -0.2, -0.2, -0.2]), 
-        np.array([0.2, 0.2, 0.2, 0.2]), 
-        np.array([-0.1, 0.1, -0.1, 0.1])
+        np.array([0, 0, 0]), 
+        np.array([-1, -1, -1]), 
+        np.array([1, 1, 1]), 
+        np.array([-1, -1, 1]), 
+        np.array([1, 1, -1]), 
+        np.array([-1, 1, -1])
     ]
     initial_dissolution_vec = [
-        np.array([0, 0, 0, 0]), 
-        np.array([-0.05, -0.05, -0.05, -0.05]), 
-        np.array([0.05, 0.05, 0.05, 0.05]), 
-        np.array([-0.1, -0.1, -0.1, -0.1]), 
-        np.array([0.1, 0.1, 0.1, 0.1]), 
-        np.array([-0.2, -0.2, -0.2, -0.2]), 
-        np.array([0.2, 0.2, 0.2, 0.2]), 
-        np.array([-0.1, 0.1, -0.1, 0.1])
+        np.array([0, 0, 0]), 
+        np.array([-1, -1, -1]), 
+        np.array([1, 1, 1]), 
+        np.array([-1, -1, 1]), 
+        np.array([1, 1, -1]), 
+        np.array([-1, 1, -1])
     ]
 
     for i in range(core_num):
         process_unit = mp.Process(target=procedure, 
-        args=(proc_queue, samplk_sequence, initial_formation_vec[i], initial_dissolution_vec[i], "samplk_sequence_ex_model_"+str(i)+"chain", 2021+i*10, 8000, 30))
+        args=(proc_queue, sociational_interactions, initial_formation_vec[i], initial_dissolution_vec[i], "tailorSoc_ex_model_"+str(i)+"chain", 2021+i*10, 10, 30))
         # def procedure(result_queue, network_sequence, initial_formation_param, initial_dissolution_param, result_string, rng_seed=2021, main_iter=30000, ex_iter=50)
         
         process_vec.append(process_unit)
