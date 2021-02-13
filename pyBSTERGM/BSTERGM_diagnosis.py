@@ -162,20 +162,20 @@ class BSTERGM_latest_exchangeSampler_work:
 
 if __name__ == "__main__":
     reader_inst = BSTERGM_posterior_work()
-    reader_inst.read_from_csv("samplk_results/samplk_sequence_ex_model_5chain", 4, 4)
+    reader_inst.read_from_csv("tailorSoc_ex_model_5chain", 3, 3)
     # print(reader_inst.MC_formation_samples[0:10])
-    reader_inst.MC_dissolution_samples = reader_inst.MC_dissolution_samples[2000::10]
-    reader_inst.MC_formation_samples = reader_inst.MC_formation_samples[2000::10]
-    print(np.mean(reader_inst.MC_sample_trace()[0][0]), np.mean(reader_inst.MC_sample_trace()[0][1]),
-        np.mean(reader_inst.MC_sample_trace()[0][2]), np.mean(reader_inst.MC_sample_trace()[0][3]))
+    # reader_inst.MC_dissolution_samples = reader_inst.MC_dissolution_samples[2000::10]
+    # reader_inst.MC_formation_samples = reader_inst.MC_formation_samples[2000::10]
+    # print(np.mean(reader_inst.MC_sample_trace()[0][0]), np.mean(reader_inst.MC_sample_trace()[0][1]),
+    #     np.mean(reader_inst.MC_sample_trace()[0][2]), np.mean(reader_inst.MC_sample_trace()[0][3]))
     #STERGM formation: -3.5586, 2.2624, -0.4994, 0.2945
-    print(np.mean(reader_inst.MC_sample_trace()[1][0]), np.mean(reader_inst.MC_sample_trace()[1][1]),
-        np.mean(reader_inst.MC_sample_trace()[1][2]), np.mean(reader_inst.MC_sample_trace()[1][3]))
+    # print(np.mean(reader_inst.MC_sample_trace()[1][0]), np.mean(reader_inst.MC_sample_trace()[1][1]),
+    #     np.mean(reader_inst.MC_sample_trace()[1][2]), np.mean(reader_inst.MC_sample_trace()[1][3]))
     #STERGM dissolution: -0.1164, 1.5791, -1.6957, 0.6847
     reader_inst.show_traceplot()
     reader_inst.show_histogram()
     reader_inst.show_acfplot()
 
     netstat_reader_inst = BSTERGM_latest_exchangeSampler_work()
-    netstat_reader_inst.read_from_csv("samplk_results/samplk_sequence_ex_model_5chain_NetworkStat")
+    netstat_reader_inst.read_from_csv("tailorSoc_ex_model_5chain_NetworkStat")
     netstat_reader_inst.show_traceplot()

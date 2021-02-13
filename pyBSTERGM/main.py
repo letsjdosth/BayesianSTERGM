@@ -22,8 +22,7 @@ def model_netStat(network):
     model = []
     #define model
     model.append(network.statCal_edgeNum())
-    model.append(network.statCal_k_star(2))
-    model.append(network.statCal_geoWeightedESP(tau=0.30102999566)) #log2
+    model.append(network.statCal_geoWeightedESP(tau=0.30103)) #log2
     return np.array(model)
 
 def procedure(result_queue, network_sequence, initial_formation_param, initial_dissolution_param, result_string, rng_seed=2021, main_iter=30000, ex_iter=50):
@@ -93,25 +92,25 @@ if __name__=="__main__":
     proc_queue = mp.Queue()
 
     initial_formation_vec = [
-        np.array([0, 0, 0]), 
-        np.array([-1, -1, -1]), 
-        np.array([1, 1, 1]), 
-        np.array([-1, -1, 1]), 
-        np.array([1, 1, -1]), 
-        np.array([-1, 1, -1])
+        np.array([0, 0]), 
+        np.array([-1, 0]), 
+        np.array([1, 0]), 
+        np.array([-1, 0]), 
+        np.array([1, 0]), 
+        np.array([-1, 0])
     ]
     initial_dissolution_vec = [
-        np.array([0, 0, 0]), 
-        np.array([-1, -1, -1]), 
-        np.array([1, 1, 1]), 
-        np.array([-1, -1, 1]), 
-        np.array([1, 1, -1]), 
-        np.array([-1, 1, -1])
+        np.array([0, 0]), 
+        np.array([-1, 0]), 
+        np.array([1, 0]), 
+        np.array([-1, 0]), 
+        np.array([1, 0]), 
+        np.array([-1, 0])
     ]
 
     for i in range(core_num):
         process_unit = mp.Process(target=procedure, 
-        args=(proc_queue, sociational_interactions, initial_formation_vec[i], initial_dissolution_vec[i], "tailorSoc_ex_model_"+str(i)+"chain", 2021+i*10, 10, 30))
+        args=(proc_queue, sociational_interactions, initial_formation_vec[i], initial_dissolution_vec[i], "tailorSoc_edgeGWESPl2_model_"+str(i)+"chain", 2021+i*10, 30000, 50))
         # def procedure(result_queue, network_sequence, initial_formation_param, initial_dissolution_param, result_string, rng_seed=2021, main_iter=30000, ex_iter=50)
         
         process_vec.append(process_unit)
@@ -128,5 +127,3 @@ if __name__=="__main__":
     for unit_proc in process_vec:
         unit_proc.join()
     print("exit multiprocessing")
-
-
