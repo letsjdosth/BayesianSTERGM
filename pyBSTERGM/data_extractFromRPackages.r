@@ -26,11 +26,12 @@ rownames(primary) <- rownames(friendship[[1]])
 colnames(primary) <- colnames(friendship[[1]])
 sex <- demographics$sex
 names(sex) <- 1:length(sex)
+sex #1: girl, 2: boy
 
 # step 2: imputation of NAs and removal of absent nodes:
 friendship <- handleMissings(friendship, na = 10, method = "remove")
 friendship <- handleMissings(friendship, na = NA, method = "fillmode")
-
+?handleMissings
 length(friendship$t1)
 length(friendship$t2)
 length(friendship$t3)
@@ -41,6 +42,8 @@ write.table(friendship$t2, row.names=FALSE, col.names=FALSE, file="pyBSTERGM/kne
 write.table(friendship$t3, row.names=FALSE, col.names=FALSE, file="pyBSTERGM/knecht_friendship_t3.txt", sep=",")
 write.table(friendship$t4, row.names=FALSE, col.names=FALSE, file="pyBSTERGM/knecht_friendship_t4.txt", sep=",")
 
+primary == t(primary)
+write.table(primary, row.names=FALSE, col.names=FALSE, file="pyBSTERGM/primary.txt", sep=",")
 
 # ==========================================
 library(RSiena)

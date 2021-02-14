@@ -22,7 +22,14 @@ def model_netStat(network):
     model = []
     #define model
     model.append(network.statCal_edgeNum())
-    model.append(network.statCal_geoWeightedESP(tau=0.30103)) #log2
+    model.append(network.statCal_homophily(data_knecht_friendship.friendship_sex_girl_index)) #girls
+    model.append(network.statCal_homophily(data_knecht_friendship.friendship_sex_boy_index)) #boys
+    model.append(network.statCal_heterophily(data_knecht_friendship.friendship_sex_girl_index, data_knecht_friendship.friendship_sex_boy_index))#girls->boys
+    model.append(network.statCal_match_matrix(np.array(data_knecht_friendship.friendship_primary)))
+    model.append(network.statCal_mutuality())
+    model.append(network.statCal_transitiveTies())
+    model.append(network.statCal_cyclicalTies())
+    
     return np.array(model)
 
 def procedure(result_queue, network_sequence, initial_formation_param, initial_dissolution_param, result_string, rng_seed=2021, main_iter=30000, ex_iter=50):
@@ -68,12 +75,12 @@ if __name__=="__main__":
 
 
     # knecht_friendship
-    # friendship_sequence = [
-    #     DirectedNetwork(np.array(data_knecht_friendship.friendship_t1)),
-    #     DirectedNetwork(np.array(data_knecht_friendship.friendship_t2)),
-    #     DirectedNetwork(np.array(data_knecht_friendship.friendship_t3)),
-    #     DirectedNetwork(np.array(data_knecht_friendship.friendship_t4))
-    # ]
+    friendship_sequence = [
+        DirectedNetwork(np.array(data_knecht_friendship.friendship_t1)),
+        DirectedNetwork(np.array(data_knecht_friendship.friendship_t2)),
+        DirectedNetwork(np.array(data_knecht_friendship.friendship_t3)),
+        DirectedNetwork(np.array(data_knecht_friendship.friendship_t4))
+    ]
 
     #tailor shop
     # instrumental_interactions = [
@@ -81,10 +88,10 @@ if __name__=="__main__":
     #     DirectedNetwork(np.array(data_tailor.KAPFTI2)),
     # ]
     
-    sociational_interactions = [
-        UndirectedNetwork(np.array(data_tailor.KAPFTS1)),
-        UndirectedNetwork(np.array(data_tailor.KAPFTS2))
-    ]
+    # sociational_interactions = [
+    #     UndirectedNetwork(np.array(data_tailor.KAPFTS1)),
+    #     UndirectedNetwork(np.array(data_tailor.KAPFTS2))
+    # ]
 
     #core
     core_num = 6
@@ -92,25 +99,25 @@ if __name__=="__main__":
     proc_queue = mp.Queue()
 
     initial_formation_vec = [
-        np.array([0, 0]), 
-        np.array([-1, 0]), 
-        np.array([1, 0]), 
-        np.array([-1, 0]), 
-        np.array([1, 0]), 
-        np.array([-1, 0])
+        np.array([0, 0, 0, 0, 0, 0, 0, 0]), 
+        np.array([-1, 0, 0, 0, 0, 0, 0, 0]), 
+        np.array([1, 0, 0, 0, 0, 0, 0, 0]), 
+        np.array([0, 0, 1, 0, 1, 1, 0, 0]),
+        np.array([1, 0, 1, 0, 1, 1, 0, 0]),
+        np.array([-1, 0, 1, 0, 1, 1, 0, 0]), 
     ]
     initial_dissolution_vec = [
-        np.array([0, 0]), 
-        np.array([-1, 0]), 
-        np.array([1, 0]), 
-        np.array([-1, 0]), 
-        np.array([1, 0]), 
-        np.array([-1, 0])
+        np.array([0, 0, 0, 0, 0, 0, 0, 0]), 
+        np.array([-1, 0, 0, 0, 0, 0, 0, 0]), 
+        np.array([1, 0, 0, 0, 0, 0, 0, 0]), 
+        np.array([0, 0, 1, 0, 1, 1, 0, 0]),
+        np.array([1, 0, 1, 0, 1, 1, 0, 0]),
+        np.array([-1, 0, 1, 0, 1, 1, 0, 0]), 
     ]
 
     for i in range(core_num):
         process_unit = mp.Process(target=procedure, 
-        args=(proc_queue, sociational_interactions, initial_formation_vec[i], initial_dissolution_vec[i], "tailorSoc_edgeGWESPl2_model_"+str(i)+"chain", 2021+i*10, 30000, 50))
+        args=(proc_queue, friendship_sequence, initial_formation_vec[i], initial_dissolution_vec[i], "friendship_sequence_Exmodel_run_"+str(i)+"chain", 2021+i*10, 30000, 30))
         # def procedure(result_queue, network_sequence, initial_formation_param, initial_dissolution_param, result_string, rng_seed=2021, main_iter=30000, ex_iter=50)
         
         process_vec.append(process_unit)

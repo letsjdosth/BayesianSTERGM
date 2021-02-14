@@ -83,7 +83,7 @@ class BSTERGM:
             self.obs_network_dissolution_seq.append(y_minus)
 
     def propose_param(self, last_param, cov_rate):
-        cov_mat = np.identity(len(last_param))
+        cov_mat = np.identity(len(last_param))*cov_rate
         return self.random_gen.multivariate_normal(last_param, cov_mat)
 
     def get_exchange_sampler(self, start_time_lag, exchange_iter, proposed_param, rng_seed):

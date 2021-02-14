@@ -120,7 +120,10 @@ class DirectedNetwork:
 
         #initialize
         self.structure = structure
-        self.node_num = structure.shape[0]    
+        self.node_num = structure.shape[0]
+
+        #temporal variables
+        self.statCal_existTwoPath_calculated = None
 
     def __str__(self):
         string_val = "<network.DirectedNetwork object>\n" + self.structure.__str__()
@@ -244,18 +247,23 @@ class DirectedNetwork:
         return mutual
 
     def statCal_existTwoPath(self):
-        existance = np.zeros((self.node_num, self.node_num))
-        for start_node in range(self.node_num):
-            for end_node in range(self.node_num):
-                if start_node == end_node:
-                    pass
-                else:
-                    idx_set = [i for i in range(self.node_num) if i != start_node and i != end_node]
-                    # print(start_node, end_node, idx_set)
-                    for inter_node in idx_set:
-                        if self.structure[start_node, inter_node]==1 and self.structure[inter_node,end_node]==1:
-                            existance[start_node, end_node] += 1
-        return existance
+        if self.statCal_existTwoPath_calculated is None:
+            existance = np.zeros((self.node_num, self.node_num))
+            for start_node in range(self.node_num):
+                for end_node in range(self.node_num):
+                    if start_node == end_node:
+                        pass
+                    else:
+                        idx_set = [i for i in range(self.node_num) if i != start_node and i != end_node]
+                        # print(start_node, end_node, idx_set)
+                        for inter_node in idx_set:
+                            if self.structure[start_node, inter_node]==1 and self.structure[inter_node,end_node]==1:
+                                existance[start_node, end_node] += 1
+            
+            self.statCal_existTwoPath_calculated = existance
+            return existance
+        else:
+            return self.statCal_existTwoPath_calculated
 
     def statCal_transitiveTriples(self):
         result = 0
@@ -293,6 +301,33 @@ class DirectedNetwork:
                     result += 1
         return result
 
+    def statCal_homophily(self, indexList_samegroup):
+        #Lists : python list
+        result = 0
+        for row in indexList_samegroup:
+            for col in indexList_samegroup:
+                if self.structure[row,col]==1:
+                    result +=1
+        return result
+    
+    def statCal_heterophily(self, indexList_from, indexList_to):
+        #Lists : python list
+        result = 0
+        for row in indexList_from:
+            for col in indexList_to:
+                if self.structure[row,col]==1:
+                    result +=1
+        return result
+    
+    def statCal_match_matrix(self, match_matrix):
+        #match_matrix: np array
+        result = 0
+        for row in range(self.node_num):
+            for col in range(self.node_num):
+                if self.structure[row,col]==1:
+                    if match_matrix[row,col]==1:
+                        result +=1
+        return result
 
 # class InterNetwork_Statistics:
 #     @classmethod
@@ -357,3 +392,14 @@ if __name__ == "__main__":
 
     print(test_net_2.statCal_k_in_star(2)) #true 6
     print(test_net_2.statCal_k_out_star(2)) #true 6
+    print(test_net_2.statCal_homophily([0,1,2])) # true 5
+    print(test_net_2.statCal_heterophily([2,3,4],[0,1])) # true 3
+
+    match_mat = np.array([
+        [0,0,0,0,0],
+        [1,0,0,0,0],
+        [1,0,0,0,0],
+        [0,0,0,0,0],
+        [0,0,0,1,1]
+    ])
+    print(test_net_2.statCal_match_matrix(match_mat)) #true 3
