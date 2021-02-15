@@ -133,13 +133,23 @@ if __name__=="__main__":
     ]
 
     for i in range(core_num):
-        process_unit = mp.Process(target=procedure, 
-        args=(proc_queue, samplk_sequence, model_netStat_samplk_vignettesEx, 
-            samplk_vignettesEx_initial_formation_vec[i], samplk_vignettesEx_initial_dissolution_vec[i], 
-            "samplk_sequence_Exmodel_run_"+str(i)+"chain", 2021+i*10, 80000, 30))
         # def procedure(result_queue, network_sequence, model_netStat_func, 
         #       initial_formation_param, initial_dissolution_param, 
         #       result_string, rng_seed=2021, main_iter=30000, ex_iter=50):
+
+        #samplk
+        # process_unit = mp.Process(target=procedure, 
+        # args=(proc_queue, samplk_sequence, model_netStat_samplk_vignettesEx, 
+        #     samplk_vignettesEx_initial_formation_vec[i], samplk_vignettesEx_initial_dissolution_vec[i], 
+        #     "samplk_sequence_Exmodel_run_"+str(i)+"chain", 2021+i*10, 80000, 30))
+        
+        #friendship
+        process_unit = mp.Process(target=procedure, 
+        args=(proc_queue, friendship_sequence, model_netStat_friendship_KHEx, 
+            friendship_KHEx_initial_formation_vec[i], friendship_KHEx_initial_dissolution_vec[i], 
+            "friendship_sequence_Exmodel_run2_"+str(i)+"chain", 2021+i*10, 80000, 30))
+        
+        
         process_vec.append(process_unit)
     
     for unit_proc in process_vec:

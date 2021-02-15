@@ -70,16 +70,18 @@ class BSTERGM_posterior_work:
 
     def show_histogram(self, bins=100 ,show=True):
         formation_trace, dissolution_trace = self.MC_sample_trace()
-        grid_column = 1
+        grid_column = 2
         # grid_row = int(len(netStat)/2+0.51)
-        grid_row = len(self.initial_formation_param) + len(self.initial_dissolution_param)
+        grid_row = (len(self.initial_formation_param) + len(self.initial_dissolution_param))/2
         plt.figure(figsize=(5*grid_column, 3*grid_row))
         for i, paramSeq in enumerate(formation_trace):
             plt.subplot(grid_row, grid_column, i+1)
             plt.hist(paramSeq, bins=bins, density=True)
+            plt.ylabel('formation'+str(i))
         for i, paramSeq in enumerate(dissolution_trace):
             plt.subplot(grid_row, grid_column, len(self.initial_formation_param)+i+1)
             plt.hist(paramSeq, bins=bins, density=True)
+            plt.ylabel('dissolution'+str(i))
 
         if show:
             plt.show()
@@ -162,7 +164,7 @@ class BSTERGM_latest_exchangeSampler_work:
 
 if __name__ == "__main__":
     reader_inst = BSTERGM_posterior_work()
-    reader_inst.read_from_csv("tailorSoc_ex_model_5chain", 3, 3)
+    reader_inst.read_from_csv("friendship_KH_example_model/friendship_sequence_Exmodel_run_2chain", 8, 8)
     # print(reader_inst.MC_formation_samples[0:10])
     # reader_inst.MC_dissolution_samples = reader_inst.MC_dissolution_samples[2000::10]
     # reader_inst.MC_formation_samples = reader_inst.MC_formation_samples[2000::10]
@@ -177,5 +179,5 @@ if __name__ == "__main__":
     reader_inst.show_acfplot()
 
     netstat_reader_inst = BSTERGM_latest_exchangeSampler_work()
-    netstat_reader_inst.read_from_csv("tailorSoc_ex_model_5chain_NetworkStat")
+    netstat_reader_inst.read_from_csv("friendship_KH_example_model/friendship_sequence_Exmodel_run_2chain_NetworkStat")
     netstat_reader_inst.show_traceplot()
