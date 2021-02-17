@@ -39,19 +39,19 @@ friendship_sequence = [
     DirectedNetwork(np.array(data_knecht_friendship.friendship_t4))
 ]
 
-#tailor shop
-# instrumental_interactions = [
-#     DirectedNetwork(np.array(data_tailor.KAPFTI1)),
-#     DirectedNetwork(np.array(data_tailor.KAPFTI2)),
-# ]
+# tailor shop
+instrumental_interactions = [
+    DirectedNetwork(np.array(data_tailor.KAPFTI1)),
+    DirectedNetwork(np.array(data_tailor.KAPFTI2)),
+]
 
-# sociational_interactions = [
-#     UndirectedNetwork(np.array(data_tailor.KAPFTS1)),
-#     UndirectedNetwork(np.array(data_tailor.KAPFTS2))
-# ]
+sociational_interactions = [
+    UndirectedNetwork(np.array(data_tailor.KAPFTS1)),
+    UndirectedNetwork(np.array(data_tailor.KAPFTS2))
+]
 
 
-def model_netStat_samplk_vignettesEx(network):
+def model_netStat_samplk_vignettesEx(network): #directed
     model = []
     #define model
     model.append(network.statCal_edgeNum())
@@ -60,7 +60,7 @@ def model_netStat_samplk_vignettesEx(network):
     model.append(network.statCal_transitiveTriples())
     return np.array(model)
 
-def model_netStat_friendship_KHEx(network):
+def model_netStat_friendship_KHEx(network): #directed
     model = []
     #define model
     model.append(network.statCal_edgeNum())
@@ -71,6 +71,22 @@ def model_netStat_friendship_KHEx(network):
     model.append(network.statCal_mutuality())
     model.append(network.statCal_transitiveTies())
     model.append(network.statCal_cyclicalTies())
+    return np.array(model)
+
+def model_netStat_friendship_KH_simplified(network): #directed
+    model = []
+    model.append(network.statCal_edgeNum())
+    model.append(network.statCal_heterophily(data_knecht_friendship.friendship_sex_girl_index, data_knecht_friendship.friendship_sex_boy_index))#girls->boys
+    model.append(network.statCal_match_matrix(np.array(data_knecht_friendship.friendship_primary)))
+    model.append(network.statCal_mutuality())
+    model.append(network.statCal_transitiveTies())
+    model.append(network.statCal_cyclicalTies())
+    return np.array(model)
+
+def model_netStat_tailorshop_social(network): #undirected
+    model = []
+    model.append(network.statCal_edgeNum())
+    model.append(network.statCal_geoWeightedESP(tau=0.5))
     return np.array(model)
 
 #for multiprocessing
@@ -86,7 +102,6 @@ def procedure(result_queue, network_sequence, model_netStat_func, initial_format
     BSTERGM_sampler.write_latest_exchangeSampler_netStat(result_string + "_NetworkStat")
 
     result_queue.put(BSTERGM_sampler)
-
 
     BSTERGM_sampler.show_traceplot()
     # BSTERGM_sampler.show_latest_exchangeSampler_netStat_traceplot()
