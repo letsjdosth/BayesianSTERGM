@@ -39,11 +39,11 @@ friendship_sequence = [
     DirectedNetwork(np.array(data_knecht_friendship.friendship_t4))
 ]
 
-#tailor shop
-# instrumental_interactions = [
-#     DirectedNetwork(np.array(data_tailor.KAPFTI1)),
-#     DirectedNetwork(np.array(data_tailor.KAPFTI2)),
-# ]
+# tailor shop
+instrumental_interactions = [
+    DirectedNetwork(np.array(data_tailor.KAPFTI1)),
+    DirectedNetwork(np.array(data_tailor.KAPFTI2)),
+]
 
 sociational_interactions = [
     UndirectedNetwork(np.array(data_tailor.KAPFTS1)),
@@ -51,7 +51,7 @@ sociational_interactions = [
 ]
 
 
-def model_netStat_samplk_vignettesEx(network):
+def model_netStat_samplk_vignettesEx(network): #directed
     model = []
     #define model
     model.append(network.statCal_edgeNum())
@@ -107,7 +107,6 @@ def procedure(result_queue, network_sequence, model_netStat_func, initial_format
     BSTERGM_sampler.write_latest_exchangeSampler_netStat(result_string + "_NetworkStat")
 
     result_queue.put(BSTERGM_sampler)
-
 
     BSTERGM_sampler.show_traceplot()
     # BSTERGM_sampler.show_latest_exchangeSampler_netStat_traceplot()
@@ -185,7 +184,7 @@ if __name__=="__main__":
         process_unit = mp.Process(target=procedure, 
         args=(proc_queue, friendship_sequence, model_netStat_friendship_simplified, 
             friendship_simplified_initial_formation_vec[i], friendship_simplified_initial_dissolution_vec[i], 
-            "friendship_sequence_simplified_"+str(i)+"chain", 2021+i*10, 10, 30))
+            "friendship_sequence_simplified_"+str(i)+"chain", 2021+i*10, 80000, 30))
         
         
         process_vec.append(process_unit)
