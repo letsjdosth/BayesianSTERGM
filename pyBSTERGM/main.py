@@ -24,12 +24,12 @@ from BSTERGM import BSTERGM
 #     UndirectedNetwork(np.array(data_Jdata.f3_19_structure))
 # ]
 
-#samplk
-samplk_sequence = [
-    DirectedNetwork(np.array(data_samplk.samplk1)),
-    DirectedNetwork(np.array(data_samplk.samplk2)),
-    DirectedNetwork(np.array(data_samplk.samplk3))
-]
+# #samplk
+# samplk_sequence = [
+#     DirectedNetwork(np.array(data_samplk.samplk1)),
+#     DirectedNetwork(np.array(data_samplk.samplk2)),
+#     DirectedNetwork(np.array(data_samplk.samplk3))
+# ]
 
 # knecht_friendship
 friendship_sequence = [
@@ -45,10 +45,10 @@ friendship_sequence = [
 #     DirectedNetwork(np.array(data_tailor.KAPFTI2)),
 # ]
 
-# sociational_interactions = [
-#     UndirectedNetwork(np.array(data_tailor.KAPFTS1)),
-#     UndirectedNetwork(np.array(data_tailor.KAPFTS2))
-# ]
+sociational_interactions = [
+    UndirectedNetwork(np.array(data_tailor.KAPFTS1)),
+    UndirectedNetwork(np.array(data_tailor.KAPFTS2))
+]
 
 
 def model_netStat_samplk_vignettesEx(network):
@@ -61,6 +61,7 @@ def model_netStat_samplk_vignettesEx(network):
     return np.array(model)
 
 def model_netStat_friendship_KHEx(network):
+    #directed network
     model = []
     #define model
     model.append(network.statCal_edgeNum())
@@ -71,6 +72,26 @@ def model_netStat_friendship_KHEx(network):
     model.append(network.statCal_mutuality())
     model.append(network.statCal_transitiveTies())
     model.append(network.statCal_cyclicalTies())
+    return np.array(model)
+
+def model_netStat_friendship_simplified(network):
+    #directed network
+    model = []
+    #define model
+    model.append(network.statCal_edgeNum())
+    model.append(network.statCal_heterophily(data_knecht_friendship.friendship_sex_girl_index, data_knecht_friendship.friendship_sex_boy_index))#girls->boys
+    model.append(network.statCal_match_matrix(np.array(data_knecht_friendship.friendship_primary)))
+    model.append(network.statCal_mutuality())
+    model.append(network.statCal_transitiveTies())
+    model.append(network.statCal_cyclicalTies())
+    return np.array(model)
+
+
+def model_netStat_tailor_social(network):
+    #undirected network
+    model = []
+    model.append(network.statCal_edgeNum)
+    model.append(network.statCal_geoWeightedESP(0.3))
     return np.array(model)
 
 #for multiprocessing
@@ -115,6 +136,23 @@ if __name__=="__main__":
         np.array([-1, 0, 1, 0, 1, 1, 0, 0]), 
     ]
 
+    friendship_simplified_initial_formation_vec = [
+        np.array([0, 0, 0, 0, 0, 0]), 
+        np.array([-1, 0, 0, 0, 0, 0]), 
+        np.array([1, 0, 0, 0, 0, 0]), 
+        np.array([0, -1, 1, 0, 0, 0]),
+        np.array([1, -1, 1, 0, 0, 0]),
+        np.array([-1, -1, 1, 0, 0, 0])
+    ]
+    friendship_simplified_initial_dissolution_vec = [
+        np.array([0, 0, 0, 0, 0, 0]), 
+        np.array([-1, 0, 0, 0, 0, 0]), 
+        np.array([1, 0, 0, 0, 0, 0]), 
+        np.array([0, -1, 1, 0, 0, 0]),
+        np.array([1, -1, 1, 0, 0, 0]),
+        np.array([-1, -1, 1, 0, 0, 0])
+    ]
+
     samplk_vignettesEx_initial_formation_vec = [
         np.array([0,0,0,0]),
         np.array([1,0,0,0]),
@@ -145,9 +183,9 @@ if __name__=="__main__":
         
         #friendship
         process_unit = mp.Process(target=procedure, 
-        args=(proc_queue, friendship_sequence, model_netStat_friendship_KHEx, 
-            friendship_KHEx_initial_formation_vec[i], friendship_KHEx_initial_dissolution_vec[i], 
-            "friendship_sequence_Exmodel_run2_"+str(i)+"chain", 2021+i*10, 80000, 30))
+        args=(proc_queue, friendship_sequence, model_netStat_friendship_simplified, 
+            friendship_simplified_initial_formation_vec[i], friendship_simplified_initial_dissolution_vec[i], 
+            "friendship_sequence_simplified_"+str(i)+"chain", 2021+i*10, 10, 30))
         
         
         process_vec.append(process_unit)
