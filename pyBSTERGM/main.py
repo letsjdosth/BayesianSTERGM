@@ -51,49 +51,6 @@ sociational_interactions = [
 ]
 
 
-def model_netStat_samplk_vignettesEx(network): #directed
-    model = []
-    #define model
-    model.append(network.statCal_edgeNum())
-    model.append(network.statCal_mutuality())
-    model.append(network.statCal_cyclicTriples())
-    model.append(network.statCal_transitiveTriples())
-    return np.array(model)
-
-def model_netStat_friendship_KHEx(network):
-    #directed network
-    model = []
-    #define model
-    model.append(network.statCal_edgeNum())
-    model.append(network.statCal_homophily(data_knecht_friendship.friendship_sex_girl_index)) #girls
-    model.append(network.statCal_homophily(data_knecht_friendship.friendship_sex_boy_index)) #boys
-    model.append(network.statCal_heterophily(data_knecht_friendship.friendship_sex_girl_index, data_knecht_friendship.friendship_sex_boy_index))#girls->boys
-    model.append(network.statCal_match_matrix(np.array(data_knecht_friendship.friendship_primary)))
-    model.append(network.statCal_mutuality())
-    model.append(network.statCal_transitiveTies())
-    model.append(network.statCal_cyclicalTies())
-    return np.array(model)
-
-def model_netStat_friendship_simplified(network):
-    #directed network
-    model = []
-    #define model
-    model.append(network.statCal_edgeNum())
-    model.append(network.statCal_heterophily(data_knecht_friendship.friendship_sex_girl_index, data_knecht_friendship.friendship_sex_boy_index))#girls->boys
-    model.append(network.statCal_match_matrix(np.array(data_knecht_friendship.friendship_primary)))
-    model.append(network.statCal_mutuality())
-    model.append(network.statCal_transitiveTies())
-    model.append(network.statCal_cyclicalTies())
-    return np.array(model)
-
-
-def model_netStat_tailor_social(network):
-    #undirected network
-    model = []
-    model.append(network.statCal_edgeNum)
-    model.append(network.statCal_geoWeightedESP(0.3))
-    return np.array(model)
-
 #for multiprocessing
 def procedure(result_queue, network_sequence, model_netStat_func, initial_formation_param, initial_dissolution_param, result_string, rng_seed=2021, main_iter=30000, ex_iter=50):
     proc_pid = getpid()
@@ -118,56 +75,8 @@ if __name__=="__main__":
     process_vec = []
     proc_queue = mp.Queue()
 
-    friendship_KHEx_initial_formation_vec = [
-        np.array([0, 0, 0, 0, 0, 0, 0, 0]), 
-        np.array([-1, 0, 0, 0, 0, 0, 0, 0]), 
-        np.array([1, 0, 0, 0, 0, 0, 0, 0]), 
-        np.array([0, 0, 1, 0, 1, 1, 0, 0]),
-        np.array([1, 0, 1, 0, 1, 1, 0, 0]),
-        np.array([-1, 0, 1, 0, 1, 1, 0, 0]), 
-    ]
-    friendship_KHEx_initial_dissolution_vec = [
-        np.array([0, 0, 0, 0, 0, 0, 0, 0]), 
-        np.array([-1, 0, 0, 0, 0, 0, 0, 0]), 
-        np.array([1, 0, 0, 0, 0, 0, 0, 0]), 
-        np.array([0, 0, 1, 0, 1, 1, 0, 0]),
-        np.array([1, 0, 1, 0, 1, 1, 0, 0]),
-        np.array([-1, 0, 1, 0, 1, 1, 0, 0]), 
-    ]
+    from model_settings import model_netStat_friendship_simplified, friendship_simplified_initial_formation_vec, friendship_simplified_initial_dissolution_vec
 
-    friendship_simplified_initial_formation_vec = [
-        np.array([0, 0, 0, 0, 0, 0]), 
-        np.array([-1, 0, 0, 0, 0, 0]), 
-        np.array([1, 0, 0, 0, 0, 0]), 
-        np.array([0, -1, 1, 0, 0, 0]),
-        np.array([1, -1, 1, 0, 0, 0]),
-        np.array([-1, -1, 1, 0, 0, 0])
-    ]
-    friendship_simplified_initial_dissolution_vec = [
-        np.array([0, 0, 0, 0, 0, 0]), 
-        np.array([-1, 0, 0, 0, 0, 0]), 
-        np.array([1, 0, 0, 0, 0, 0]), 
-        np.array([0, -1, 1, 0, 0, 0]),
-        np.array([1, -1, 1, 0, 0, 0]),
-        np.array([-1, -1, 1, 0, 0, 0])
-    ]
-
-    samplk_vignettesEx_initial_formation_vec = [
-        np.array([0,0,0,0]),
-        np.array([1,0,0,0]),
-        np.array([-1,0,0,0]),
-        np.array([0,0.5,-0.5,0]),
-        np.array([1,0.5,-0.5,0]),
-        np.array([-1,0.5,-0.5,0]),
-    ]
-    samplk_vignettesEx_initial_dissolution_vec = [
-        np.array([0,0,0,0]),
-        np.array([1,0,0,0]),
-        np.array([-1,0,0,0]),
-        np.array([0,0.5,-0.5,0]),
-        np.array([1,0.5,-0.5,0]),
-        np.array([-1,0.5,-0.5,0]),
-    ]
 
     for i in range(core_num):
         # def procedure(result_queue, network_sequence, model_netStat_func, 
