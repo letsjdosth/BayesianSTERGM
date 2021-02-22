@@ -75,6 +75,7 @@ if __name__=="__main__":
     process_vec = []
     proc_queue = mp.Queue()
 
+    from model_settings import model_netStat_tailor_social, tailor_social_initial_formation_vec, tailor_social_initial_dissolution_vec
     from model_settings import model_netStat_friendship_simplified, friendship_simplified_initial_formation_vec, friendship_simplified_initial_dissolution_vec
 
 
@@ -90,11 +91,17 @@ if __name__=="__main__":
         #     "samplk_sequence_Exmodel_run_"+str(i)+"chain", 2021+i*10, 80000, 30))
         
         #friendship
-        process_unit = mp.Process(target=procedure, 
-        args=(proc_queue, friendship_sequence, model_netStat_friendship_simplified, 
-            friendship_simplified_initial_formation_vec[i], friendship_simplified_initial_dissolution_vec[i], 
-            "friendship_sequence_simplified_"+str(i)+"chain", 2021+i*10, 80000, 30))
+        # process_unit = mp.Process(target=procedure, 
+        # args=(proc_queue, friendship_sequence, model_netStat_friendship_simplified, 
+        #     friendship_simplified_initial_formation_vec[i], friendship_simplified_initial_dissolution_vec[i], 
+        #     "friendship_sequence_simplified_"+str(i)+"chain", 2021+i*10, 80000, 30))
         
+        #tailorshop-social
+        process_unit = mp.Process(target=procedure, 
+        args=(proc_queue, sociational_interactions, model_netStat_tailor_social, 
+            tailor_social_initial_formation_vec[i], tailor_social_initial_dissolution_vec[i], 
+            "friendship_sequence_simplified_"+str(i)+"chain", 2021+i*10, 80000, 30))
+
         
         process_vec.append(process_unit)
     

@@ -105,3 +105,21 @@ def model_netStat_tailor_social(network):
     model.append(network.statCal_edgeNum)
     model.append(network.statCal_geoWeightedESP(0.3))
     return np.array(model)
+
+tailor_social_initial_formation_vec = [
+    np.array([0,0]),
+    np.array([0.5,-0.5]),
+    np.array([-0.5,0.5]),
+    np.array([-0.5,-0.5]),
+    np.array([0,-0.5]),
+    np.array([0.5,0])
+]
+
+tailor_social_initial_dissolution_vec = [
+    np.array([0,0]),
+    np.array([0.5,-0.5]),
+    np.array([-0.5,0.5]),
+    np.array([-0.5,-0.5]),
+    np.array([0,-0.5]),
+    np.array([0.5,0])
+]
