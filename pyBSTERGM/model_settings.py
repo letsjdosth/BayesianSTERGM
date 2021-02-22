@@ -102,7 +102,7 @@ friendship_simplified_initial_dissolution_vec = [
 def model_netStat_tailor_social(network):
     #undirected network
     model = []
-    model.append(network.statCal_edgeNum)
+    model.append(network.statCal_edgeNum())
     model.append(network.statCal_geoWeightedESP(0.3))
     return np.array(model)
 

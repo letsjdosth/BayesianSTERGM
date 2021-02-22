@@ -100,9 +100,9 @@ if __name__=="__main__":
         process_unit = mp.Process(target=procedure, 
         args=(proc_queue, sociational_interactions, model_netStat_tailor_social, 
             tailor_social_initial_formation_vec[i], tailor_social_initial_dissolution_vec[i], 
-            "friendship_sequence_simplified_"+str(i)+"chain", 2021+i*10, 80000, 30))
+            "tailorshop_social_edgeGWESP03_"+str(i)+"chain", 2021+i*10, 80000, 30))
 
-        
+
         process_vec.append(process_unit)
     
     for unit_proc in process_vec:
