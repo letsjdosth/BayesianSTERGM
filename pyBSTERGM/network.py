@@ -53,6 +53,29 @@ class UndirectedNetwork:
             val += (1 - nested) * ESPdist[k] * np.exp(tau)
         return val
     
+    def statCal_DyadwiseSharedPartner(self):
+        DSP = np.zeros((self.node_num, self.node_num))
+        for row_ind in range(1, self.node_num):
+            for col_ind in range(row_ind):
+                DSP[row_ind, col_ind] = np.dot(self.structure[row_ind,:].T, self.structure[col_ind,:])
+                DSP[col_ind, row_ind] = DSP[row_ind, col_ind]
+        return DSP
+    def statCal_DyadwiseSharedPartnerDist(self):
+        fullDSP= self.statCal_DyadwiseSharedPartner()
+        DSP_dist = np.zeros(self.node_num-1) #0 ~ n-2
+        for row_ind in range(1, self.node_num):
+            for col_ind in range(row_ind):
+                DSP_dist[int(fullDSP[row_ind,col_ind])] += 1
+        return DSP_dist
+    def statCal_geoWeightedDSP(self, tau=0.5):
+        val = 0
+        DSPdist = self.statCal_DyadwiseSharedPartnerDist()
+        for k in range(1, self.node_num - 1):
+            nested = (-np.expm1(-tau))**k
+            val += (1 - nested) * DSPdist[k] * np.exp(tau)
+        return val
+
+
     def statCal_k_star(self, order):
         if order==1:
             return self.statCal_edgeNum()
@@ -364,6 +387,9 @@ if __name__ == "__main__":
     print(test_net.statCal_geoWeightedESP()) #true: 5.393469 (R과 cross check 완료)
     print(test_net.statCal_MinGeodesic())
     print(test_net.statCal_MinGeodesicDist())
+    print(test_net.statCal_DyadwiseSharedPartnerDist()) #true 2,6,2,0
+    print(test_net.statCal_geoWeightedDSP(0.3)) #true:8.518364
+
 
     test_structure_2 = np.array(
         [
