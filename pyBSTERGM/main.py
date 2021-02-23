@@ -52,7 +52,9 @@ sociational_interactions = [
 
 
 #for multiprocessing
-def procedure(result_queue, network_sequence, model_netStat_func, initial_formation_param, initial_dissolution_param, result_string, rng_seed=2021, main_iter=30000, ex_iter=50):
+def procedure(result_queue, network_sequence, model_netStat_func, 
+        initial_formation_param, initial_dissolution_param, result_string, rng_seed=2021, main_iter=30000, ex_iter=50):
+    
     proc_pid = getpid()
     print("pid: ", proc_pid, "start!")
 
@@ -67,6 +69,25 @@ def procedure(result_queue, network_sequence, model_netStat_func, initial_format
 
     BSTERGM_sampler.show_traceplot()
     # BSTERGM_sampler.show_latest_exchangeSampler_netStat_traceplot()
+
+def procedure_1dim_sampler(result_queue, network_sequence, model_netStat_func,
+        initial_formation_param, initial_dissolution_param, result_string, rng_seed=2021, main_iter=30000, ex_iter=50):
+    
+    proc_pid = getpid()
+    print("pid: ", proc_pid, "start!")
+
+    BSTERGM_sampler = BSTERGM(model_netStat_func, initial_formation_param, initial_dissolution_param, network_sequence, rng_seed, pid=proc_pid)
+    BSTERGM_sampler.run_1dim(main_iter, exchange_iter=ex_iter)
+    # print(BSTERGM_sampler.MC_formation_samples)
+    # print(BSTERGM_sampler.MC_dissolution_samples)
+    BSTERGM_sampler.write_posterior_samples(result_string)
+    BSTERGM_sampler.write_latest_exchangeSampler_netStat(result_string + "_NetworkStat")
+
+    result_queue.put(BSTERGM_sampler)
+
+    BSTERGM_sampler.show_traceplot()
+    # BSTERGM_sampler.show_latest_exchangeSampler_netStat_traceplot()
+
 
 
 if __name__=="__main__":
@@ -96,12 +117,17 @@ if __name__=="__main__":
         # args=(proc_queue, friendship_sequence, model_netStat_friendship_simplified, 
         #     friendship_simplified_initial_formation_vec[i], friendship_simplified_initial_dissolution_vec[i], 
         #     "friendship_sequence_simplified_"+str(i)+"chain", 2021+i*10, 80000, 30))
+
+        process_unit = mp.Process(target=procedure_1dim_sampler, 
+        args=(proc_queue, friendship_sequence, model_netStat_friendship_simplified, 
+            friendship_simplified_initial_formation_vec[i], friendship_simplified_initial_dissolution_vec[i], 
+            "friendship_sequence_simplified_run1dim_"+str(i)+"chain", 2021+i*10, 20000, 20))
         
         #tailorshop-social
-        process_unit = mp.Process(target=procedure, 
-        args=(proc_queue, sociational_interactions, model_netStat_tailor_social_edgeDSPESP, 
-            tailor_social_edgeDSPESP_initial_formation_vec[i], tailor_social_edgeDSPESP_initial_dissolution_vec[i], 
-            "tailorshop_social_edgeGWESP025GWDSP025_"+str(i)+"chain", 2021+i*10, 80000, 30))
+        # process_unit = mp.Process(target=procedure, 
+        # args=(proc_queue, sociational_interactions, model_netStat_tailor_social_edgeDSPESP, 
+        #     tailor_social_edgeDSPESP_initial_formation_vec[i], tailor_social_edgeDSPESP_initial_dissolution_vec[i], 
+        #     "tailorshop_social_edgeGWESP025GWDSP025_"+str(i)+"chain", 2021+i*10, 80000, 30))
 
 
         process_vec.append(process_unit)
