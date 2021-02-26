@@ -21,6 +21,7 @@ class UndirectedNetwork:
 
     def statCal_edgeNum(self):
         return np.sum(self.structure)/2    
+
     def statCal_nodeDegree(self):
         return np.sum(self.structure, axis=1) #rowsum
     def statCal_nodeDegreeDist(self):
@@ -29,6 +30,14 @@ class UndirectedNetwork:
         for i in node_degree:
             node_degree_dist[i] += 1
         return node_degree_dist
+    def statCal_geoWeightedDegree(self, tau=0.5):
+        val = 0
+        Degrdist = self.statCal_nodeDegreeDist()
+        for k in range(1, self.node_num):
+            nested = (-np.expm1(-tau))**k
+            val += (1 - nested) * Degrdist[k] * np.exp(tau)
+        return val
+
     def statCal_EdgewiseSharedPartner(self):
         ESP = np.zeros((self.node_num, self.node_num))
         for row_ind in range(1, self.node_num):
@@ -389,43 +398,43 @@ if __name__ == "__main__":
     print(test_net.statCal_MinGeodesicDist())
     print(test_net.statCal_DyadwiseSharedPartnerDist()) #true 2,6,2,0
     print(test_net.statCal_geoWeightedDSP(0.3)) #true:8.518364
+    print(test_net.statCal_geoWeightedDegree(0.3)) #true: 6.238253
 
+    # test_structure_2 = np.array(
+    #     [
+    #     [0,1,1,0,0],
+    #     [1,0,0,0,1],
+    #     [1,1,0,1,0],
+    #     [0,0,0,0,1],
+    #     [1,0,0,1,0]]
+    # )
+    # test_net_2 = DirectedNetwork(test_structure_2)
+    # print(test_net_2.statCal_edgeNum())
+    # print(test_net_2.statCal_nodeOutDegreeDist()) #true [0,1,3,1,0]
+    # print(test_net_2.statCal_nodeInDegreeDist()) #true [0,1,3,1,0]
+    # print(test_net_2.statCal_EdgewiseSharedPartnerDist()) #true [6,4,0,0]
+    # print(test_net_2.statCal_geoWeightedESP(0.5)) #true 4.0
+    # print(test_net_2.statCal_MinGeodesic())
+    # print(test_net_2.statCal_MinGeodesicDist())
+    # print(test_net_2.statCal_mutuality()) #true 3
 
-    test_structure_2 = np.array(
-        [
-        [0,1,1,0,0],
-        [1,0,0,0,1],
-        [1,1,0,1,0],
-        [0,0,0,0,1],
-        [1,0,0,1,0]]
-    )
-    test_net_2 = DirectedNetwork(test_structure_2)
-    print(test_net_2.statCal_edgeNum())
-    print(test_net_2.statCal_nodeOutDegreeDist()) #true [0,1,3,1,0]
-    print(test_net_2.statCal_nodeInDegreeDist()) #true [0,1,3,1,0]
-    print(test_net_2.statCal_EdgewiseSharedPartnerDist()) #true [6,4,0,0]
-    print(test_net_2.statCal_geoWeightedESP(0.5)) #true 4.0
-    print(test_net_2.statCal_MinGeodesic())
-    print(test_net_2.statCal_MinGeodesicDist())
-    print(test_net_2.statCal_mutuality()) #true 3
+    # print(test_net_2.statCal_existTwoPath())
+    # print(test_net_2.statCal_transitiveTies())#true 4
+    # print(test_net_2.statCal_cyclicalTies()) #true 6
 
-    print(test_net_2.statCal_existTwoPath())
-    print(test_net_2.statCal_transitiveTies())#true 4
-    print(test_net_2.statCal_cyclicalTies()) #true 6
+    # print(test_net_2.statCal_transitiveTriples())#true 4
+    # print(test_net_2.statCal_cyclicTriples())#true 2
 
-    print(test_net_2.statCal_transitiveTriples())#true 4
-    print(test_net_2.statCal_cyclicTriples())#true 2
+    # print(test_net_2.statCal_k_in_star(2)) #true 6
+    # print(test_net_2.statCal_k_out_star(2)) #true 6
+    # print(test_net_2.statCal_homophily([0,1,2])) # true 5
+    # print(test_net_2.statCal_heterophily([2,3,4],[0,1])) # true 3
 
-    print(test_net_2.statCal_k_in_star(2)) #true 6
-    print(test_net_2.statCal_k_out_star(2)) #true 6
-    print(test_net_2.statCal_homophily([0,1,2])) # true 5
-    print(test_net_2.statCal_heterophily([2,3,4],[0,1])) # true 3
-
-    match_mat = np.array([
-        [0,0,0,0,0],
-        [1,0,0,0,0],
-        [1,0,0,0,0],
-        [0,0,0,0,0],
-        [0,0,0,1,1]
-    ])
-    print(test_net_2.statCal_match_matrix(match_mat)) #true 3
+    # match_mat = np.array([
+    #     [0,0,0,0,0],
+    #     [1,0,0,0,0],
+    #     [1,0,0,0,0],
+    #     [0,0,0,0,0],
+    #     [0,0,0,1,1]
+    # ])
+    # print(test_net_2.statCal_match_matrix(match_mat)) #true 3

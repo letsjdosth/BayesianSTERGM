@@ -96,9 +96,9 @@ if __name__=="__main__":
     process_vec = []
     proc_queue = mp.Queue()
 
-    from model_settings import model_netStat_tailor_social, tailor_social_initial_formation_vec, tailor_social_initial_dissolution_vec
-    from model_settings import model_netStat_tailor_social_edgeDSPESP, tailor_social_edgeDSPESP_initial_formation_vec, tailor_social_edgeDSPESP_initial_dissolution_vec
-    from model_settings import model_netStat_friendship_simplified, friendship_simplified_initial_formation_vec, friendship_simplified_initial_dissolution_vec
+    from model_settings import model_netStat_tailor_social_edgeDegrESP, tailor_social_edgeDegrESP_initial_formation_vec, tailor_social_edgeDegrESP_initial_dissolution_vec
+    from model_settings import model_netStat_tailor_social_edgeDegrESPDSP, tailor_social_edgeDegrESPDSP_initial_formation_vec, tailor_social_edgeDegrESPDSP_initial_dissolution_vec
+    
 
 
     for i in range(core_num):
@@ -118,16 +118,16 @@ if __name__=="__main__":
         #     friendship_simplified_initial_formation_vec[i], friendship_simplified_initial_dissolution_vec[i], 
         #     "friendship_sequence_simplified_"+str(i)+"chain", 2021+i*10, 80000, 30))
 
-        process_unit = mp.Process(target=procedure_1dim_sampler, 
-        args=(proc_queue, friendship_sequence, model_netStat_friendship_simplified, 
-            friendship_simplified_initial_formation_vec[i], friendship_simplified_initial_dissolution_vec[i], 
-            "friendship_sequence_simplified_run1dim_"+str(i)+"chain", 2021+i*10, 20000, 20))
+        # process_unit = mp.Process(target=procedure_1dim_sampler, 
+        # args=(proc_queue, friendship_sequence, model_netStat_friendship_simplified, 
+        #     friendship_simplified_initial_formation_vec[i], friendship_simplified_initial_dissolution_vec[i], 
+        #     "friendship_sequence_simplified_run1dim_"+str(i)+"chain", 2021+i*10, 20000, 20))
         
-        #tailorshop-social
-        # process_unit = mp.Process(target=procedure, 
-        # args=(proc_queue, sociational_interactions, model_netStat_tailor_social_edgeDSPESP, 
-        #     tailor_social_edgeDSPESP_initial_formation_vec[i], tailor_social_edgeDSPESP_initial_dissolution_vec[i], 
-        #     "tailorshop_social_edgeGWESP025GWDSP025_"+str(i)+"chain", 2021+i*10, 80000, 30))
+        # tailorshop-social
+        process_unit = mp.Process(target=procedure, 
+        args=(proc_queue, sociational_interactions, model_netStat_tailor_social_edgeDegrESP, 
+            tailor_social_edgeDegrESP_initial_formation_vec[i], tailor_social_edgeDegrESP_initial_dissolution_vec[i], 
+            "tailorshop_social_edgeGWDgr025GWESP025_"+str(i)+"chain", 2021+i*10, 80000, 30))
 
 
         process_vec.append(process_unit)

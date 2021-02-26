@@ -6,7 +6,7 @@ plot(test_network)
 
 summary(test_network~edges+dsp(0)+dsp(1)+dsp(2)+dsp(3)+dsp(4))
 summary(test_network~edges+gwdsp(0.3, fixed=TRUE))
-
+summary(test_network~edges+gwdegree(0.3, fixed=TRUE))
 
 
 # test_structure = matrix(c(

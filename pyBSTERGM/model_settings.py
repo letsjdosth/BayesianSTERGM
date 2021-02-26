@@ -124,8 +124,7 @@ tailor_social_initial_dissolution_vec = [
     np.array([0.5,0])
 ]
 
-
-def model_netStat_tailor_social_edgeDSPESP(network):
+def model_netStat_tailor_social_edgeESPDSP(network):
     #undirected network
     model = []
     model.append(network.statCal_edgeNum())
@@ -133,8 +132,7 @@ def model_netStat_tailor_social_edgeDSPESP(network):
     model.append(network.statCal_geoWeightedDSP(0.25))
     return np.array(model)
 
-
-tailor_social_edgeDSPESP_initial_formation_vec = [
+tailor_social_edgeESPDSP_initial_formation_vec = [
     np.array([0,0,0]),
     np.array([0.5,-0.5,-0.5]),
     np.array([-0.5,0.5,-0.5]),
@@ -143,7 +141,7 @@ tailor_social_edgeDSPESP_initial_formation_vec = [
     np.array([0.5,0,0.5])
 ]
 
-tailor_social_edgeDSPESP_initial_dissolution_vec = [
+tailor_social_edgeESPDSP_initial_dissolution_vec = [
     np.array([0,0,0]),
     np.array([0.5,-0.5,-0.5]),
     np.array([-0.5,0.5,-0.5]),
@@ -151,3 +149,60 @@ tailor_social_edgeDSPESP_initial_dissolution_vec = [
     np.array([0,-0.5,0.5]),
     np.array([0.5,0,0.5])
 ]
+
+
+def model_netStat_tailor_social_edgeDegrESP(network):
+    #undirected network
+    model = []
+    model.append(network.statCal_edgeNum())
+    model.append(network.statCal_geoWeightedDegree(0.25))
+    model.append(network.statCal_geoWeightedESP(0.25))
+    return np.array(model)
+
+tailor_social_edgeDegrESP_initial_formation_vec = [
+    np.array([0,0,0]),
+    np.array([0.5,-0.5,-0.5]),
+    np.array([-0.5,0.5,-0.5]),
+    np.array([-0.5,-0.5,-0.5]),
+    np.array([0,-0.5,0.5]),
+    np.array([0.5,0,0.5])
+]
+
+tailor_social_edgeDegrESP_initial_dissolution_vec = [
+    np.array([0,0,0]),
+    np.array([0.5,-0.5,-0.5]),
+    np.array([-0.5,0.5,-0.5]),
+    np.array([-0.5,-0.5,-0.5]),
+    np.array([0,-0.5,0.5]),
+    np.array([0.5,0,0.5])
+]
+
+
+def model_netStat_tailor_social_edgeDegrESPDSP(network):
+    #undirected network
+    model = []
+    model.append(network.statCal_edgeNum())
+    model.append(network.statCal_geoWeightedDegree(0.25))
+    model.append(network.statCal_geoWeightedESP(0.25))
+    model.append(network.statCal_geoWeightedDSP(0.25))
+    return np.array(model)
+
+
+tailor_social_edgeDegrESPDSP_initial_formation_vec = [
+    np.array([0,0,0,0]),
+    np.array([0.5,-0.5,-0.5,0.5]),
+    np.array([-0.5,0.5,-0.5,0.5]),
+    np.array([-0.5,-0.5,-0.5,-0.5]),
+    np.array([0,-0.5,0.5,-0.5]),
+    np.array([0.5,0,0.5,0])
+]
+
+tailor_social_edgeDegrESPDSP_initial_dissolution_vec = [
+    np.array([0,0,0,0]),
+    np.array([0.5,-0.5,-0.5,0.5]),
+    np.array([-0.5,0.5,-0.5,0.5]),
+    np.array([-0.5,-0.5,-0.5,-0.5]),
+    np.array([0,-0.5,0.5,-0.5]),
+    np.array([0.5,0,0.5,0])
+]
+

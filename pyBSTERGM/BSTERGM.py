@@ -102,7 +102,6 @@ class BSTERGM:
         formation_netStat_diff = self.model(self.obs_network_formation_seq[start_time_lag+1]) - self.model(exchange_formation)
         dissolution_netStat_diff = self.model(self.obs_network_dissolution_seq[start_time_lag+1]) - self.model(exchange_dissolution)
 
-        print(type(proposed_formation_param), type(last_formation_param))
         log_r_val = np.dot(proposed_formation_param - last_formation_param, formation_netStat_diff)
         log_r_val += np.dot(proposed_dissolution_param - last_dissolution_param, dissolution_netStat_diff)
         log_r_val += self.log_prior(last_formation_param, last_dissolution_param,
