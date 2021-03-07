@@ -128,7 +128,7 @@ if __name__=="__main__":
         process_unit = mp.Process(target=procedure, 
         args=(proc_queue, friendship_sequence, model_netStat_friendship_2hom_noprisch, 
             friendship_2hom_noprisch_initial_formation_vec[i], friendship_2hom_noprisch_initial_dissolution_vec[i], 
-            "friendship_sequence_2homNoprisch_"+str(i)+"chain", 2021+i*10, 20, 30))
+            "friendship_sequence_2homNoprisch_"+str(i)+"chain", 2021+i*10, 80000, 30))
 
         # tailorshop-social
         # process_unit = mp.Process(target=procedure, 

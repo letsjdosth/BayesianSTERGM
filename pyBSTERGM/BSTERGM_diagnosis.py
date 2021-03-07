@@ -68,7 +68,7 @@ class BSTERGM_posterior_work:
         if show:
             plt.show()
 
-    def show_histogram(self, bins=100 ,show=True):
+    def show_histogram(self, bins=100, formation_mark=None, dissolution_mark=None, show=True):
         formation_trace, dissolution_trace = self.MC_sample_trace()
         grid_column = 2
         # grid_row = int(len(netStat)/2+0.51)
@@ -78,10 +78,15 @@ class BSTERGM_posterior_work:
             plt.subplot(grid_row, grid_column, i+1)
             plt.hist(paramSeq, bins=bins, density=True)
             plt.ylabel('formation'+str(i))
+            if formation_mark is not None:
+                plt.axvline(formation_mark[i], color='red', linewidth=1.5)
+
         for i, paramSeq in enumerate(dissolution_trace):
             plt.subplot(grid_row, grid_column, len(self.initial_formation_param)+i+1)
             plt.hist(paramSeq, bins=bins, density=True)
             plt.ylabel('dissolution'+str(i))
+            if dissolution_mark is not None:
+                plt.axvline(dissolution_mark[i], color='red', linewidth=1.5)
 
         if show:
             plt.show()
@@ -165,7 +170,6 @@ class BSTERGM_latest_exchangeSampler_work:
 if __name__ == "__main__":
     reader_inst = BSTERGM_posterior_work()
     #1
-    # reader_inst.read_from_csv("samplk_vignettes_example_model/samplk_sequence_Exmodel_run_0chain", 4, 4)
     
     # #2
     # reader_inst.read_from_csv("friendship_KH_example_model/friendship_sequence_Exmodel_run_2chain", 8, 8)
