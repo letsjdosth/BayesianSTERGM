@@ -4,23 +4,24 @@ import numpy as np
 
 from BSTERGM_diagnosis import BSTERGM_posterior_work, BSTERGM_latest_exchangeSampler_work
 
-model_select = 'tailorshop_edgeESPDSP'
+model_select = 'tailorshop_edgeDegrESPDSP'
 #select string list
 # samplk_vig
 # friendship_KHex
 # friendship_simplified #<- no freq estimate
 # friendship_2hom_chains #<- no freq estimate
-# friendship_2hom_exceptPriSch (#<-now running)
+# friendship_2hom_noprisch (#<-now running)
 # tailorshop_edgeDegrESP
 # tailorshop_edgeDegrESPDSP
 # tailorshop_edgeESP
 # tailorshop_edgeESPDSP
 
+chain_idx = 1
+#0~5 (some models permit ~8)
 
-chain_idx = 2
 
-# model_netStat_samplk_vignettesEx
-if model_select == 'samplk_vig':
+
+if model_select == 'samplk_vig': # model_netStat_samplk_vignettesEx
     reader_inst = BSTERGM_posterior_work()
     reader_inst.read_from_csv("samplk_vignettes_example_model/samplk_sequence_Exmodel_run_"+str(chain_idx)+"chain", 4, 4)
     
@@ -110,27 +111,26 @@ elif model_select == 'friendship_2hom_chains': #edges+ homo(girl) + homo(boys) +
     reader_inst.show_acfplot()
 
 elif model_select == 'friendship_2hom_noprisch': # correct R code?
-    pass
-    # reader_inst = BSTERGM_posterior_work()
-    # reader_inst.read_from_csv("friendship_2hom_noprisch_chains/friendship_2hom_noprisch_"+str(chain_idx)+"chain", 6, 6)
+    reader_inst = BSTERGM_posterior_work()
+    reader_inst.read_from_csv("friendship_sequence_2homNoprisch_chains/friendship_sequence_2homNoprisch_"+str(chain_idx)+"chain", 6, 6)
     
-    # reader_inst.MC_formation_samples = reader_inst.MC_formation_samples[10000::50]
-    # reader_inst.MC_dissolution_samples = reader_inst.MC_dissolution_samples[10000::50]
+    reader_inst.MC_formation_samples = reader_inst.MC_formation_samples[10000::50]
+    reader_inst.MC_dissolution_samples = reader_inst.MC_dissolution_samples[10000::50]
 
-    # print(np.mean(reader_inst.MC_sample_trace()[0][0]), np.mean(reader_inst.MC_sample_trace()[0][1]),
-    #     np.mean(reader_inst.MC_sample_trace()[0][2]), np.mean(reader_inst.MC_sample_trace()[0][3]),
-    #     np.mean(reader_inst.MC_sample_trace()[0][4]), np.mean(reader_inst.MC_sample_trace()[0][5]))
-    # # STERGM formation: -3.4113, 0.6497, 0.9130, 1.6660, 0.7663, -0.3590
+    print(np.mean(reader_inst.MC_sample_trace()[0][0]), np.mean(reader_inst.MC_sample_trace()[0][1]),
+        np.mean(reader_inst.MC_sample_trace()[0][2]), np.mean(reader_inst.MC_sample_trace()[0][3]),
+        np.mean(reader_inst.MC_sample_trace()[0][4]), np.mean(reader_inst.MC_sample_trace()[0][5]))
+    # STERGM formation: -3.4113, 0.6497, 0.9130, 1.6660, 0.7663, -0.3590
     
-    # print(np.mean(reader_inst.MC_sample_trace()[1][0]), np.mean(reader_inst.MC_sample_trace()[1][1]),
-    #     np.mean(reader_inst.MC_sample_trace()[1][2]), np.mean(reader_inst.MC_sample_trace()[1][3]),
-    #     np.mean(reader_inst.MC_sample_trace()[1][4]), np.mean(reader_inst.MC_sample_trace()[1][5]))
-    # # STERGM dissolution: -1.1243, 0.1402, 1.1940, 2.4484, 1.1083, -0.9749
+    print(np.mean(reader_inst.MC_sample_trace()[1][0]), np.mean(reader_inst.MC_sample_trace()[1][1]),
+        np.mean(reader_inst.MC_sample_trace()[1][2]), np.mean(reader_inst.MC_sample_trace()[1][3]),
+        np.mean(reader_inst.MC_sample_trace()[1][4]), np.mean(reader_inst.MC_sample_trace()[1][5]))
+    # STERGM dissolution: -1.1243, 0.1402, 1.1940, 2.4484, 1.1083, -0.9749
 
-    # reader_inst.show_traceplot()
-    # reader_inst.show_histogram(formation_mark=[-3.4113, 0.6497, 0.9130, 1.6660, 0.7663, -0.3590],
-    #     dissolution_mark=[-1.1243, 0.1402, 1.1940, 2.4484, 1.1083, -0.9749])
-    # reader_inst.show_acfplot()
+    reader_inst.show_traceplot()
+    reader_inst.show_histogram(formation_mark=[-3.4113, 0.6497, 0.9130, 1.6660, 0.7663, -0.3590],
+        dissolution_mark=[-1.1243, 0.1402, 1.1940, 2.4484, 1.1083, -0.9749])
+    reader_inst.show_acfplot()
 
 elif model_select == 'tailorshop_edgeDegrESP': #edges + gwdegree(0.25) + gwesp(0.25)
     reader_inst = BSTERGM_posterior_work()

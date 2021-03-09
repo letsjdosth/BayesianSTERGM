@@ -204,7 +204,7 @@ summary(stergm.fit1.tailor_social)
 stergm.fit2.tailor_social = stergm(tailor_social, 
     formation = ~edges+gwdegree(0.25, fixed=TRUE)+gwesp(0.25, fixed=TRUE)+gwdsp(0.25, fixed=TRUE),
     dissolution = ~edges+gwdegree(0.25, fixed=TRUE)+gwesp(0.25, fixed=TRUE)+gwdsp(0.25, fixed=TRUE),
-    estimate='CMLE') #CMLE
+    estimate='CMLE', verbose=TRUE) #CMLE verbose 놓고 돌려보자
 
 summary(stergm.fit2.tailor_social)
 # ==============================

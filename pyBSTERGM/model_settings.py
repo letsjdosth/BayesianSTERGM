@@ -137,7 +137,7 @@ def model_netStat_friendship_2hom_noprisch(network):
     model.append(network.statCal_edgeNum())
     model.append(network.statCal_homophily(data_knecht_friendship.friendship_sex_girl_index)) #girls
     model.append(network.statCal_homophily(data_knecht_friendship.friendship_sex_boy_index)) #boys
-    model.append(network.statCal_mutuality())
+    model.append(network.statCal_mutuality()) #밑 3개 빼자
     model.append(network.statCal_transitiveTies())
     model.append(network.statCal_cyclicalTies())
     return np.array(model)
