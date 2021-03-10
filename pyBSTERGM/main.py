@@ -103,7 +103,8 @@ if __name__=="__main__":
     
     # from model_settings import model_netStat_friendship_KHEx, friendship_KHEx_initial_formation_vec, friendship_KHEx_initial_dissolution_vec
     # from model_settings import model_netStat_friendship_2hom, friendship_2hom_initial_formation_vec, friendship_2hom_initial_dissolution_vec
-    from model_settings import model_netStat_friendship_2hom_noprisch, friendship_2hom_noprisch_initial_formation_vec, friendship_2hom_noprisch_initial_dissolution_vec
+    # from model_settings import model_netStat_friendship_2hom_noprisch, friendship_2hom_noprisch_initial_formation_vec, friendship_2hom_noprisch_initial_dissolution_vec
+    from model_settings import model_netstat_friendship_nondds, friendship_nondds_initial_formation_vec, friendship_nondds_initial_dissolution_vec
 
     for i in range(core_num):
         # format
@@ -120,9 +121,9 @@ if __name__=="__main__":
 
         # friendship
         process_unit = mp.Process(target=procedure, 
-        args=(proc_queue, friendship_sequence, model_netStat_friendship_2hom_noprisch, 
-            friendship_2hom_noprisch_initial_formation_vec[i], friendship_2hom_noprisch_initial_dissolution_vec[i], 
-            "friendship_normPrior_2homNoprischModel_"+str(i)+"chain", 2021+i*10, 80000, 30))
+        args=(proc_queue, friendship_sequence, model_netstat_friendship_nondds, 
+            friendship_nondds_initial_formation_vec[i], friendship_nondds_initial_dissolution_vec[i], 
+            "friendship_normPrior_noddsModel_"+str(i)+"chain", 2021+i*10, 80000, 30))
 
         # process_unit = mp.Process(target=procedure_1dim_sampler, 
         # args=(proc_queue, friendship_sequence, model_netStat_friendship_simplified, 

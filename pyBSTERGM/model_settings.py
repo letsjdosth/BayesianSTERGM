@@ -160,7 +160,32 @@ friendship_2hom_noprisch_initial_dissolution_vec = [
     np.array([-1, -1, 1, 0, 0, 0])
 ]
 
+def model_netstat_friendship_nondds(network):
+    #directed network
+    model = []
+    #define model
+    model.append(network.statCal_edgeNum())
+    model.append(network.statCal_homophily(data_knecht_friendship.friendship_sex_girl_index)) #girls
+    model.append(network.statCal_homophily(data_knecht_friendship.friendship_sex_boy_index)) #boys
+    return np.array(model)
 
+friendship_nondds_initial_formation_vec = [
+    np.array([0,0,0]),
+    np.array([1,0,0]),
+    np.array([-1,0,0]),
+    np.array([0,1,-1]),
+    np.array([0,-1,1]),
+    np.array([1,1,0])
+]
+
+friendship_nondds_initial_dissolution_vec = [
+    np.array([0,0,0]),
+    np.array([1,0,0]),
+    np.array([-1,0,0]),
+    np.array([0,1,-1]),
+    np.array([0,-1,1]),
+    np.array([1,1,0])
+]
 
 #tailorshop model
 def model_netStat_tailor_social(network):
