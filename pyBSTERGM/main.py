@@ -141,7 +141,7 @@ if __name__=="__main__":
         process_unit = mp.Process(target=procedure, 
         args=(proc_queue, sociational_interactions, model_netStat_tailor_social_edgeDegrESP, 
             tailor_social_edgeDegrESP_initial_formation_vec[i], tailor_social_edgeDegrESP_initial_dissolution_vec[i], 
-            "tailorshop_social_normPrior_edgeGWDgr025GWESP025GWDSP025_"+str(i)+"chain", 2021+i*10, 80000, 30))
+            "tailorshop_social_normPrior_edgeGWDgr025GWESP025"+str(i)+"chain", 2021+i*10, 80000, 30))
 
         # process_unit = mp.Process(target=procedure, 
         # args=(proc_queue, sociational_interactions, model_netStat_tailor_social_edgeDegrESPDSP, 
