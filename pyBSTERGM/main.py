@@ -45,10 +45,10 @@ friendship_sequence = [
 #     DirectedNetwork(np.array(data_tailor.KAPFTI2)),
 # ]
 
-# sociational_interactions = [
-#     UndirectedNetwork(np.array(data_tailor.KAPFTS1)),
-#     UndirectedNetwork(np.array(data_tailor.KAPFTS2))
-# ]
+sociational_interactions = [
+    UndirectedNetwork(np.array(data_tailor.KAPFTS1)),
+    UndirectedNetwork(np.array(data_tailor.KAPFTS2))
+]
 
 
 #for multiprocessing
@@ -98,13 +98,15 @@ if __name__=="__main__":
 
     # from model_settings import model_netStat_samplk_vignettesEx, samplk_vignettesEx_initial_formation_vec, samplk_vignettesEx_initial_dissolution_vec
 
-    # from model_settings import model_netStat_tailor_social_edgeDegrESP, tailor_social_edgeDegrESP_initial_formation_vec, tailor_social_edgeDegrESP_initial_dissolution_vec
-    # from model_settings import model_netStat_tailor_social_edgeDegrESPDSP, tailor_social_edgeDegrESPDSP_initial_formation_vec, tailor_social_edgeDegrESPDSP_initial_dissolution_vec
-    
     # from model_settings import model_netStat_friendship_KHEx, friendship_KHEx_initial_formation_vec, friendship_KHEx_initial_dissolution_vec
     # from model_settings import model_netStat_friendship_2hom, friendship_2hom_initial_formation_vec, friendship_2hom_initial_dissolution_vec
     # from model_settings import model_netStat_friendship_2hom_noprisch, friendship_2hom_noprisch_initial_formation_vec, friendship_2hom_noprisch_initial_dissolution_vec
-    from model_settings import model_netstat_friendship_nondds, friendship_nondds_initial_formation_vec, friendship_nondds_initial_dissolution_vec
+    # from model_settings import model_netstat_friendship_nondds, friendship_nondds_initial_formation_vec, friendship_nondds_initial_dissolution_vec
+
+    from model_settings import model_netStat_tailor_social_edgeDegrESP, tailor_social_edgeDegrESP_initial_formation_vec, tailor_social_edgeDegrESP_initial_dissolution_vec
+    from model_settings import model_netStat_tailor_social_edgeDegrESPDSP, tailor_social_edgeDegrESPDSP_initial_formation_vec, tailor_social_edgeDegrESPDSP_initial_dissolution_vec
+    
+
 
     for i in range(core_num):
         # format
@@ -120,10 +122,10 @@ if __name__=="__main__":
 
 
         # friendship
-        process_unit = mp.Process(target=procedure, 
-        args=(proc_queue, friendship_sequence, model_netstat_friendship_nondds, 
-            friendship_nondds_initial_formation_vec[i], friendship_nondds_initial_dissolution_vec[i], 
-            "friendship_normPrior_noddsModel_"+str(i)+"chain", 2021+i*10, 80000, 30))
+        # process_unit = mp.Process(target=procedure, 
+        # args=(proc_queue, friendship_sequence, model_netstat_friendship_nondds, 
+        #     friendship_nondds_initial_formation_vec[i], friendship_nondds_initial_dissolution_vec[i], 
+        #     "friendship_normPrior_noddsModel_"+str(i)+"chain", 2021+i*10, 80000, 30))
 
         # process_unit = mp.Process(target=procedure_1dim_sampler, 
         # args=(proc_queue, friendship_sequence, model_netStat_friendship_simplified, 
@@ -136,10 +138,16 @@ if __name__=="__main__":
         #     "friendship_sequence_2homNoprisch_"+str(i)+"chain", 2021+i*10, 80000, 30))
 
         # tailorshop-social
+        process_unit = mp.Process(target=procedure, 
+        args=(proc_queue, sociational_interactions, model_netStat_tailor_social_edgeDegrESP, 
+            tailor_social_edgeDegrESP_initial_formation_vec[i], tailor_social_edgeDegrESP_initial_dissolution_vec[i], 
+            "tailorshop_social_normPrior_edgeGWDgr025GWESP025GWDSP025_"+str(i)+"chain", 2021+i*10, 80000, 30))
+
         # process_unit = mp.Process(target=procedure, 
         # args=(proc_queue, sociational_interactions, model_netStat_tailor_social_edgeDegrESPDSP, 
         #     tailor_social_edgeDegrESPDSP_initial_formation_vec[i], tailor_social_edgeDegrESPDSP_initial_dissolution_vec[i], 
-        #     "tailorshop_social_edgeGWDgr025GWESP025GWDSP025_"+str(i)+"chain", 2021+i*10, 80000, 30))
+        #     "tailorshop_social_normPrior_edgeGWDgr025GWESP025GWDSP025_"+str(i)+"chain", 2021+i*10, 80000, 30))
+
 
 
         process_vec.append(process_unit)

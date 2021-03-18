@@ -188,14 +188,14 @@ friendship_nondds_initial_dissolution_vec = [
 ]
 
 #tailorshop model
-def model_netStat_tailor_social(network):
+def model_netStat_tailor_social_edgeESP(network): #model_netStat_tailor_social
     #undirected network
     model = []
     model.append(network.statCal_edgeNum())
     model.append(network.statCal_geoWeightedESP(0.3))
     return np.array(model)
 
-tailor_social_initial_formation_vec = [
+tailor_social_edgeESP_initial_formation_vec = [
     np.array([0,0]),
     np.array([0.5,-0.5]),
     np.array([-0.5,0.5]),
@@ -204,7 +204,7 @@ tailor_social_initial_formation_vec = [
     np.array([0.5,0])
 ]
 
-tailor_social_initial_dissolution_vec = [
+tailor_social_edgeESP_initial_dissolution_vec = [
     np.array([0,0]),
     np.array([0.5,-0.5]),
     np.array([-0.5,0.5]),
