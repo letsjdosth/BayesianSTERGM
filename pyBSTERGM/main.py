@@ -25,19 +25,19 @@ from BSTERGM import BSTERGM
 # ]
 
 #samplk
-samplk_sequence = [
-    DirectedNetwork(np.array(data_samplk.samplk1)),
-    DirectedNetwork(np.array(data_samplk.samplk2)),
-    DirectedNetwork(np.array(data_samplk.samplk3))
-]
+# samplk_sequence = [
+#     DirectedNetwork(np.array(data_samplk.samplk1)),
+#     DirectedNetwork(np.array(data_samplk.samplk2)),
+#     DirectedNetwork(np.array(data_samplk.samplk3))
+# ]
 
 # knecht_friendship
-friendship_sequence = [
-    DirectedNetwork(np.array(data_knecht_friendship.friendship_t1)),
-    DirectedNetwork(np.array(data_knecht_friendship.friendship_t2)),
-    DirectedNetwork(np.array(data_knecht_friendship.friendship_t3)),
-    DirectedNetwork(np.array(data_knecht_friendship.friendship_t4))
-]
+# friendship_sequence = [
+#     DirectedNetwork(np.array(data_knecht_friendship.friendship_t1)),
+#     DirectedNetwork(np.array(data_knecht_friendship.friendship_t2)),
+#     DirectedNetwork(np.array(data_knecht_friendship.friendship_t3)),
+#     DirectedNetwork(np.array(data_knecht_friendship.friendship_t4))
+# ]
 
 # # tailor shop
 # instrumental_interactions = [
@@ -97,6 +97,9 @@ if __name__=="__main__":
     proc_queue = mp.Queue()
 
     from model_settings import model_netStat_edgeonly, edgeonly_initial_formation_vec, edgeonly_initial_dissolution_vec
+    from model_settings import model_netStat_edgeGWdgre, edgeGWdgre_initial_formation_vec, edgeGWdgre_initial_dissolution_vec
+    from model_settings import model_netStat_edgeGWESP, edgeGWESP_initial_formation_vec, edgeGWESP_initial_dissolution_vec
+    from model_settings import model_netStat_edgeGWDSP, edgeGWDSP_initial_formation_vec, edgeGWDSP_initial_dissolution_vec
 
     # from model_settings import model_netStat_samplk_vignettesEx, samplk_vignettesEx_initial_formation_vec, samplk_vignettesEx_initial_dissolution_vec
 
@@ -105,8 +108,8 @@ if __name__=="__main__":
     # from model_settings import model_netStat_friendship_2hom_noprisch, friendship_2hom_noprisch_initial_formation_vec, friendship_2hom_noprisch_initial_dissolution_vec
     # from model_settings import model_netstat_friendship_nondds, friendship_nondds_initial_formation_vec, friendship_nondds_initial_dissolution_vec
 
-    from model_settings import model_netStat_tailor_social_edgeDegrESP, tailor_social_edgeDegrESP_initial_formation_vec, tailor_social_edgeDegrESP_initial_dissolution_vec
-    from model_settings import model_netStat_tailor_social_edgeDegrESPDSP, tailor_social_edgeDegrESPDSP_initial_formation_vec, tailor_social_edgeDegrESPDSP_initial_dissolution_vec
+    # from model_settings import model_netStat_tailor_social_edgeDegrESP, tailor_social_edgeDegrESP_initial_formation_vec, tailor_social_edgeDegrESP_initial_dissolution_vec
+    # from model_settings import model_netStat_tailor_social_edgeDegrESPDSP, tailor_social_edgeDegrESPDSP_initial_formation_vec, tailor_social_edgeDegrESPDSP_initial_dissolution_vec
     
 
 
@@ -117,21 +120,16 @@ if __name__=="__main__":
         #       result_string, rng_seed=2021, main_iter=30000, ex_iter=50):
 
         # samplk
-        process_unit = mp.Process(target=procedure, 
-        args=(proc_queue, samplk_sequence, model_netStat_edgeonly, 
-            edgeonly_initial_formation_vec[i], edgeonly_initial_dissolution_vec[i], 
-            "samplk_normPrior_edgeonly_"+str(i)+"chain", 2021+i*10, 80000, 30))
-
-        process_vec.append(process_unit)
-
+        # process_unit = mp.Process(target=procedure, 
+        # args=(proc_queue, samplk_sequence, model_netStat_edgeonly, 
+        #     edgeonly_initial_formation_vec[i], edgeonly_initial_dissolution_vec[i], 
+        #     "samplk_normPrior_edgeonly_"+str(i)+"chain", 2021+i*10, 80000, 30))
 
         # friendship
-        process_unit = mp.Process(target=procedure, 
-        args=(proc_queue, friendship_sequence, model_netStat_edgeonly, 
-            edgeonly_initial_formation_vec[i], edgeonly_initial_dissolution_vec[i], 
-            "friendship_normPrior_edgeonly_"+str(i)+"chain", 2021+i*10, 80000, 30))
-
-        process_vec.append(process_unit)
+        # process_unit = mp.Process(target=procedure, 
+        # args=(proc_queue, friendship_sequence, model_netStat_edgeonly, 
+        #     edgeonly_initial_formation_vec[i], edgeonly_initial_dissolution_vec[i], 
+        #     "friendship_normPrior_edgeonly_"+str(i)+"chain", 2021+i*10, 80000, 30))
 
         # process_unit = mp.Process(target=procedure_1dim_sampler, 
         # args=(proc_queue, friendship_sequence, model_netStat_friendship_simplified, 
@@ -140,19 +138,32 @@ if __name__=="__main__":
 
         # tailorshop-social
         process_unit = mp.Process(target=procedure, 
-        args=(proc_queue, sociational_interactions, model_netStat_edgeonly, 
-            edgeonly_initial_formation_vec[i], edgeonly_initial_dissolution_vec[i], 
-            "tailorshop_social_normPrior_edgeonly_"+str(i)+"chain", 2021+i*10, 80000, 30))
-
+        args=(proc_queue, sociational_interactions, model_netStat_edgeGWdgre, 
+            edgeGWdgre_initial_formation_vec[i], edgeGWdgre_initial_dissolution_vec[i], 
+            "tailorshop_social_normPrior_edgeGWdgre_"+str(i)+"chain", 2021+i*10, 80000, 30))
         process_vec.append(process_unit)
-    
+
+        process_unit = mp.Process(target=procedure, 
+        args=(proc_queue, sociational_interactions, model_netStat_edgeGWESP, 
+            edgeGWESP_initial_formation_vec[i], edgeGWESP_initial_dissolution_vec[i], 
+            "tailorshop_social_normPrior_edgeGWESP_"+str(i)+"chain", 2021+i*10, 80000, 30))
+        process_vec.append(process_unit)
+
+        process_unit = mp.Process(target=procedure, 
+        args=(proc_queue, sociational_interactions, model_netStat_edgeGWDSP, 
+            edgeGWDSP_initial_formation_vec[i], edgeGWDSP_initial_dissolution_vec[i], 
+            "tailorshop_social_normPrior_edgeGWDSP_"+str(i)+"chain", 2021+i*10, 80000, 30))
+        process_vec.append(process_unit)
+
+
+
     for unit_proc in process_vec:
         unit_proc.start()
     
     mp_result_vec = []
-    for _ in range(len(process_vec)):
+    for i, _ in enumerate(process_vec):
         each_result = proc_queue.get()
-        # print("mp_result_vec_object:", each_result)
+        print("mp_result_vec_object:", i)
         mp_result_vec.append(each_result)
 
     for unit_proc in process_vec:

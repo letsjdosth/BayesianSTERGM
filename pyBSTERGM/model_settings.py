@@ -27,6 +27,85 @@ edgeonly_initial_dissolution_vec = [
     np.array([3])
 ]
 
+def model_netStat_edgeGWdgre(network):
+    model = []
+    model.append(network.statCal_edgeNum())
+    model.append(network.statCal_geoWeightedDegree(0.25))
+    return np.array(model)
+
+
+edgeGWdgre_initial_formation_vec = [
+    np.array([0,0]),
+    np.array([1,0]),
+    np.array([-1,0]),
+    np.array([0,-1]),
+    np.array([0,1]),
+    np.array([0.5,0.5])
+]
+
+edgeGWdgre_initial_dissolution_vec = [
+    np.array([0,0]),
+    np.array([1,0]),
+    np.array([-1,0]),
+    np.array([0,-1]),
+    np.array([0,1]),
+    np.array([0.5,0.5])
+]
+
+
+def model_netStat_edgeGWESP(network):
+    model = []
+    model.append(network.statCal_edgeNum())
+    model.append(network.statCal_geoWeightedESP(0.25))
+    return np.array(model)
+
+
+edgeGWESP_initial_formation_vec = [
+    np.array([0,0]),
+    np.array([1,0]),
+    np.array([-1,0]),
+    np.array([0,-1]),
+    np.array([0,1]),
+    np.array([0.5,0.5])
+]
+
+edgeGWESP_initial_dissolution_vec = [
+    np.array([0,0]),
+    np.array([1,0]),
+    np.array([-1,0]),
+    np.array([0,-1]),
+    np.array([0,1]),
+    np.array([0.5,0.5])
+]
+
+
+
+def model_netStat_edgeGWDSP(network):
+    model = []
+    model.append(network.statCal_edgeNum())
+    model.append(network.statCal_geoWeightedDSP(0.25))
+    return np.array(model)
+
+
+edgeGWDSP_initial_formation_vec = [
+    np.array([0,0]),
+    np.array([1,0]),
+    np.array([-1,0]),
+    np.array([0,-1]),
+    np.array([0,1]),
+    np.array([0.5,0.5])
+]
+
+edgeGWDSP_initial_dissolution_vec = [
+    np.array([0,0]),
+    np.array([1,0]),
+    np.array([-1,0]),
+    np.array([0,-1]),
+    np.array([0,1]),
+    np.array([0.5,0.5])
+]
+
+
 
 
 
