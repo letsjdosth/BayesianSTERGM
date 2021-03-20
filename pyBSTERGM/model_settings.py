@@ -3,6 +3,32 @@ import numpy as np
 from network import UndirectedNetwork, DirectedNetwork
 import data_samplk, data_knecht_friendship, data_tailor
 
+# default models
+def model_netStat_edgeonly(network):
+    model = []
+    model.append(network.statCal_edgeNum())
+    return np.array(model)
+
+edgeonly_initial_formation_vec = [
+    np.array([0]),
+    np.array([1]),
+    np.array([-1]),
+    np.array([2]),
+    np.array([-2]),
+    np.array([3])
+]
+
+edgeonly_initial_dissolution_vec = [
+    np.array([0]),
+    np.array([1]),
+    np.array([-1]),
+    np.array([2]),
+    np.array([-2]),
+    np.array([3])
+]
+
+
+
 
 # samplk model
 def model_netStat_samplk_vignettesEx(network): #directed
