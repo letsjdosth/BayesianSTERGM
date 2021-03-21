@@ -292,6 +292,64 @@ friendship_nondds_initial_dissolution_vec = [
     np.array([1,1,0])
 ]
 
+
+def model_netstat_friendship_edge1hom(network):
+    #directed network
+    model = []
+    #define model
+    model.append(network.statCal_edgeNum())
+    model.append(network.statCal_homophily(data_knecht_friendship.friendship_sex_girl_index)) #girls
+    return np.array(model)
+
+friendship_edge1hom_initial_formation_vec = [
+    np.array([0,0]),
+    np.array([1,0]),
+    np.array([-1,0]),
+    np.array([0,-1]),
+    np.array([0,1]),
+    np.array([0.5,0.5])
+]
+
+friendship_edge1hom_initial_dissolution_vec = [
+    np.array([0,0]),
+    np.array([1,0]),
+    np.array([-1,0]),
+    np.array([0,-1]),
+    np.array([0,1]),
+    np.array([0.5,0.5])
+]
+
+
+def model_netstat_friendship_edge1homMs(network):
+    #directed network
+    model = []
+    #define model
+    model.append(network.statCal_edgeNum())
+    model.append(network.statCal_homophily(data_knecht_friendship.friendship_sex_girl_index)) #girls
+    model.append(network.statCal_mutuality())
+    model.append(network.statCal_transitiveTies())
+    model.append(network.statCal_cyclicalTies())
+    return np.array(model)
+
+
+friendship_edge1homMs_initial_formation_vec = [
+    np.array([0,0,0,0,0]),
+    np.array([1,0,0,0,0]),
+    np.array([-1,0,0,0,0]),
+    np.array([0,1,-1,0,0]),
+    np.array([0,-1,1,0,0]),
+    np.array([1,1,0,0,0])
+]
+
+friendship_edge1homMs_initial_dissolution_vec = [
+    np.array([0,0,0,0,0]),
+    np.array([1,0,0,0,0]),
+    np.array([-1,0,0,0,0]),
+    np.array([0,1,-1,0,0]),
+    np.array([0,-1,1,0,0]),
+    np.array([1,1,0,0,0])
+]
+
 #tailorshop model
 def model_netStat_tailor_social_edgeESP(network): #model_netStat_tailor_social
     #undirected network
