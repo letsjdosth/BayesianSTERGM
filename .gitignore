@@ -437,3 +437,5 @@ FodyWeavers.xsd
 # miscel
 Rintrospection/
 paper_format/
+pyBSTERGM/example_results_normPrior
+pyBSTERGM/example_results_unifPrior

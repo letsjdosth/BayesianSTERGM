@@ -224,3 +224,42 @@ summary(stergm.fit.2hom.noprimarysch.friendship)
 #  Residual Deviance: 365.4  on 322  degrees of freedom
  
 # AIC: 377.4    BIC: 400.1    (Smaller is better.)
+
+
+
+stergm.fit.edge2hom.friendship = stergm(friendship, 
+    formation = ~edges+nodematch('sex',level='1')+nodematch('sex',level='2'),
+    dissolution = ~edges+nodematch('sex',level='1')+nodematch('sex',level='2'),
+    estimate='CMLE')
+
+
+summary(stergm.fit.edge2hom.friendship)
+
+
+
+stergm.fit.edge1hommodelstat.friendship = stergm(friendship, 
+    formation = ~edges+nodematch('sex',level='1')
+        +mutual+transitiveties+cyclicalties,
+    dissolution = ~edges+nodematch('sex',level='1')
+        +mutual+transitiveties+cyclicalties,
+    estimate='CMLE')
+
+
+summary(stergm.fit.edge1hommodelstat.friendship)
+
+
+
+stergm.fit.edge1hom.friendship = stergm(friendship, 
+    formation = ~edges+nodematch('sex',level='1'),
+    dissolution = ~edges+nodematch('sex',level='1'),
+    estimate='CMLE')
+
+summary(stergm.fit.edge1hom.friendship)
+
+
+stergm.fit.edgeonly.friendship = stergm(friendship, 
+    formation = ~edges,
+    dissolution = ~edges,
+    estimate='CMLE')
+
+summary(stergm.fit.edgeonly.friendship)

@@ -87,6 +87,8 @@ net2 = as.network(KAPFTS2, directed=FALSE)
 tailor_social = list()
 tailor_social[[1]] = net1
 tailor_social[[2]] = net2
+
+
 stergm.fit1.tailor_social = stergm(tailor_social, 
     formation = ~edges+gwdegree(0.25, fixed=TRUE)+gwesp(0.25, fixed=TRUE),
     dissolution = ~edges+gwdegree(0.25, fixed=TRUE)+gwesp(0.25, fixed=TRUE),
@@ -379,3 +381,11 @@ summary(stergm.fit4.tailor_social)
 #  Residual Deviance: 196.1  on 155  degrees of freedom
 
 # AIC: 202.1    BIC: 211.3    (Smaller is better.)
+
+
+stergm.fit5.tailor_social = stergm(tailor_social, 
+    formation = ~edges + gwdegree(0.25, fixed=TRUE), # gwdsp(0.25, fixed=TRUE), #+gwdsp(0.25, fixed=TRUE),
+    dissolution = ~edges + gwdegree(0.25, fixed=TRUE), # gwdsp(0.25, fixed=TRUE), #+gwdsp(0.25, fixed=TRUE),
+    estimate='CMLE') #CMLE
+
+summary(stergm.fit5.tailor_social)
