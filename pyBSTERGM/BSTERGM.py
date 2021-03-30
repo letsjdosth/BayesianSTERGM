@@ -87,9 +87,9 @@ class BSTERGM:
         cov_mat = np.diag(cov_rate)
         return self.random_gen.multivariate_normal(last_param, cov_mat)
 
-    def get_exchange_sampler(self, start_time_lag, exchange_iter, proposed_param, rng_seed):
+    def get_exchange_sampler(self, start_time_lag, exchange_iter, proposed_param, is_formation, rng_seed):
         exchange_sampler = NetworkSampler(self.model, proposed_param,
-            self.obs_network_seq[start_time_lag], rng_seed)
+            self.obs_network_seq[start_time_lag], is_formation=is_formation, rng_seed=rng_seed)
         exchange_sampler.run(exchange_iter)
         return exchange_sampler
 
@@ -138,9 +138,9 @@ class BSTERGM:
         proposed_formation_param = self.propose_param(last_formation_param, self.formation_cov_rate)
         
         #exchange
-        self.latest_exchange_formation_sampler = self.get_exchange_sampler(start_time_lag, exchange_iter, proposed_formation_param, rng_seed)
+        self.latest_exchange_formation_sampler = self.get_exchange_sampler(start_time_lag, exchange_iter, proposed_formation_param, is_formation=True, rng_seed=rng_seed)
         exchange_formation_sample = self.latest_exchange_formation_sampler.network_samples[-1]
-        self.latest_exchange_dissolution_sampler = self.get_exchange_sampler(start_time_lag, exchange_iter, proposed_dissolution_param, rng_seed*10)
+        self.latest_exchange_dissolution_sampler = self.get_exchange_sampler(start_time_lag, exchange_iter, proposed_dissolution_param, is_formation=False, rng_seed=rng_seed*10)
         exchange_dissolution_sample = self.latest_exchange_dissolution_sampler.network_samples[-1]
 
         #MCMC
@@ -227,7 +227,7 @@ class BSTERGM:
             proposed_dissolution_param = now_dissolution_param
 
             #exchange
-            self.latest_exchange_formation_sampler = self.get_exchange_sampler(start_time_lag, exchange_iter, proposed_formation_param, rng_seed)
+            self.latest_exchange_formation_sampler = self.get_exchange_sampler(start_time_lag, exchange_iter, proposed_formation_param, is_formation=True, rng_seed=rng_seed)
             exchange_formation_sample = self.latest_exchange_formation_sampler.network_samples[-1]
 
             #MCMC
@@ -247,7 +247,7 @@ class BSTERGM:
             proposed_dissolution_param = self.propose_param_1dim(i_idx, now_dissolution_param, proposal_cov_rate)
 
             #exchange
-            self.latest_exchange_dissolution_sampler = self.get_exchange_sampler(start_time_lag, exchange_iter, proposed_dissolution_param, rng_seed*10)
+            self.latest_exchange_dissolution_sampler = self.get_exchange_sampler(start_time_lag, exchange_iter, proposed_dissolution_param, is_formation=False, rng_seed=rng_seed*10)
             exchange_dissolution_sample = self.latest_exchange_dissolution_sampler.network_samples[-1]
 
             #MCMC
@@ -282,6 +282,7 @@ class BSTERGM:
         else:
             print(iter,"/",iter, "time elapsed(second):", round(time.time()-start_time,1))
 
+    #=============================================================================================
 
     def MC_sample_trace(self):
         formation_trace = []
@@ -403,7 +404,7 @@ if __name__=="__main__":
     initial_dissolution_param = np.array([0.1, 0.1])
     test_BSTERGM_sampler = BSTERGM(model_netStat, initial_formation_param, initial_dissolution_param, test_obs_seq, 2021)
 
-    test_BSTERGM_sampler.run(200, exchange_iter=30)
+    test_BSTERGM_sampler.run(4000, exchange_iter=30)
     # print(test_BSTERGM_sampler.MC_formation_samples)
     # print(test_BSTERGM_sampler.MC_dissolution_samples)
     test_BSTERGM_sampler.show_traceplot()

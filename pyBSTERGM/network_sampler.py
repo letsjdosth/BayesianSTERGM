@@ -6,13 +6,14 @@ from network import UndirectedNetwork, DirectedNetwork
 
 
 class NetworkSampler:
-    def __init__(self, model_fn, param, init_network, rng_seed=2021):
+    def __init__(self, model_fn, param, init_network, is_formation, rng_seed=2021):
         #variables
         self.initial_network = 0
         self.param = np.array(0)
         self.network_samples = []
         self.node_num = 0
         self.random_gen = 0
+        self.mutable_edges = []
 
         #initialize
         self.param = param
@@ -21,6 +22,26 @@ class NetworkSampler:
         self.model = model_fn
         self.node_num = init_network.node_num
         self.random_gen = np.random.default_rng(seed=rng_seed)
+        self.is_formation = is_formation
+        self.make_mutable_edges_list(self.is_formation)
+
+
+    def make_mutable_edges_list(self, is_formation):
+        init_structure = self.initial_network.structure
+        if is_formation:
+            # we can change 0s
+            for i in range(self.node_num):
+                for j in range(self.node_num):
+                    if i==j:
+                        pass
+                    elif init_structure[i][j]==0:
+                        self.mutable_edges.append((i,j))
+        else: #dissolution
+            # we can change 1s
+            for i in range(self.node_num):
+                for j in range(self.node_num):
+                    if init_structure[i][j]==1:
+                        self.mutable_edges.append((i,j))
 
     def choose_edge(self):
         edge_idx = (0, 0)
@@ -28,9 +49,15 @@ class NetworkSampler:
             edge_idx = self.random_gen.integers(low=0, high=self.node_num - 1, size=2)
         return edge_idx
 
+    def choose_mutable_edge(self):
+        rnd_idx = self.random_gen.integers(low=0, high=len(self.mutable_edges))
+        edge_idx = self.mutable_edges[rnd_idx]
+        return edge_idx
+
+
     def propose_network(self, last_network):
         proposed_structure = last_network.structure.copy()
-        edge_idx = self.choose_edge()
+        edge_idx = self.choose_mutable_edge() #choose_edge or choose_mutable_edge
         result_network = 0
         if isinstance(last_network, UndirectedNetwork):
             proposed_structure[edge_idx[0], edge_idx[1]] = 1 - proposed_structure[edge_idx[0], edge_idx[1]]
@@ -111,12 +138,17 @@ if __name__ == "__main__":
         ]
         )
     test_initnet = UndirectedNetwork(test_structure)
-    test_netSampler = NetworkSampler(model_netStat, np.array([0, 0]), test_initnet)
+    test_netSampler = NetworkSampler(model_netStat, np.array([0, 0]), test_initnet, is_formation=True)
+    test_netSampler.make_mutable_edges_list(is_formation=False)
+    print(test_netSampler.mutable_edges)
+    print(test_netSampler.choose_mutable_edge())
+    
+
     test_netSampler.run(30000)
     test_netSampler.show_traceplot()
 
 
-    test_initnet2 = DirectedNetwork(test_structure)
-    test_netSampler = NetworkSampler(model_netStat, np.array([0, 0]), test_initnet)
-    test_netSampler.run(30000)
-    test_netSampler.show_traceplot()
+    # test_initnet2 = DirectedNetwork(test_structure)
+    # test_netSampler = NetworkSampler(model_netStat, np.array([0, 0]), test_initnet)
+    # test_netSampler.run(30000)
+    # test_netSampler.show_traceplot()

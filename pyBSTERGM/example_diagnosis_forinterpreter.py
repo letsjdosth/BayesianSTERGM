@@ -4,10 +4,12 @@ import numpy as np
 
 from BSTERGM_diagnosis import BSTERGM_posterior_work, BSTERGM_latest_exchangeSampler_work
 
-model_select = 'samplk_edgeonly'
+model_select = 'friendship_KHex'
 prior_select = 'norm' #'norm', 'unif
+chain_idx = 1
+#0~5 (some models permit ~8)
 
-#select string list (norm, unif)
+#select model
 # samplk_vig
 # friendship_KHex
 # friendship_2hom_noprisch (#<-now running)
@@ -19,7 +21,6 @@ prior_select = 'norm' #'norm', 'unif
 # friendship_2hom_chains #<- no freq estimate (X)
 # tailorshop_edgeESP
 # tailorshop_edgeESPDSP
-
 
 #(norm only)
 # samplk_edgeonly
@@ -33,8 +34,6 @@ prior_select = 'norm' #'norm', 'unif
 # tailorshop_edgeGWDSP
 
 
-chain_idx = 1
-#0~5 (some models permit ~8)
 
 
 
