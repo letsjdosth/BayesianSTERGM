@@ -155,7 +155,7 @@ class NetworkSampler_integrated:
 
     def propose_network_with_edgeclass(self, last_network):
         proposed_structure = last_network.structure.copy()
-        edge_idx = self.choose_edge() #choose_edge or choose_mutable_edge
+        edge_idx = self.choose_edge() #choose_edge
         result_network = 0
         if isinstance(last_network, UndirectedNetwork):
             proposed_structure[edge_idx[0], edge_idx[1]] = 1 - proposed_structure[edge_idx[0], edge_idx[1]]
@@ -232,7 +232,7 @@ if __name__ == "__main__":
         model = []
         #define model
         model.append(network.statCal_edgeNum())
-        # model.append(network.statCal_geoWeightedESP(0.5))
+        model.append(network.statCal_geoWeightedESP(0.5))
         return np.array(model)
 
 
@@ -254,14 +254,14 @@ if __name__ == "__main__":
 
     #1
     
-    # test_netSampler = NetworkSampler(model_netStat, np.array([0]), test_initnet, is_formation=True)
+    test_netSampler = NetworkSampler(model_netStat, np.array([2, -1]), test_initnet, is_formation=True)
     # test_netSampler.make_mutable_edges_list(is_formation=False)
     # print(test_netSampler.mutable_edges)
     # print(test_netSampler.choose_mutable_edge())
     
 
-    # test_netSampler.run(50000)
-    # test_netSampler.show_traceplot()
+    test_netSampler.run(50)
+    test_netSampler.show_traceplot()
 
 
     #2
@@ -271,8 +271,8 @@ if __name__ == "__main__":
     # test_netSampler.run(30000)
     # test_netSampler.show_traceplot()
 
-    test_newNetSampler = NetworkSampler_integrated(model_netStat, np.array([0]), np.array([0]), test_initnet)
+    # test_newNetSampler = NetworkSampler_integrated(model_netStat, np.array([0]), np.array([0]), test_initnet)
     # print(test_newNetSampler.formation_edges)
-    print(test_newNetSampler.dissolution_edges)
-    test_newNetSampler.run(50000)
-    test_newNetSampler.show_traceplot()
+    # print(test_newNetSampler.dissolution_edges)
+    # test_newNetSampler.run(50000)
+    # test_newNetSampler.show_traceplot()
