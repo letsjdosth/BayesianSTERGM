@@ -263,3 +263,10 @@ stergm.fit.edgeonly.friendship = stergm(friendship,
     estimate='CMLE')
 
 summary(stergm.fit.edgeonly.friendship)
+
+stergm.fit.edgegwesp.friendship = stergm(friendship, 
+    formation = ~edges+gwesp(0.25,fixed=TRUE),
+    dissolution = ~edges+gwesp(0.25, fixed=TRUE),
+    estimate='CMLE')
+
+summary(stergm.fit.edgegwesp.friendship)

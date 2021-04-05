@@ -1,3 +1,5 @@
+library(statnet)
+
 samplk1 = matrix(c(
 0,0,1,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,
 1,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,
@@ -68,8 +70,8 @@ samplk[[3]] = as.network(samplk3, directed=TRUE)
 
 
 stergm.fit.edgeonly.samplk = stergm(samplk, 
-    formation = ~edges,
-    dissolution = ~edges,
+    formation = ~edges+gwesp(0.25, fixed=TRUE),
+    dissolution = ~edges+gwesp(0.25, fixed=TRUE),
     estimate='CMLE')
 
 summary(stergm.fit.edgeonly.samplk)
