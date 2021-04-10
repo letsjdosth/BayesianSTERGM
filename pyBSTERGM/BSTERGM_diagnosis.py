@@ -176,14 +176,14 @@ if __name__ == "__main__":
     # reader_inst.read_from_csv("friendship_KH_example_model/friendship_sequence_Exmodel_run_2chain", 8, 8)
 
     # #3
-    reader_inst0 = BSTERGM_posterior_work()
-    reader_inst0.read_from_csv("example_results_pairProposal/samplk_pairsample_normPrior_edgeonly_2chain", 1, 1)
-    reader_inst0.MC_formation_samples = reader_inst0.MC_formation_samples[10000::10]
-    reader_inst0.MC_dissolution_samples = reader_inst0.MC_dissolution_samples[10000::10]
-    reader_inst0.show_traceplot()
-    reader_inst0.show_histogram(formation_mark=[-2.4980],
-        dissolution_mark=[0.7066])
-    reader_inst0.show_acfplot()
+    # reader_inst0 = BSTERGM_posterior_work()
+    # reader_inst0.read_from_csv("example_results_pairProposal/samplk_pairsample_normPrior_edgeonly_2chain", 1, 1)
+    # reader_inst0.MC_formation_samples = reader_inst0.MC_formation_samples[10000::10]
+    # reader_inst0.MC_dissolution_samples = reader_inst0.MC_dissolution_samples[10000::10]
+    # reader_inst0.show_traceplot()
+    # reader_inst0.show_histogram(formation_mark=[-2.4980],
+    #     dissolution_mark=[0.7066])
+    # reader_inst0.show_acfplot()
     
     # reader_inst1 = BSTERGM_posterior_work()
     # reader_inst1.read_from_csv("example_results_pairProposal/samplk_pairsample_normPrior_edgeGWESP_3chain", 2, 2)
@@ -205,14 +205,14 @@ if __name__ == "__main__":
     # reader_inst2.show_acfplot()
 
 
-    # reader_inst3 = BSTERGM_posterior_work()
-    # reader_inst3.read_from_csv("example_results_pairProposal/friendship_pairsample_normPrior_edgeGWESP_0chain", 2, 2)
-    # reader_inst3.MC_formation_samples = reader_inst3.MC_formation_samples[10000::20]
-    # reader_inst3.MC_dissolution_samples = reader_inst3.MC_dissolution_samples[10000::20]
-    # reader_inst3.show_traceplot()
-    # reader_inst3.show_histogram(formation_mark=[-3.9368, 1.2713],
-    #     dissolution_mark=[-0.1159, 0.4066])
-    # reader_inst3.show_acfplot()
+    reader_inst3 = BSTERGM_posterior_work()
+    reader_inst3.read_from_csv("example_results_pairProposal/friendship_pairsample_normPrior_edgeGWESP_0chain", 2, 2)
+    reader_inst3.MC_formation_samples = reader_inst3.MC_formation_samples[10000::20]
+    reader_inst3.MC_dissolution_samples = reader_inst3.MC_dissolution_samples[10000::20]
+    reader_inst3.show_traceplot()
+    reader_inst3.show_histogram(formation_mark=[-3.9368, 1.2713],
+        dissolution_mark=[-0.1159, 0.4066])
+    reader_inst3.show_acfplot()
 
 
     # reader_inst4 = BSTERGM_posterior_work()

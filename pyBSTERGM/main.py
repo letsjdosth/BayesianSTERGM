@@ -71,13 +71,13 @@ def procedure(result_queue, network_sequence, model_netStat_func,
     # BSTERGM_sampler.show_latest_exchangeSampler_netStat_traceplot()
 
 def procedure_1dim_sampler(result_queue, network_sequence, model_netStat_func,
-        initial_formation_param, initial_dissolution_param, result_string, rng_seed=2021, main_iter=30000, ex_iter=50):
+        initial_formation_param, initial_dissolution_param, result_string, rng_seed=2021, main_iter=30000, ex_iter=50, proposal_cov_rate=0.1):
     
     proc_pid = getpid()
     print("pid: ", proc_pid, "start!")
 
     BSTERGM_sampler = BSTERGM(model_netStat_func, initial_formation_param, initial_dissolution_param, network_sequence, rng_seed, pid=proc_pid)
-    BSTERGM_sampler.run_1dim(main_iter, exchange_iter=ex_iter)
+    BSTERGM_sampler.run_1dim(main_iter, exchange_iter=ex_iter, proposal_cov_rate=0.5)
     # print(BSTERGM_sampler.MC_formation_samples)
     # print(BSTERGM_sampler.MC_dissolution_samples)
     BSTERGM_sampler.write_posterior_samples(result_string)
@@ -90,7 +90,7 @@ def procedure_1dim_sampler(result_queue, network_sequence, model_netStat_func,
 
 
 def procedure_pair_sampler(result_queue, network_sequence, model_netStat_func,
-        initial_formation_param, initial_dissolution_param, result_string, rng_seed=2021, main_iter=30000, ex_iter=50, proposal_cov_rate=0.5):
+        initial_formation_param, initial_dissolution_param, result_string, rng_seed=2021, main_iter=30000, ex_iter=50, proposal_cov_rate=0.1):
     
     proc_pid = getpid()
     print("pid: ", proc_pid, "start!")
@@ -110,7 +110,7 @@ def procedure_pair_sampler(result_queue, network_sequence, model_netStat_func,
 
 if __name__=="__main__":
     #core
-    core_num = 4
+    core_num = 2
     process_vec = []
     proc_queue = mp.Queue()
 
@@ -141,13 +141,13 @@ if __name__=="__main__":
         #       result_string, rng_seed=2021, main_iter=30000, ex_iter=50):
 
         # samplk
-        process_unit = mp.Process(target=procedure_pair_sampler, 
+        process_unit = mp.Process(target=procedure_1dim_sampler, 
         args=(proc_queue, samplk_sequence, model_netStat_edgeonly, 
             edgeonly_initial_formation_vec[i], edgeonly_initial_dissolution_vec[i], 
             "samplk_pairsample_normPrior_edgeonly_"+str(i)+"chain", 2021+i*10, 80000, 100, 0.1*i+0.1))
         process_vec.append(process_unit)
 
-        process_unit = mp.Process(target=procedure_pair_sampler, 
+        process_unit = mp.Process(target=procedure_1dim_sampler, 
         args=(proc_queue, samplk_sequence, model_netStat_edgeGWESP, 
             edgeGWESP_initial_formation_vec[i], edgeGWESP_initial_dissolution_vec[i], 
             "samplk_pairsample_normPrior_edgeGWESP_"+str(i)+"chain", 2021+i*10, 80000, 100, 0.1*i+0.1))
@@ -155,26 +155,26 @@ if __name__=="__main__":
 
 
         # friendship
-        process_unit = mp.Process(target=procedure_pair_sampler, 
+        process_unit = mp.Process(target=procedure_1dim_sampler, 
         args=(proc_queue, friendship_sequence, model_netStat_edgeonly, 
             edgeonly_initial_formation_vec[i], edgeonly_initial_dissolution_vec[i], 
             "friendship_pairsample_normPrior_edgeonly_"+str(i)+"chain", 2021+i*10, 80000, 100, 0.1*i+0.1))
         process_vec.append(process_unit)
 
-        process_unit = mp.Process(target=procedure_pair_sampler, 
+        process_unit = mp.Process(target=procedure_1dim_sampler, 
         args=(proc_queue, friendship_sequence, model_netStat_edgeGWESP, 
             edgeGWESP_initial_formation_vec[i], edgeGWESP_initial_dissolution_vec[i], 
             "friendship_pairsample_normPrior_edgeGWESP_"+str(i)+"chain", 2021+i*10, 80000, 100, 0.1*i+0.1))
         process_vec.append(process_unit)
 
         # tailorshop-social
-        process_unit = mp.Process(target=procedure_pair_sampler, 
+        process_unit = mp.Process(target=procedure_1dim_sampler, 
         args=(proc_queue, sociational_interactions, model_netStat_edgeonly, 
             edgeonly_initial_formation_vec[i], edgeonly_initial_dissolution_vec[i], 
             "tailorshop_pairsample_normPrior_edgeonly_"+str(i)+"chain", 2021+i*10, 80000, 100, 0.1*i+0.1))
         process_vec.append(process_unit)
 
-        process_unit = mp.Process(target=procedure_pair_sampler, 
+        process_unit = mp.Process(target=procedure_1dim_sampler, 
         args=(proc_queue, sociational_interactions, model_netStat_edgeGWESP, 
             edgeGWESP_initial_formation_vec[i], edgeGWESP_initial_dissolution_vec[i], 
             "tailorshop_pairsample_normPrior_edgeGWESP_"+str(i)+"chain", 2021+i*10, 80000, 100, 0.1*i+0.1))
