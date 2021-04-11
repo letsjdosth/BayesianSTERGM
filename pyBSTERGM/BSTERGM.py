@@ -175,6 +175,8 @@ class BSTERGM:
             self.MC_dissolution_samples.append(last_dissolution_param)
 
     def proposal_cov_rate_setting(self, proposal_cov_rate):
+        # float or
+        # dict structured by {"formation_cov_rate": [0,...], "dissolution_cov_rate":[0,...]}
         if isinstance(proposal_cov_rate, float):
             formation_dim = len(self.MC_formation_samples[-1])
             dissolution_dim = len(self.MC_dissolution_samples[-1])
@@ -185,6 +187,8 @@ class BSTERGM:
             self.dissolution_cov_rate = proposal_cov_rate["disolution_cov_rate"]
 
     def run(self, iter, exchange_iter=30, proposal_cov_rate=0.01):
+        # proposal_cov_rate: float or
+        #   dict structured by {"formation_cov_rate": [0,...], "dissolution_cov_rate":[0,...]}
         start_time = time.time()
         self.proposal_cov_rate_setting(proposal_cov_rate)
         for i in range(iter):
@@ -230,7 +234,7 @@ class BSTERGM:
             proposed_formation_param, proposed_dissolution_param)        
         return log_r_val
 
-    def sampler_1dim(self, start_time_lag, exchange_iter, rng_seed, proposal_cov_rate):
+    def sampler_1dim(self, start_time_lag, exchange_iter, rng_seed):
         last_formation_param = self.MC_formation_samples[-1]
         last_dissolution_param = self.MC_dissolution_samples[-1]
         
@@ -239,6 +243,7 @@ class BSTERGM:
 
         for i_idx in range(len(last_formation_param)):
             #proposal
+            proposal_cov_rate = self.formation_cov_rate[i_idx]
             proposed_formation_param = self.propose_param_1dim(i_idx, now_formation_param, proposal_cov_rate)
             proposed_dissolution_param = now_dissolution_param
 
@@ -259,6 +264,7 @@ class BSTERGM:
 
         for i_idx in range(len(last_dissolution_param)):
             #proposal
+            proposal_cov_rate = self.dissolution_cov_rate[i_idx]
             proposed_formation_param = now_formation_param
             proposed_dissolution_param = self.propose_param_1dim(i_idx, now_dissolution_param, proposal_cov_rate)
 
@@ -282,11 +288,14 @@ class BSTERGM:
 
 
     def run_1dim(self, iter, exchange_iter=30, proposal_cov_rate=0.1):
+        # proposal_cov_rate: float or
+        #   dict structured by {"formation_cov_rate": [0,...], "dissolution_cov_rate":[0,...]}
         start_time = time.time()
+        self.proposal_cov_rate_setting(proposal_cov_rate)
         for i in range(iter):
             start_time_lag = self.random_gen.integers(len(self.obs_network_seq)-1)
             rng_seed = self.random_seed + i
-            self.sampler_1dim(start_time_lag, exchange_iter, rng_seed, proposal_cov_rate)
+            self.sampler_1dim(start_time_lag, exchange_iter, rng_seed)
             if i%50==0:
                 if self.pid is not None:
                     print("pid:",self.pid, " iter: ", i, "/", iter, " time elapsed(second):", round(time.time()-start_time,1))
@@ -301,7 +310,7 @@ class BSTERGM:
 
     #=============================================================================================
 
-    def sampler_2dim(self, start_time_lag, exchange_iter, rng_seed, proposal_cov_rate):
+    def sampler_2dim(self, start_time_lag, exchange_iter, rng_seed):
         last_formation_param = self.MC_formation_samples[-1]
         last_dissolution_param = self.MC_dissolution_samples[-1]
         if len(last_formation_param) != len(last_dissolution_param):
@@ -312,8 +321,10 @@ class BSTERGM:
 
         for i_idx in range(len(last_formation_param)):
             #proposal
-            proposed_formation_param = self.propose_param_1dim(i_idx, now_formation_param, proposal_cov_rate)
-            proposed_dissolution_param = self.propose_param_1dim(i_idx, now_dissolution_param, proposal_cov_rate)
+            proposal_formation_cov_rate = self.formation_cov_rate[i_idx]
+            proposal_dissolution_cov_rate = self.dissolution_cov_rate[i_idx]
+            proposed_formation_param = self.propose_param_1dim(i_idx, now_formation_param, proposal_formation_cov_rate)
+            proposed_dissolution_param = self.propose_param_1dim(i_idx, now_dissolution_param, proposal_dissolution_cov_rate)
 
             #exchange
             #separately generated case
@@ -346,11 +357,14 @@ class BSTERGM:
         self.MC_dissolution_samples.append(now_dissolution_param)
 
     def run_2dim(self, iter, exchange_iter=30, proposal_cov_rate=0.1):
+        # proposal_cov_rate: float or
+        #   dict structured by {"formation_cov_rate": [0,...], "dissolution_cov_rate":[0,...]}
         start_time = time.time()
+        self.proposal_cov_rate_setting(proposal_cov_rate)
         for i in range(iter):
             start_time_lag = self.random_gen.integers(len(self.obs_network_seq)-1)
             rng_seed = self.random_seed + i
-            self.sampler_2dim(start_time_lag, exchange_iter, rng_seed, proposal_cov_rate)
+            self.sampler_2dim(start_time_lag, exchange_iter, rng_seed)
             if i%50==0:
                 if self.pid is not None:
                     print("pid:",self.pid, " iter: ", i, "/", iter, " time elapsed(second):", round(time.time()-start_time,1))
@@ -362,7 +376,111 @@ class BSTERGM:
         else:
             print(iter,"/",iter, "time elapsed(second):", round(time.time()-start_time,1))
 
+
     #=============================================================================================
+
+    def sampler_by_group(self, start_time_lag, exchange_iter, rng_seed):
+        last_formation_param = self.MC_formation_samples[-1]
+        last_dissolution_param = self.MC_dissolution_samples[-1]
+        
+        now_formation_param = np.array([val for val in last_formation_param])
+        now_dissolution_param = np.array([val for val in last_dissolution_param])
+
+        #step1. formation group proposal
+        proposed_formation_param = 0
+        proposed_dissolution_param = 0
+        
+        proposed_formation_param = self.propose_param(last_formation_param, self.formation_cov_rate)
+        proposed_dissolution_param = now_dissolution_param
+        
+        #exchange
+        # separately generated case
+        self.latest_exchange_formation_sampler = self.get_exchange_sampler(start_time_lag, exchange_iter, proposed_formation_param, is_formation=True, rng_seed=rng_seed)
+        exchange_formation_sample = self.latest_exchange_formation_sampler.network_samples[-1]
+        self.latest_exchange_dissolution_sampler = self.get_exchange_sampler(start_time_lag, exchange_iter, proposed_dissolution_param, is_formation=False, rng_seed=rng_seed*10)
+        exchange_dissolution_sample = self.latest_exchange_dissolution_sampler.network_samples[-1]
+
+        #intergratedly generated case
+        # self.latest_exchange_integrated_sampler = self.get_integrated_exchange_sampler(start_time_lag, exchange_iter, 
+        #     proposed_formation_param, proposed_dissolution_param, rng_seed=rng_seed)
+        # exchange_integrated_sample = self.latest_exchange_integrated_sampler.network_samples[-1]
+        # exchange_formation_sample, exchange_dissolution_sample = self.dissociate_network(self.obs_network_seq[start_time_lag], exchange_integrated_sample)
+
+        #MCMC
+        try:
+            log_r_val = self.log_r(start_time_lag, last_formation_param, last_dissolution_param,
+                proposed_formation_param, proposed_dissolution_param,
+                exchange_formation_sample, exchange_dissolution_sample)
+        except ZeroDivisionError:
+            log_r_val = -math.inf #manual reject
+
+        unif_sample = self.random_gen.random()
+        if np.log(unif_sample) < log_r_val:
+                now_formation_param = proposed_formation_param
+        else:
+            pass
+
+        #step2. dissolution proposal
+        proposed_formation_param = now_formation_param
+        proposed_dissolution_param = self.propose_param(last_dissolution_param, self.dissolution_cov_rate)
+        
+        #exchange
+        # separately generated case
+        self.latest_exchange_formation_sampler = self.get_exchange_sampler(start_time_lag, exchange_iter, proposed_formation_param, is_formation=True, rng_seed=rng_seed)
+        exchange_formation_sample = self.latest_exchange_formation_sampler.network_samples[-1]
+        self.latest_exchange_dissolution_sampler = self.get_exchange_sampler(start_time_lag, exchange_iter, proposed_dissolution_param, is_formation=False, rng_seed=rng_seed*10)
+        exchange_dissolution_sample = self.latest_exchange_dissolution_sampler.network_samples[-1]
+
+        #intergratedly generated case
+        # self.latest_exchange_integrated_sampler = self.get_integrated_exchange_sampler(start_time_lag, exchange_iter, 
+        #     proposed_formation_param, proposed_dissolution_param, rng_seed=rng_seed)
+        # exchange_integrated_sample = self.latest_exchange_integrated_sampler.network_samples[-1]
+        # exchange_formation_sample, exchange_dissolution_sample = self.dissociate_network(self.obs_network_seq[start_time_lag], exchange_integrated_sample)
+
+        #MCMC
+        try:
+            log_r_val = self.log_r(start_time_lag, last_formation_param, last_dissolution_param,
+                proposed_formation_param, proposed_dissolution_param,
+                exchange_formation_sample, exchange_dissolution_sample)
+        except ZeroDivisionError:
+            log_r_val = -math.inf #manual reject
+
+        unif_sample = self.random_gen.random()
+        if np.log(unif_sample) < log_r_val:
+                now_formation_param = proposed_formation_param
+                now_dissolution_param = proposed_dissolution_param
+        else:
+            pass
+
+        #step 3
+        self.MC_formation_samples.append(now_formation_param)
+        self.MC_dissolution_samples.append(now_dissolution_param)
+    
+
+
+    def run_by_group(self, iter, exchange_iter=30, proposal_cov_rate=0.1):
+        start_time = time.time()
+        self.proposal_cov_rate_setting(proposal_cov_rate)
+        for i in range(iter):
+            start_time_lag = self.random_gen.integers(len(self.obs_network_seq)-1)
+            rng_seed = self.random_seed + i
+            self.sampler_by_group(start_time_lag, exchange_iter, rng_seed)
+            if i%50==0:
+                if self.pid is not None:
+                    print("pid:",self.pid, " iter: ", i, "/", iter, " time elapsed(second):", round(time.time()-start_time,1))
+                else:
+                    print("iter: ", i, "/", iter, " time elapsed(second):", round(time.time()-start_time,1))
+                
+        if self.pid is not None:
+            print("pid:",self.pid," iter:", iter,"/",iter, "time elapsed(second):", round(time.time()-start_time,1))
+        else:
+            print(iter,"/",iter, "time elapsed(second):", round(time.time()-start_time,1))
+
+    
+
+    #=============================================================================================
+
+
 
     def MC_sample_trace(self):
         formation_trace = []
@@ -496,11 +614,11 @@ if __name__=="__main__":
     initial_dissolution_param = np.array([2.5, -0.4])
     test_BSTERGM_sampler = BSTERGM(model_netStat, initial_formation_param, initial_dissolution_param, test_obs_seq, 2021)
 
-    # test_BSTERGM_sampler.run(10000, exchange_iter=50)
-    # print(test_BSTERGM_sampler.MC_formation_samples)
-    # print(test_BSTERGM_sampler.MC_dissolution_samples)
-    # test_BSTERGM_sampler.show_traceplot()
-    # test_BSTERGM_sampler.show_latest_exchangeSampler_netStat_traceplot()
+    test_BSTERGM_sampler.run_by_group(100, exchange_iter=50)
+    print(test_BSTERGM_sampler.MC_formation_samples)
+    print(test_BSTERGM_sampler.MC_dissolution_samples)
+    test_BSTERGM_sampler.show_traceplot()
+    test_BSTERGM_sampler.show_latest_exchangeSampler_netStat_traceplot()
 
     # test_BSTERGM_sampler.write_posterior_samples("test")
     # test_BSTERGM_sampler.write_latest_exchangeSampler_netStat("test_netStat")
@@ -511,9 +629,9 @@ if __name__=="__main__":
     # test_BSTERGM_sampler.show_traceplot()
     # test_BSTERGM_sampler.show_latest_exchangeSampler_netStat_traceplot()
 
-    print(test_BSTERGM_sampler.propose_param_1dim(0, [0,0], 1))
-    print(test_BSTERGM_sampler.propose_param_1dim(1, [0,0], 1))
-    print(test_BSTERGM_sampler.propose_param_1dim(0, [0,0], 1))
+    # print(test_BSTERGM_sampler.propose_param_1dim(0, [0,0], 1))
+    # print(test_BSTERGM_sampler.propose_param_1dim(1, [0,0], 1))
+    # print(test_BSTERGM_sampler.propose_param_1dim(0, [0,0], 1))
 
 
     # test_BSTERGM_sampler.run_2dim(2000, exchange_iter=100)
