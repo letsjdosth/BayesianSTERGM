@@ -387,9 +387,6 @@ class BSTERGM:
         now_dissolution_param = np.array([val for val in last_dissolution_param])
 
         #step1. formation group proposal
-        proposed_formation_param = 0
-        proposed_dissolution_param = 0
-        
         proposed_formation_param = self.propose_param(last_formation_param, self.formation_cov_rate)
         proposed_dissolution_param = now_dissolution_param
         
@@ -398,7 +395,7 @@ class BSTERGM:
         self.latest_exchange_formation_sampler = self.get_exchange_sampler(start_time_lag, exchange_iter, proposed_formation_param, is_formation=True, rng_seed=rng_seed)
         exchange_formation_sample = self.latest_exchange_formation_sampler.network_samples[-1]
         self.latest_exchange_dissolution_sampler = self.get_exchange_sampler(start_time_lag, exchange_iter, proposed_dissolution_param, is_formation=False, rng_seed=rng_seed*10)
-        exchange_dissolution_sample = self.latest_exchange_dissolution_sampler.network_samples[-1]
+        exchange_dissolution_sample = self.latest_exchange_dissolution_sampler.network_samples[-1] #없어도 됨(어차피 theta 지워져서 logr에 영향x)
 
         #intergratedly generated case
         # self.latest_exchange_integrated_sampler = self.get_integrated_exchange_sampler(start_time_lag, exchange_iter, 
@@ -408,7 +405,7 @@ class BSTERGM:
 
         #MCMC
         try:
-            log_r_val = self.log_r(start_time_lag, last_formation_param, last_dissolution_param,
+            log_r_val = self.log_r(start_time_lag, now_formation_param, now_dissolution_param,
                 proposed_formation_param, proposed_dissolution_param,
                 exchange_formation_sample, exchange_dissolution_sample)
         except ZeroDivisionError:
@@ -427,7 +424,7 @@ class BSTERGM:
         #exchange
         # separately generated case
         self.latest_exchange_formation_sampler = self.get_exchange_sampler(start_time_lag, exchange_iter, proposed_formation_param, is_formation=True, rng_seed=rng_seed)
-        exchange_formation_sample = self.latest_exchange_formation_sampler.network_samples[-1]
+        exchange_formation_sample = self.latest_exchange_formation_sampler.network_samples[-1] #없어도 됨(어차피 theta 지워져서 logr에 영향x)
         self.latest_exchange_dissolution_sampler = self.get_exchange_sampler(start_time_lag, exchange_iter, proposed_dissolution_param, is_formation=False, rng_seed=rng_seed*10)
         exchange_dissolution_sample = self.latest_exchange_dissolution_sampler.network_samples[-1]
 
@@ -439,7 +436,7 @@ class BSTERGM:
 
         #MCMC
         try:
-            log_r_val = self.log_r(start_time_lag, last_formation_param, last_dissolution_param,
+            log_r_val = self.log_r(start_time_lag, now_formation_param, now_dissolution_param,
                 proposed_formation_param, proposed_dissolution_param,
                 exchange_formation_sample, exchange_dissolution_sample)
         except ZeroDivisionError:

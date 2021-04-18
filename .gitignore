@@ -438,3 +438,4 @@ FodyWeavers.xsd
 Rintrospection/
 paper_format/
 pyBSTERGM/example_results_*
+compare_testcode_introspection.r

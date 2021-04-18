@@ -90,11 +90,39 @@ tailor_social[[2]] = net2
 
 
 stergm.fit1.tailor_social = stergm(tailor_social, 
-    formation = ~edges+gwdegree(0.25, fixed=TRUE)+gwesp(0.25, fixed=TRUE),
-    dissolution = ~edges+gwdegree(0.25, fixed=TRUE)+gwesp(0.25, fixed=TRUE),
+    formation = ~edges+gwesp(0.25, fixed=TRUE),
+    dissolution = ~edges+gwesp(0.25, fixed=TRUE),
     estimate='CMLE')
 
-summary(stergm.fit1.tailor_social)
+summary(stergm.fit1.tailor_social) #-2.5611, 0.8806 // -0.1880,0.5129
+fit1.gof <- gof(stergm.fit1.tailor_social)
+# fit1.gof <- gof(stergm.fit1.tailor_social, coef=c(10, 0))
+#bstergm: formation [-2.7086, 0.9838], dissolution [-2.7814, 1.0281]
+# print(fit1.gof)
+par(mfrow=c(2,4))
+plot(fit1.gof, plotlogodds=FALSE)
+
+
+net.formation = net1|net2
+ergm.formation.fit = ergm(net.formation~edges+gwesp(0.25, fixed=TRUE), constraints=~atleast(net1))
+summary(ergm.formation.fit) #-2.5621, 0.8827
+ergm.formation.gof = gof(ergm.formation.fit)
+plot(ergm.formation.gof, plotlogodds=FALSE)
+
+net.dissolution = net1&net2
+ergm.dissolution.fit = ergm(net.dissolution~edges+gwesp(0.25, fixed=TRUE), constraints=~atmost(net1))
+summary(ergm.dissolution.fit) #-0.1878, 0.5118
+ergm.dissolution.gof = gof(ergm.dissolution.fit)
+par(mfrow=c(1,4))
+plot(ergm.dissolution.gof, plotlogodds=FALSE)
+
+
+par(mfrow=c(4,4))
+plot(ergm.formation.gof, plotlogodds=FALSE)
+plot(fit1.gof, plotlogodds=FALSE)
+plot(ergm.dissolution.gof, plotlogodds=FALSE)
+
+
 
 #with time c(1,2) argument
 # ============================== 

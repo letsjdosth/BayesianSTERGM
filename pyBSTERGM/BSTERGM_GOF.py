@@ -24,11 +24,12 @@ def dissociate_network(last_network, now_network):
     return result
 
 class BSTERGM_GOF:
-    def __init__(self, model_function, posterior_parameter_samples, init_network, additional_netstat_function=None , rng_seed=2021):
+    def __init__(self, model_function, posterior_parameter_samples, init_network, is_formation, additional_netstat_function=None , rng_seed=2021):
         self.model = model_function
         self.additional_netstats = additional_netstat_function
         self.posterior_parameter_samples = posterior_parameter_samples
         self.init_network = init_network
+        self.is_formation = is_formation
 
         self.random_seed = rng_seed
         self.random_gen = np.random.default_rng(seed=rng_seed)
@@ -79,7 +80,7 @@ class BSTERGM_GOF:
 
 
     def gof_sampler(self, parameter, exchange_iter, rng_seed):
-        Net_sampler = NetworkSampler(self.model, parameter, self.init_network, rng_seed)
+        Net_sampler = NetworkSampler(self.model, parameter, self.init_network, self.is_formation, rng_seed)
         Net_sampler.run(exchange_iter)
 
         return Net_sampler.network_samples[-1]
@@ -107,6 +108,7 @@ class BSTERGM_GOF:
             if i%10==9:
                 print("gof iter: ",i+1)
             parameter = self.choose_samples()
+            # print('now chosen parameter: ', parameter) #for test
             gof_sample_network = self.gof_sampler(parameter, exchange_iter, self.random_seed + i)
             self.collect_netstat(gof_sample_network)
     
@@ -316,12 +318,12 @@ if __name__ == "__main__":
     yplus2_net, yminus2_net = dissociate_network(test_initnet1, test_initnet2)
 
     gof_inst11 = BSTERGM_GOF(model_netStat, test_BSTERGM_sampler.MC_formation_samples[-2000::10], 
-        test_initnet1, additional_netstat_function=gof_additional_netStat)
+        test_initnet1, is_formation=True, additional_netstat_function=gof_additional_netStat)
     gof_inst11.gof_run(num_sim=100, exchange_iter=50)
     gof_inst11.show_boxplot(next_net=yplus2_net)
 
     gof_inst12 = BSTERGM_GOF(model_netStat, test_BSTERGM_sampler.MC_dissolution_samples[-2000::10], 
-        test_initnet1, additional_netstat_function=gof_additional_netStat)
+        test_initnet1, is_formation=False, additional_netstat_function=gof_additional_netStat)
     gof_inst12.gof_run(num_sim=100, exchange_iter=50)
     gof_inst12.show_boxplot(next_net=yminus2_net)
 
@@ -329,12 +331,12 @@ if __name__ == "__main__":
     yplus3_net, yminus3_net = dissociate_network(test_initnet2, test_initnet3)
     
     gof_inst11 = BSTERGM_GOF(model_netStat, test_BSTERGM_sampler.MC_formation_samples[-2000::10], 
-        test_initnet2, additional_netstat_function=gof_additional_netStat)
+        test_initnet2, is_formation=True, additional_netstat_function=gof_additional_netStat)
     gof_inst11.gof_run(num_sim=100, exchange_iter=50)
     gof_inst11.show_boxplot(next_net=yplus3_net)
 
     gof_inst12 = BSTERGM_GOF(model_netStat, test_BSTERGM_sampler.MC_dissolution_samples[-2000::10], 
-        test_initnet2, additional_netstat_function=gof_additional_netStat)
+        test_initnet2, is_formation=False, additional_netstat_function=gof_additional_netStat)
     gof_inst12.gof_run(num_sim=100, exchange_iter=50)
     gof_inst12.show_boxplot(next_net=yminus3_net)
 
