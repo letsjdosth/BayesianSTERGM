@@ -260,6 +260,7 @@ summary(stergm.fit.edge1hom.friendship)
 stergm.fit.edgeonly.friendship = stergm(friendship, 
     formation = ~edges,
     dissolution = ~edges,
+    times=c(3,4),
     estimate='CMLE')
 
 summary(stergm.fit.edgeonly.friendship)
