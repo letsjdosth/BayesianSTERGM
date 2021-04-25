@@ -104,12 +104,15 @@ plot(fit1.gof, plotlogodds=FALSE)
 
 
 net.formation = net1|net2
+# ergm.formation.fit = ergm(net.formation~edges, constraints=~atleast(net1)) #-1.3502
 ergm.formation.fit = ergm(net.formation~edges+gwesp(0.25, fixed=TRUE), constraints=~atleast(net1))
 summary(ergm.formation.fit) #-2.5621, 0.8827
 ergm.formation.gof = gof(ergm.formation.fit)
+par(mfrow=c(1,4))
 plot(ergm.formation.gof, plotlogodds=FALSE)
 
 net.dissolution = net1&net2
+# ergm.dissolution.fit = ergm(net.dissolution~edges, constraints=~atmost(net1)) #0.6274
 ergm.dissolution.fit = ergm(net.dissolution~edges+gwesp(0.25, fixed=TRUE), constraints=~atmost(net1))
 summary(ergm.dissolution.fit) #-0.1878, 0.5118
 ergm.dissolution.gof = gof(ergm.dissolution.fit)
@@ -123,6 +126,20 @@ plot(fit1.gof, plotlogodds=FALSE)
 plot(ergm.dissolution.gof, plotlogodds=FALSE)
 
 
+#참고용(bergm 비교용)
+ergm.net1.fit = ergm(net1~edges+gwesp(0.25, fixed=TRUE))
+summary(ergm.net1.fit)
+
+ergm.net2.fit = ergm(net2~edges+gwesp(0.25, fixed=TRUE))
+summary(ergm.net2.fit)
+mcmc.diagnostics(ergm.net2.fit)
+
+ergm.netf.fit = ergm(net.formation~edges+gwesp(0.25, fixed=TRUE))
+summary(ergm.netf.fit)
+
+
+ergm.netd.fit = ergm(net.dissolution~edges+gwesp(0.25, fixed=TRUE))
+summary(ergm.netd.fit)
 
 #with time c(1,2) argument
 # ============================== 

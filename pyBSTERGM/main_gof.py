@@ -122,8 +122,12 @@ if __name__ == "__main__":
     # print(len(reader_inst.MC_dissolution_samples))
     reader_inst.MC_dissolution_samples = reader_inst.MC_dissolution_samples[5000::10]
     reader_inst.MC_formation_samples = reader_inst.MC_formation_samples[5000::10]
-    print(np.mean(reader_inst.MC_sample_trace()[0][0]), np.mean(reader_inst.MC_sample_trace()[0][1]),
-        np.mean(reader_inst.MC_sample_trace()[1][0]), np.mean(reader_inst.MC_sample_trace()[1][1]))    
+
+    # reader_inst.show_traceplot()
+    # reader_inst.show_histogram()
+
+    # print(np.mean(reader_inst.MC_sample_trace()[0][0]), np.mean(reader_inst.MC_sample_trace()[0][1]),
+    #     np.mean(reader_inst.MC_sample_trace()[1][0]), np.mean(reader_inst.MC_sample_trace()[1][1]))    
 
     #bstergm: formation [-2.7086, 0.9838], dissolution [-2.7814, 1.0281]
     # formation_mark = [np.array([-2.5998, 0.9106])]
@@ -131,14 +135,14 @@ if __name__ == "__main__":
     
 
 
-    # net_plus, net_minus = dissociate_network(sociational_interactions[0], sociational_interactions[1])
+    net_plus, net_minus = dissociate_network(sociational_interactions[0], sociational_interactions[1])
     
-    # gof_inst_f = BSTERGM_GOF(model_netStat_edgeGWESP, reader_inst.MC_formation_samples, sociational_interactions[0],
-    #                         is_formation=True, additional_netstat_function=model_netStat_edgeGWESP)
-    # gof_inst_f.gof_run(num_sim=200, exchange_iter=500)
-    # gof_inst_f.show_boxplot(next_net=net_plus)
+    gof_inst_f = BSTERGM_GOF(model_netStat_edgeGWESP, reader_inst.MC_formation_samples, sociational_interactions[0],
+                            is_formation=True, additional_netstat_function=model_netStat_edgeGWESP)
+    gof_inst_f.gof_run(num_sim=200, exchange_iter=500)
+    gof_inst_f.show_boxplot(next_net=net_plus)
 
-    # gof_inst_d = BSTERGM_GOF(model_netStat_edgeGWESP, dissolution_mark, sociational_interactions[0],
-    #                         is_formation=False, additional_netstat_function=model_netStat_edgeGWESP)
-    # gof_inst_d.gof_run(num_sim=200, exchange_iter=30)
-    # gof_inst_d.show_boxplot(next_net=net_minus)
+    gof_inst_d = BSTERGM_GOF(model_netStat_edgeGWESP, reader_inst.MC_dissolution_samples, sociational_interactions[0],
+                            is_formation=False, additional_netstat_function=model_netStat_edgeGWESP)
+    gof_inst_d.gof_run(num_sim=200, exchange_iter=500)
+    gof_inst_d.show_boxplot(next_net=net_minus)

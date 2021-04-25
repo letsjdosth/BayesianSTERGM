@@ -227,14 +227,14 @@ if __name__ == "__main__":
     # reader_inst4.show_acfplot()
 
 
-    # reader_inst5 = BSTERGM_posterior_work()
+    reader_inst5 = BSTERGM_posterior_work()
     # reader_inst5.read_from_csv("example_results_pairProposal/tailorshop_pairsample_normPrior_edgeGWESP_1chain", 2, 2)
-    # reader_inst5.read_from_csv("example_results_1dimProposal/tailorshop_1dimsample_normPrior_edgeGWESP_1chain", 2, 2)
-    # reader_inst5.MC_formation_samples = reader_inst5.MC_formation_samples[10000::20]
-    # reader_inst5.MC_dissolution_samples = reader_inst5.MC_dissolution_samples[10000::20]
-    # reader_inst5.show_traceplot()
-    # reader_inst5.show_histogram(formation_mark=[-2.5998, 0.9106], dissolution_mark=[-0.1921, 0.5155])
-    # reader_inst5.show_acfplot()
+    reader_inst5.read_from_csv("example_results_1dimProposal/tailorshop_1dimsample_normPrior_edgeGWESP_1chain", 2, 2)
+    reader_inst5.MC_formation_samples = reader_inst5.MC_formation_samples[10000::20]
+    reader_inst5.MC_dissolution_samples = reader_inst5.MC_dissolution_samples[10000::20]
+    reader_inst5.show_traceplot()
+    reader_inst5.show_histogram(formation_mark=[-2.5611, 0.8806], dissolution_mark=[-0.1880, 0.5129])
+    reader_inst5.show_acfplot()
 
 
     
@@ -250,8 +250,8 @@ if __name__ == "__main__":
     # reader_inst0.show_traceplot()
     # reader_inst0.show_histogram(formation_mark=[-1.3502],
     #     dissolution_mark=[0.6274])
-    # reader_inst0.show_acfplot()
+    # # reader_inst0.show_acfplot()
 
-    netstat_reader_inst0 = BSTERGM_latest_exchangeSampler_work()
-    netstat_reader_inst0.read_from_csv("example_results_mutableEdge/tailorshop_social_mutableEdge_normPrior_edgeonly_main40000_aux4000_0chain_NetworkStat")
-    netstat_reader_inst0.show_traceplot()
+    # netstat_reader_inst0 = BSTERGM_latest_exchangeSampler_work()
+    # netstat_reader_inst0.read_from_csv("example_results_mutableEdge/tailorshop_social_mutableEdge_normPrior_edgeonly_main40000_aux4000_0chain_NetworkStat")
+    # netstat_reader_inst0.show_traceplot()

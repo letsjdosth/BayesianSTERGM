@@ -11,28 +11,9 @@ from network_sampler import NetworkSampler, NetworkSampler_integrated
 
 class BSTERGM:
     def __init__(self, model_fn, initial_formation_param, initial_dissolution_param, obs_network_seq, rng_seed=2021, pid=None):
-        #variables
-        self.obs_network_seq = []
-        self.initial_formation_param = np.array(0)
-        self.initial_dissolution_param = np.array(0)
-        self.MC_formation_samples = []
-        self.MC_dissolution_samples = []
-        self.node_num = 0
-        self.isDirected = False
-
-        self.random_seed = 2021
-        self.random_gen = 0
-        self.obs_network_formation_seq = []
-        self.obs_network_dissolution_seq = []
-
-        self.latest_exchange_formation_sampler = None
-        self.latest_exchange_dissolution_sampler = None
-        self.latest_exchange_integrated_sampler = None
-        self.pid = None
-
-        
-        #initialize
         self.obs_network_seq = obs_network_seq
+        self.node_num = obs_network_seq[0].node_num
+        self.isDirected = False
         if isinstance(obs_network_seq[0], DirectedNetwork):
             self.isDirected = True
         else:
@@ -40,16 +21,28 @@ class BSTERGM:
         
         self.initial_formation_param = initial_formation_param
         self.initial_dissolution_param = initial_dissolution_param
-        self.MC_formation_samples.append(initial_formation_param)
-        self.MC_dissolution_samples.append(initial_dissolution_param)
-        self.obs_network_formation_seq.append(initial_formation_param)
-        self.obs_network_dissolution_seq.append(initial_dissolution_param)
+
+        self.MC_formation_samples = []
+        self.MC_dissolution_samples = []
+        self.MC_formation_samples.append(initial_formation_param) #np array
+        self.MC_dissolution_samples.append(initial_dissolution_param) #np array
+        
+        self.obs_network_formation_seq = []
+        self.obs_network_dissolution_seq = []
+        self.obs_network_formation_seq.append([0])
+        self.obs_network_dissolution_seq.append([0])
         self.dissociate_obsSeq()
+
         self.model = model_fn
-        self.node_num = obs_network_seq[0].node_num
         
         self.random_seed = rng_seed
         self.random_gen = np.random.default_rng(seed=rng_seed)
+        
+        self.latest_exchange_formation_sampler = None
+        self.latest_exchange_dissolution_sampler = None
+        self.latest_exchange_integrated_sampler = None
+
+        self.pid = None
         if pid is not None:
             self.pid = pid
 
@@ -104,6 +97,7 @@ class BSTERGM:
     def log_prior(self, last_formation_param, last_dissolution_param,
             proposed_formation_param, proposed_dissolution_param):
         #normal(0,100) prior
+        # proposed - last
 
         dim = len(last_formation_param)
         zero_mean = [0 for _ in range(dim)]
