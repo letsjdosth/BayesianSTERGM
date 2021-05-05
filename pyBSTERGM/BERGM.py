@@ -1,5 +1,6 @@
 import time
 import csv
+import math
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -86,7 +87,10 @@ class BERGM:
         self.latest_exchange_sampler = self.get_exchange_sampler(exchange_iter, proposed_param, rng_seed=rng_seed)
         exchange_sample = self.latest_exchange_sampler.network_samples[-1]
 
-        log_r_val = self.log_r(last_param, proposed_param, exchange_sample)
+        try:
+            log_r_val = self.log_r(last_param, proposed_param, exchange_sample)
+        except ZeroDivisionError:
+            log_r_val = -math.inf
 
         unif_sample = self.random_gen.random()
         if np.log(unif_sample) < log_r_val:
@@ -103,7 +107,7 @@ class BERGM:
             cov_rate_vec = proposal_cov_rate
         return cov_rate_vec
 
-    def run(self, iter, exchange_iter, proposal_cov_rate):
+    def run(self, iter, exchange_iter, proposal_cov_rate, console_output_str=""):
         start_time = time.time()
         cov_rate_vec = self.proposal_cov_rate_setting(proposal_cov_rate)
 
@@ -112,14 +116,14 @@ class BERGM:
             self.sampler(exchange_iter, cov_rate_vec, rng_seed)
             if i%200==0:
                 if self.pid is not None:
-                    print("pid:",self.pid, " iter: ", i, "/", iter, " time elapsed(second):", round(time.time()-start_time,1))
+                    print("pid:",self.pid, " ", console_output_str, " iter: ", i, "/", iter, " time elapsed(second):", round(time.time()-start_time,1))
                 else:
-                    print("iter: ", i, "/", iter, " time elapsed(second):", round(time.time()-start_time,1))
+                    print(console_output_str, " iter: ", i, "/", iter, " time elapsed(second):", round(time.time()-start_time,1))
                 
         if self.pid is not None:
-            print("pid:",self.pid," iter:", iter,"/",iter, "time elapsed(second):", round(time.time()-start_time,1))
+            print("pid:",self.pid, " ", console_output_str, " iter:", iter,"/",iter, "time elapsed(second):", round(time.time()-start_time,1))
         else:
-            print(iter,"/",iter, "time elapsed(second):", round(time.time()-start_time,1))
+            print(console_output_str, " iter:", iter,"/",iter, "time elapsed(second):", round(time.time()-start_time,1))
 
     # ===============================================
 
@@ -137,13 +141,19 @@ class BERGM:
     def show_traceplot(self, show=True):
         trace = self.MC_sample_trace()
         grid_column = 1
-        # grid_row = int(len(netStat)/2+0.51)
         grid_row = len(self.initial_param)
         plt.figure(figsize=(5*grid_column, 3*grid_row))
         for i, paramSeq in enumerate(trace):
             plt.subplot(grid_row, grid_column, i+1)
             plt.plot(range(len(paramSeq)), paramSeq)
-        
+
+        if show:
+            plt.show()
+
+    
+    def show_traceplot_eachaxis(self, axis_idx, show=False):
+        axis_trace = self.MC_sample_trace()[axis_idx]
+        plt.plot(range(len(axis_trace)), axis_trace)
         if show:
             plt.show()
 
@@ -151,7 +161,6 @@ class BERGM:
         self.latest_exchange_sampler.show_traceplot()
         
     def write_posterior_samples(self, filename: str):
-        # print(self.MC_dissolution_samples)
         with open("pyBSTERGM/" + filename + '.csv', 'w', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
             for sample in self.MC_sample:
@@ -159,12 +168,10 @@ class BERGM:
                 writer.writerow(csv_row)
 
     def write_latest_exchangeSampler_netStat(self, filename: str):
-        netStat = self.latest_exchange_sampler.netStat_trace()
-        netStat_list = (np.array(netStat).T).tolist()
-    
         with open("pyBSTERGM/" + filename + '.csv', 'w', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
-            for csv_row in netStat_list:
+            for val_vec in self.latest_exchange_sampler.network_samples_netStats:
+                csv_row = val_vec.tolist()
                 writer.writerow(csv_row)
 
     
@@ -182,6 +189,123 @@ class BERGM:
                 plt.axvline(param_mark[i], color='red', linewidth=1.5)
         if show:
             plt.show()
+
+    def show_histogram_eachaxis(self, axis_idx, param_mark=None, bins=100, show=False):
+        axis_trace = self.MC_sample_trace()[axis_idx]
+        plt.hist(axis_trace, bins=bins, density=True)
+        if param_mark is not None:
+            plt.axvline(param_mark, color='red', linewidth=1.5)
+        if show:
+            plt.show()
+
+
+
+
+
+
+
+
+# #=============================================================================================
+
+# def propose_param_1dim(self, dim_idx, last_param, cov_rate):
+#     result =[val for val in last_param]
+#     new_val = self.random_gen.normal(last_param[dim_idx], cov_rate)
+#     result[dim_idx] = new_val
+#     return np.array(result)
+
+# def log_r_1dim_formation(self, start_time_lag, last_formation_param, last_dissolution_param,
+#         proposed_formation_param, proposed_dissolution_param,
+#         exchange_formation):
+#     formation_netStat_diff = self.model(self.obs_network_formation_seq[start_time_lag+1]) - self.model(exchange_formation)
+
+#     log_r_val = np.dot(proposed_formation_param - last_formation_param, formation_netStat_diff)
+#     log_r_val += self.log_prior(last_formation_param, last_dissolution_param,
+#         proposed_formation_param, proposed_dissolution_param)        
+#     return log_r_val
+
+# def log_r_1dim_dissolution(self, start_time_lag, last_formation_param, last_dissolution_param,
+#         proposed_formation_param, proposed_dissolution_param,
+#         exchange_dissolution):
+#     dissolution_netStat_diff = self.model(self.obs_network_dissolution_seq[start_time_lag+1]) - self.model(exchange_dissolution)
+
+#     log_r_val = np.dot(proposed_dissolution_param - last_dissolution_param, dissolution_netStat_diff)
+#     log_r_val += self.log_prior(last_formation_param, last_dissolution_param,
+#         proposed_formation_param, proposed_dissolution_param)        
+#     return log_r_val
+
+# def sampler_1dim(self, start_time_lag, exchange_iter, rng_seed):
+#     last_formation_param = self.MC_formation_samples[-1]
+#     last_dissolution_param = self.MC_dissolution_samples[-1]
+    
+#     now_formation_param = np.array([val for val in last_formation_param])
+#     now_dissolution_param = np.array([val for val in last_dissolution_param])
+
+#     for i_idx in range(len(last_formation_param)):
+#         #proposal
+#         proposal_cov_rate = self.formation_cov_rate[i_idx]
+#         proposed_formation_param = self.propose_param_1dim(i_idx, now_formation_param, proposal_cov_rate)
+#         proposed_dissolution_param = now_dissolution_param
+
+#         #exchange
+#         self.latest_exchange_formation_sampler = self.get_exchange_sampler(start_time_lag, exchange_iter, proposed_formation_param, is_formation=True, rng_seed=rng_seed)
+#         exchange_formation_sample = self.latest_exchange_formation_sampler.network_samples[-1]
+
+#         #MCMC
+#         log_r_val = self.log_r_1dim_formation(start_time_lag, now_formation_param, now_dissolution_param,
+#             proposed_formation_param, proposed_dissolution_param,
+#             exchange_formation_sample)
+
+#         unif_sample = self.random_gen.random()
+#         if np.log(unif_sample) < log_r_val:
+#             now_formation_param = proposed_formation_param
+#         else:
+#             pass
+
+#     for i_idx in range(len(last_dissolution_param)):
+#         #proposal
+#         proposal_cov_rate = self.dissolution_cov_rate[i_idx]
+#         proposed_formation_param = now_formation_param
+#         proposed_dissolution_param = self.propose_param_1dim(i_idx, now_dissolution_param, proposal_cov_rate)
+
+#         #exchange
+#         self.latest_exchange_dissolution_sampler = self.get_exchange_sampler(start_time_lag, exchange_iter, proposed_dissolution_param, is_formation=False, rng_seed=rng_seed*10)
+#         exchange_dissolution_sample = self.latest_exchange_dissolution_sampler.network_samples[-1]
+
+#         #MCMC
+#         log_r_val = self.log_r_1dim_dissolution(start_time_lag, now_formation_param, now_dissolution_param,
+#             proposed_formation_param, proposed_dissolution_param,
+#             exchange_dissolution_sample)
+
+#         unif_sample = self.random_gen.random()
+#         if np.log(unif_sample) < log_r_val:
+#             now_dissolution_param = proposed_dissolution_param
+#         else:
+#             pass
+
+#     self.MC_formation_samples.append(now_formation_param)
+#     self.MC_dissolution_samples.append(now_dissolution_param)
+
+
+# def run_1dim(self, iter, exchange_iter=30, proposal_cov_rate=0.1):
+#     # proposal_cov_rate: float or
+#     #   dict structured by {"formation_cov_rate": [0,...], "dissolution_cov_rate":[0,...]}
+#     start_time = time.time()
+#     self.proposal_cov_rate_setting(proposal_cov_rate)
+#     for i in range(iter):
+#         start_time_lag = self.random_gen.integers(len(self.obs_network_seq)-1)
+#         rng_seed = self.random_seed + i
+#         self.sampler_1dim(start_time_lag, exchange_iter, rng_seed)
+#         if i%50==0:
+#             if self.pid is not None:
+#                 print("pid:",self.pid, " iter: ", i, "/", iter, " time elapsed(second):", round(time.time()-start_time,1))
+#             else:
+#                 print("iter: ", i, "/", iter, " time elapsed(second):", round(time.time()-start_time,1))
+            
+#     if self.pid is not None:
+#         print("pid:",self.pid," iter:", iter,"/",iter, "time elapsed(second):", round(time.time()-start_time,1))
+#     else:
+#         print(iter,"/",iter, "time elapsed(second):", round(time.time()-start_time,1))
+
 
 
 if __name__ == "__main__":

@@ -112,11 +112,17 @@ class NetworkSampler:
         grid_column = 1
         grid_row = int(len(netStat))
         
+        constraint_netStat = None
+        if self.constraint_net is not None:
+            constraint_netStat = self.model(self.constraint_net)
+
         plt.figure(figsize=(5*grid_column, 3*grid_row))
         for i, statSeq in enumerate(netStat):
             plt.subplot(grid_row, grid_column, i+1)
             plt.plot(range(len(statSeq)), statSeq)
-        
+            if self.constraint_net is not None:
+                plt.axhline(constraint_netStat[i], color='red', linewidth=1.5)
+
         if show:
             plt.show()
 
