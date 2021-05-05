@@ -1,8 +1,0 @@
-
-    Col<double> testParam1 = { 1, 0.13 };
-    Col<double> testParam2 = { -1, -0.05 };
-    BSTERGM_MCMC_RandomLag Bstergm = BSTERGM_MCMC_RandomLag(testParam1, testParam2, netSeq);
-    Bstergm.generateSample(100000, 200);
-    Bstergm.cutBurnIn(30000);
-    Bstergm.thinning(50);
-    //Bstergm.testOut();
