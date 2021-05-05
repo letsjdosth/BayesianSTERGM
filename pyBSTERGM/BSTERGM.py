@@ -7,10 +7,11 @@ import matplotlib.pyplot as plt
 from scipy.stats import multivariate_normal
 
 from network import UndirectedNetwork, DirectedNetwork
-from network_sampler import NetworkSampler, NetworkSampler_integrated
+from network_sampler import NetworkSampler
 
 class BSTERGM:
     def __init__(self, model_fn, initial_formation_param, initial_dissolution_param, obs_network_seq, rng_seed=2021, pid=None):
+        # observed networks
         self.obs_network_seq = obs_network_seq
         self.node_num = obs_network_seq[0].node_num
         self.isDirected = False
@@ -19,35 +20,31 @@ class BSTERGM:
         else:
             self.isDirected = False
         
-        self.initial_formation_param = initial_formation_param
-        self.initial_dissolution_param = initial_dissolution_param
-
-        self.MC_formation_samples = []
-        self.MC_dissolution_samples = []
-        self.MC_formation_samples.append(initial_formation_param) #np array
-        self.MC_dissolution_samples.append(initial_dissolution_param) #np array
-        
-        self.obs_network_formation_seq = []
-        self.obs_network_dissolution_seq = []
-        self.obs_network_formation_seq.append([0])
-        self.obs_network_dissolution_seq.append([0])
+        self.obs_network_formation_seq = [0] # dummy for 0-th index. 0->1 : use [1]
+        self.obs_network_dissolution_seq = [0] # dummy for 0-th index
         self.dissociate_obsSeq()
 
+        # parameter containers
+        self.initial_formation_param = initial_formation_param #np array
+        self.initial_dissolution_param = initial_dissolution_param  #np array
+        self.MC_formation_samples = [initial_formation_param]
+        self.MC_dissolution_samples = [initial_dissolution_param]
+        
+        # exchange sampler references
+        self.latest_exchange_formation_sampler = None
+        self.latest_exchange_dissolution_sampler = None
+        self.latest_exchange_integrated_sampler = None
+
+        # other settings        
         self.model = model_fn
         
         self.random_seed = rng_seed
         self.random_gen = np.random.default_rng(seed=rng_seed)
         
-        self.latest_exchange_formation_sampler = None
-        self.latest_exchange_dissolution_sampler = None
-        self.latest_exchange_integrated_sampler = None
-
         self.pid = None
         if pid is not None:
             self.pid = pid
 
-
-    
     def __str__(self):
         string_val = "<BSTERGM.BSTERGM object>\n" + self.MC_formation_samples.__str__() +"\n" + self.MC_dissolution_samples.__str__()
         return string_val
@@ -78,19 +75,13 @@ class BSTERGM:
             self.obs_network_formation_seq.append(y_plus)
             self.obs_network_dissolution_seq.append(y_minus)
 
-    def propose_param(self, last_param, cov_rate):
-        cov_mat = np.diag(cov_rate)
+    def propose_param(self, last_param, cov_rate_vec):
+        cov_mat = np.diag(cov_rate_vec)
         return self.random_gen.multivariate_normal(last_param, cov_mat)
 
     def get_exchange_sampler(self, start_time_lag, exchange_iter, proposed_param, is_formation, rng_seed):
         exchange_sampler = NetworkSampler(self.model, proposed_param,
             self.obs_network_seq[start_time_lag], is_formation=is_formation, rng_seed=rng_seed)
-        exchange_sampler.run(exchange_iter)
-        return exchange_sampler
-
-    def get_integrated_exchange_sampler(self, start_time_lag, exchange_iter, proposed_formation_param, proposed_dissolution_param, rng_seed):
-        exchange_sampler = NetworkSampler_integrated(self.model, proposed_formation_param, proposed_dissolution_param,
-            self.obs_network_seq[start_time_lag], rng_seed=rng_seed)
         exchange_sampler.run(exchange_iter)
         return exchange_sampler
 
