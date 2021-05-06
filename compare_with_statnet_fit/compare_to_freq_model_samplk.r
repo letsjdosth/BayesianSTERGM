@@ -72,7 +72,17 @@ samplk[[3]] = as.network(samplk3, directed=TRUE)
 stergm.fit.edgeonly.samplk = stergm(samplk, 
     formation = ~edges,
     dissolution = ~edges,
-    times=c(2,3),
+    # times=c(1,2),
     estimate='CMLE')
 
 summary(stergm.fit.edgeonly.samplk)
+
+# #time 2-3
+# f: -2.6784
+# d: 0.8557
+# #time 1-2
+# f: -2.3427
+# d: 0.5596
+# #no time arg
+# f: -2.4980
+# d: 0.7066

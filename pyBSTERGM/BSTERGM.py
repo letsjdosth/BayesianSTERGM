@@ -5,6 +5,7 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import multivariate_normal
+from scipy.linalg import block_diag
 
 from network import UndirectedNetwork, DirectedNetwork
 from network_sampler import NetworkSampler
@@ -124,6 +125,45 @@ class BSTERGM:
         self.dissolution_BERGM.run(iter, exchange_iter, dissolution_cov_rate, console_output_str='dissolution')
         print("BSTERGM complete: time elapsed(second): ", round(time.time()-start_time,1))
 
+    def make_block_diag_net(self, network_list):
+        num_block = len(network_list)
+        block_mat = network_list[0].structure
+        for i in range(1, num_block):
+            block_mat = block_diag(block_mat, network_list[i].structure)
+        if self.isDirected:
+            return DirectedNetwork(block_mat)
+        else:
+            return UndirectedNetwork(block_mat)
+
+    def run_fullTimeLag_jointly(self, iter, exchange_iter=30, proposal_cov_rate=0.01):
+        start_time = time.time()
+        formation_cov_rate, dissolution_cov_rate = self.proposal_cov_rate_setting(proposal_cov_rate)
+
+        joint_constraint = self.make_block_diag_net(self.obs_network_seq[:-1])
+        joint_obs_formation = self.make_block_diag_net(self.obs_network_formation_seq[1:])
+        joint_obs_dissolution = self.make_block_diag_net(self.obs_network_dissolution_seq[1:])
+        # print(joint_constraint.structure.shape, joint_obs_formation.structure.shape, joint_obs_dissolution.structure.shape)
+        
+        num_block = len(self.obs_network_formation_seq[1:])
+        print("num_block:", num_block)
+
+        self.formation_BERGM = BERGM(self.model, 
+            self.initial_formation_param, joint_obs_formation,
+            rng_seed=self.random_seed+1,
+            is_formation = True, constraint_net=joint_constraint, 
+            num_joint_blocks= num_block,
+            pid=self.pid)
+        self.dissolution_BERGM = BERGM(self.model, 
+            self.initial_dissolution_param, joint_obs_dissolution,
+            rng_seed=self.random_seed+2,
+            is_formation = False, constraint_net=joint_constraint, 
+            num_joint_blocks= num_block,
+            pid=self.pid)
+
+        self.formation_BERGM.run(iter, exchange_iter, formation_cov_rate, console_output_str='joint-formation')
+        self.dissolution_BERGM.run(iter, exchange_iter, dissolution_cov_rate, console_output_str='joint-dissolution')
+        print("BSTERGM complete: time elapsed(second): ", round(time.time()-start_time,1))
+
     #=============================================================================================
 
     def show_traceplot(self, show=True):
@@ -217,10 +257,48 @@ if __name__=="__main__":
         model.append(network.statCal_geoWeightedESP(0.25))
         return np.array(model)
 
-    BSTERGM_sampler2 = BSTERGM(model_netStat_edgeonly, np.array([0]), np.array([0]), sociational_interactions, pid='000')
-    BSTERGM_sampler2.run(50, exchange_iter=50, time_lag=0)
-    BSTERGM_sampler2.write_posterior_samples("edgeonly_tailorshop")
-    BSTERGM_sampler2.write_latest_exchangeSampler_netStat("edgeonly_tailorshop_netStat")
+    from model_settings import model_netStat_samplk_vignettesEx
+    
+    BSTERGM_sampler0 = BSTERGM(model_netStat_edgeonly, np.array([0]), np.array([0]), samplk_sequence, pid='000')
+    BSTERGM_sampler0.run_fullTimeLag_jointly(5000, 50)
+    # BSTERGM_sampler0.write_posterior_samples("edgeonly_samplk_jointlag")
+    # BSTERGM_sampler0.write_latest_exchangeSampler_netStat("edgeonly_samplk_jointlag_netStat")
+    BSTERGM_sampler0.show_traceplot()
+    BSTERGM_sampler0.show_histogram(formation_param_mark_vec=[-2.4980], dissolution_param_mark_vec=[0.7066])
+    BSTERGM_sampler0.show_latest_exchangeSampler_netStat_traceplot()
+    
+
+    BSTERGM_sampler1 = BSTERGM(model_netStat_edgeonly, np.array([0]), np.array([0]), samplk_sequence, pid='000')
+    BSTERGM_sampler1.run(5000, exchange_iter=50, time_lag=1)
+    # BSTERGM_sampler1.write_posterior_samples("edgeonly_samplk_time12")
+    # BSTERGM_sampler1.write_latest_exchangeSampler_netStat("edgeonly_samplk_time12_netStat")
+    BSTERGM_sampler1.show_traceplot()
+    BSTERGM_sampler1.show_histogram(formation_param_mark_vec=[-2.6784], dissolution_param_mark_vec=[0.8557])
+    BSTERGM_sampler1.show_latest_exchangeSampler_netStat_traceplot()
+
+    BSTERGM_sampler2 = BSTERGM(model_netStat_edgeonly, np.array([0]), np.array([0]), samplk_sequence, pid='000')
+    BSTERGM_sampler2.run(5000, exchange_iter=50, time_lag=0)
+    # BSTERGM_sampler2.write_posterior_samples("edgeonly_samplk_time01")
+    # BSTERGM_sampler2.write_latest_exchangeSampler_netStat("edgeonly_samplk_time01_netStat")
     BSTERGM_sampler2.show_traceplot()
-    BSTERGM_sampler2.show_histogram(formation_param_mark_vec=[-1.3502], dissolution_param_mark_vec=[0.6274])
+    BSTERGM_sampler2.show_histogram(formation_param_mark_vec=[-2.3427], dissolution_param_mark_vec=[0.5596])
     BSTERGM_sampler2.show_latest_exchangeSampler_netStat_traceplot()
+
+
+    # BSTERGM_sampler0 = BSTERGM(model_netStat_edgeonly, np.array([0]), np.array([0]), sociational_interactions, pid='000')
+    # BSTERGM_sampler0.run_fullTimeLag_jointly(5000, 50)
+    # # BSTERGM_sampler0.write_posterior_samples("edgeonly_tailorshop_jointlag")
+    # # BSTERGM_sampler0.write_latest_exchangeSampler_netStat("edgeonly_tailorshop_jointlag_netStat")
+    # BSTERGM_sampler0.show_traceplot()
+    # BSTERGM_sampler0.show_histogram(formation_param_mark_vec=[-1.3502], dissolution_param_mark_vec=[0.6274])
+    # BSTERGM_sampler0.show_latest_exchangeSampler_netStat_traceplot()
+    
+    
+    # BSTERGM_sampler1 = BSTERGM(model_netStat_edgeonly, np.array([0]), np.array([0]), sociational_interactions, pid='000')
+    # BSTERGM_sampler1.run(5000, 50,time_lag=0)
+    # # BSTERGM_sampler1.write_posterior_samples("edgeonly_tailorshop_time01")
+    # # BSTERGM_sampler1.write_latest_exchangeSampler_netStat("edgeonly_tailorshop_time01_netStat")
+    # BSTERGM_sampler1.show_traceplot()
+    # BSTERGM_sampler1.show_histogram(formation_param_mark_vec=[-1.3502], dissolution_param_mark_vec=[0.6274])
+    # BSTERGM_sampler1.show_latest_exchangeSampler_netStat_traceplot()
+    

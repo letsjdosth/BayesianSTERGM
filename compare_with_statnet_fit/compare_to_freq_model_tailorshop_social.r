@@ -90,8 +90,9 @@ tailor_social[[2]] = net2
 
 
 stergm.fit1.tailor_social = stergm(tailor_social, 
-    formation = ~edges+gwesp(0.25, fixed=TRUE),
-    dissolution = ~edges+gwesp(0.25, fixed=TRUE),
+    formation = ~edges,
+    dissolution = ~edges,
+    time=c(1,2),
     estimate='CMLE')
 
 summary(stergm.fit1.tailor_social) #-2.5611, 0.8806 // -0.1880,0.5129

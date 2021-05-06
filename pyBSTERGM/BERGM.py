@@ -11,7 +11,7 @@ from network_sampler import NetworkSampler
 
 
 class BERGM:
-    def __init__(self, model_fn, initial_param, obs_network, rng_seed=2021, is_formation=None, constraint_net=None, pid=None):
+    def __init__(self, model_fn, initial_param, obs_network, rng_seed=2021, is_formation=None, constraint_net=None, num_joint_blocks=0, pid=None):
         #constraint: ['isformation',y0]
         self.obs_network = obs_network
         self.node_num = obs_network.node_num
@@ -38,6 +38,7 @@ class BERGM:
 
         self.is_formation = is_formation
         self.constraint_net = constraint_net
+        self.num_joint_blocks = num_joint_blocks
 
 
     def propose_param(self, last_param, cov_rate_vec):
@@ -46,7 +47,7 @@ class BERGM:
     
     def get_exchange_sampler(self, exchange_iter, proposed_param, rng_seed):
         exchange_sampler = NetworkSampler(self.model, proposed_param,
-            self.obs_network, is_formation=self.is_formation, constraint_net=self.constraint_net, rng_seed=rng_seed)
+            self.obs_network, is_formation=self.is_formation, constraint_net=self.constraint_net, num_joint_blocks=self.num_joint_blocks, rng_seed=rng_seed)
         exchange_sampler.run(exchange_iter)
         return exchange_sampler
 
@@ -339,6 +340,55 @@ if __name__ == "__main__":
         model.append(network.statCal_geoWeightedESP(0.25))
         return np.array(model)
 
+    
+    def dissociate_network(last_network, now_network, isDirected):
+        y_last_structure = last_network.structure
+        y_now_structure = now_network.structure
+        y_plus = y_last_structure.copy()
+        y_minus = y_last_structure.copy()
+        for row in range(last_network.node_num):
+            for col in range(last_network.node_num):
+                if y_now_structure[row,col]==1:
+                    y_plus[row,col]=1
+                if y_now_structure[row,col]==0:
+                    y_minus[row,col]=0
+        result = 0
+        if isDirected:
+            result = (DirectedNetwork(y_plus), DirectedNetwork(y_minus))
+        else:
+            result = (UndirectedNetwork(y_plus), UndirectedNetwork(y_minus))
+        return result
+    
+
+
+    #joint test
+    from scipy.linalg import block_diag
+
+    joint_y0 = DirectedNetwork(block_diag(np.array(data_samplk.samplk1), np.array(data_samplk.samplk2)))
+    joint_y1 = DirectedNetwork(block_diag(np.array(data_samplk.samplk2), np.array(data_samplk.samplk3)))
+    joint_y_plus, joint_y_minus = dissociate_network(joint_y0, joint_y1, True)
+    BERGM_sampler100_f = BERGM(model_netStat_edgeonly, np.array([0]), joint_y_plus, is_formation=True, constraint_net=joint_y0, num_joint_blocks=2)
+    BERGM_sampler100_f.run(10000, 60, 0.01)
+    # BERGM_sampler100_f.MC_formation_samples = BERGM_sampler100_f.MC_formation_samples[2000::2]
+    # BERGM_sampler100_f.MC_dissolution_samples = BERGM_sampler100_f.MC_dissolution_samples[2000::2]
+    print("mean:", np.mean(BERGM_sampler100_f.MC_sample_trace()[0]))
+    BERGM_sampler100_f.show_traceplot()
+    BERGM_sampler100_f.show_histogram(param_mark=[-2.4980])
+    print("constraint(lower bound) netStat:", model_netStat_edgeonly(joint_y0))
+    print("degenerated case edge num:", 18*17/2)
+    BERGM_sampler100_f.show_latest_exchangeSampler_netStat_traceplot()
+
+    BERGM_sampler100_d = BERGM(model_netStat_edgeonly, np.array([0]), joint_y_minus, is_formation=False, constraint_net=joint_y0, num_joint_blocks=2)
+    BERGM_sampler100_d.run(10000, 60, 0.01)
+    # BERGM_sampler100_d.MC_formation_samples = BERGM_sampler100_d.MC_formation_samples[2000::2]
+    # BERGM_sampler100_d.MC_dissolution_samples = BERGM_sampler100_d.MC_dissolution_samples[2000::2]
+    print("mean:", np.mean(BERGM_sampler100_d.MC_sample_trace()[0]))
+    BERGM_sampler100_d.show_traceplot()
+    BERGM_sampler100_d.show_histogram(param_mark=[0.7066])
+    print("constraint(lower bound) netStat:", model_netStat_edgeonly(joint_y0))
+    print("degenerated case edge num:", 18*17/2)
+    BERGM_sampler100_d.show_latest_exchangeSampler_netStat_traceplot()
+
     # time 0
     # BERGM_sampler00 = BERGM(model_netStat_edgeonly, np.array([0]), sociational_interactions[0])
     # BERGM_sampler00.run(10000, 30, 0.01)
@@ -364,36 +414,18 @@ if __name__ == "__main__":
     # BERGM_sampler11.show_latest_exchangeSampler_netStat_traceplot()
 
 
-    def dissociate_network(last_network, now_network, isDirected):
-        y_last_structure = last_network.structure
-        y_now_structure = now_network.structure
-        y_plus = y_last_structure.copy()
-        y_minus = y_last_structure.copy()
-        for row in range(last_network.node_num):
-            for col in range(last_network.node_num):
-                if y_now_structure[row,col]==1:
-                    y_plus[row,col]=1
-                if y_now_structure[row,col]==0:
-                    y_minus[row,col]=0
-        result = 0
-        if isDirected:
-            result = (DirectedNetwork(y_plus), DirectedNetwork(y_minus))
-        else:
-            result = (UndirectedNetwork(y_plus), UndirectedNetwork(y_minus))
-        return result
-    
-    tailor_y_plus, tailor_y_minus = dissociate_network(sociational_interactions[0], sociational_interactions[1], False)
+    # tailor_y_plus, tailor_y_minus = dissociate_network(sociational_interactions[0], sociational_interactions[1], False)
 
     #y+
-    BERGM_sampler20 = BERGM(model_netStat_edgeonly, np.array([0]), tailor_y_plus)
-    BERGM_sampler20.run(10000, 30, 0.01)
+    # BERGM_sampler20 = BERGM(model_netStat_edgeonly, np.array([0]), tailor_y_plus)
+    # BERGM_sampler20.run(10000, 30, 0.01)
     # BERGM_sampler20.MC_formation_samples = BERGM_sampler20.MC_formation_samples[2000::2]
     # BERGM_sampler20.MC_dissolution_samples = BERGM_sampler20.MC_dissolution_samples[2000::2]
-    print("mean:", np.mean(BERGM_sampler20.MC_sample_trace()[0]))
-    BERGM_sampler20.show_traceplot()
-    BERGM_sampler20.show_histogram(param_mark=[-0.51011])
-    print("degenerated case edge num:", 39*38/2)
-    BERGM_sampler20.show_latest_exchangeSampler_netStat_traceplot()
+    # print("mean:", np.mean(BERGM_sampler20.MC_sample_trace()[0]))
+    # BERGM_sampler20.show_traceplot()
+    # BERGM_sampler20.show_histogram(param_mark=[-0.51011])
+    # print("degenerated case edge num:", 39*38/2)
+    # BERGM_sampler20.show_latest_exchangeSampler_netStat_traceplot()
 
     # BERGM_sampler21 = BERGM(model_netStat_edgeGWESP, np.array([-1,1]), tailor_y_plus)
     # BERGM_sampler21.run(1000, 100, 0.01)
@@ -402,16 +434,16 @@ if __name__ == "__main__":
     # BERGM_sampler21.show_latest_exchangeSampler_netStat_traceplot()
 
     #y+ constraint
-    BERGM_sampler20c_f = BERGM(model_netStat_edgeonly, np.array([0]), tailor_y_plus, is_formation=True, constraint_net=sociational_interactions[0])
-    BERGM_sampler20c_f.run(10000, 30, 0.01)
+    # BERGM_sampler20c_f = BERGM(model_netStat_edgeonly, np.array([0]), tailor_y_plus, is_formation=True, constraint_net=sociational_interactions[0])
+    # BERGM_sampler20c_f.run(10000, 30, 0.01)
     # BERGM_sampler20c_f.MC_formation_samples = BERGM_sampler20.MC_formation_samples[2000::2]
     # BERGM_sampler20c_f.MC_dissolution_samples = BERGM_sampler20.MC_dissolution_samples[2000::2]
-    print("mean:", np.mean(BERGM_sampler20c_f.MC_sample_trace()[0]))
-    BERGM_sampler20c_f.show_traceplot()
-    BERGM_sampler20c_f.show_histogram(param_mark=[-1.3502])
-    print("constraint(lower bound) netStat:", model_netStat_edgeonly(sociational_interactions[0]))
-    print("degenerated case edge num:", 39*38/2)
-    BERGM_sampler20c_f.show_latest_exchangeSampler_netStat_traceplot()
+    # print("mean:", np.mean(BERGM_sampler20c_f.MC_sample_trace()[0]))
+    # BERGM_sampler20c_f.show_traceplot()
+    # BERGM_sampler20c_f.show_histogram(param_mark=[-1.3502])
+    # print("constraint(lower bound) netStat:", model_netStat_edgeonly(sociational_interactions[0]))
+    # print("degenerated case edge num:", 39*38/2)
+    # BERGM_sampler20c_f.show_latest_exchangeSampler_netStat_traceplot()
 
 
     # BERGM_sampler21c_f = BERGM(model_netStat_edgeGWESP, np.array([-2,1]), tailor_y_plus, is_formation=True, constraint_net=sociational_interactions[0])
@@ -424,15 +456,15 @@ if __name__ == "__main__":
     
 
     #y-
-    BERGM_sampler30 = BERGM(model_netStat_edgeonly, np.array([0]), tailor_y_minus)
-    BERGM_sampler30.run(10000, 30, 0.01)
+    # BERGM_sampler30 = BERGM(model_netStat_edgeonly, np.array([0]), tailor_y_minus)
+    # BERGM_sampler30.run(10000, 30, 0.01)
     # BERGM_sampler30.MC_formation_samples = BERGM_sampler20.MC_formation_samples[2000::2]
     # BERGM_sampler30.MC_dissolution_samples = BERGM_sampler20.MC_dissolution_samples[2000::2]
-    print("mean:", np.mean(BERGM_sampler30.MC_sample_trace()[0]))
-    BERGM_sampler30.show_traceplot()
-    BERGM_sampler30.show_histogram(param_mark=[-1.8236])
-    print("degenerated case edge num:", 39*38/2)
-    BERGM_sampler30.show_latest_exchangeSampler_netStat_traceplot()
+    # print("mean:", np.mean(BERGM_sampler30.MC_sample_trace()[0]))
+    # BERGM_sampler30.show_traceplot()
+    # BERGM_sampler30.show_histogram(param_mark=[-1.8236])
+    # print("degenerated case edge num:", 39*38/2)
+    # BERGM_sampler30.show_latest_exchangeSampler_netStat_traceplot()
 
     # BERGM_sampler31 = BERGM(model_netStat_edgeGWESP, np.array([-3,1]), tailor_y_minus)
     # BERGM_sampler31.run(1000, 100, 0.01)
@@ -441,16 +473,16 @@ if __name__ == "__main__":
     # BERGM_sampler31.show_latest_exchangeSampler_netStat_traceplot()
 
     #y- constraint
-    BERGM_sampler30c_d = BERGM(model_netStat_edgeonly, np.array([0]), tailor_y_minus, is_formation=False, constraint_net=sociational_interactions[0])
-    BERGM_sampler30c_d.run(10000, 30, 0.01)
+    # BERGM_sampler30c_d = BERGM(model_netStat_edgeonly, np.array([0]), tailor_y_minus, is_formation=False, constraint_net=sociational_interactions[0])
+    # BERGM_sampler30c_d.run(10000, 30, 0.01)
     # BERGM_sampler30c_d.MC_formation_samples = BERGM_sampler20.MC_formation_samples[2000::2]
     # BERGM_sampler30c_d.MC_dissolution_samples = BERGM_sampler20.MC_dissolution_samples[2000::2]
-    print("mean:", np.mean(BERGM_sampler30c_d.MC_sample_trace()[0]))
-    BERGM_sampler30c_d.show_traceplot()
-    BERGM_sampler30c_d.show_histogram(param_mark=[0.6274])
-    print("constraint(upper bound) netStat:", model_netStat_edgeonly(sociational_interactions[0]))
-    print("degenerated case edge num:", 39*38/2)
-    BERGM_sampler30c_d.show_latest_exchangeSampler_netStat_traceplot()
+    # print("mean:", np.mean(BERGM_sampler30c_d.MC_sample_trace()[0]))
+    # BERGM_sampler30c_d.show_traceplot()
+    # BERGM_sampler30c_d.show_histogram(param_mark=[0.6274])
+    # print("constraint(upper bound) netStat:", model_netStat_edgeonly(sociational_interactions[0]))
+    # print("degenerated case edge num:", 39*38/2)
+    # BERGM_sampler30c_d.show_latest_exchangeSampler_netStat_traceplot()
 
     # BERGM_sampler31c_d = BERGM(model_netStat_edgeGWESP, np.array([0,0]), tailor_y_minus, is_formation=False, constraint_net=sociational_interactions[0])
     # BERGM_sampler31c_d.run(1000, 100, 0.01)

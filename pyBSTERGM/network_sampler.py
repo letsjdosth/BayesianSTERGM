@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from network import UndirectedNetwork, DirectedNetwork
 
 class NetworkSampler:
-    def __init__(self, model_fn, param, init_network, is_formation=None, constraint_net=None, rng_seed=2021):
+    def __init__(self, model_fn, param, init_network, is_formation=None, constraint_net=None, num_joint_blocks=0, rng_seed=2021):
         # containers
         self.network_samples = []
         self.network_samples_netStats = []
@@ -24,7 +24,10 @@ class NetworkSampler:
         self.random_gen = np.random.default_rng(seed=rng_seed)
         self.is_formation = is_formation
         self.constraint_net = constraint_net
-        self.make_mutable_edges_list(self.is_formation, constraint_net)
+        if num_joint_blocks == 0 or num_joint_blocks == 1:
+            self.make_mutable_edges_list(self.is_formation, self.constraint_net)
+        else:
+            self.make_mutable_edges_list_block_diag(self.is_formation, self.constraint_net, num_joint_blocks)
 
         self.network_samples.append(init_network)
         self.network_samples_netStats.append(self.model(self.initial_network))
@@ -54,6 +57,40 @@ class NetworkSampler:
                 for j in range(self.node_num):
                     if constraint_net_structure[i][j]==1:
                         self.mutable_edges.append((i,j))
+
+    def make_mutable_edges_list_block_diag(self, is_formation, constraint_net, num_joint_blocks):
+        block_dim = self.node_num//num_joint_blocks
+        if is_formation is None: #no constraint
+            for left_up in range(0, self.node_num, block_dim):
+                print(left_up)
+                for i in range(left_up, left_up+block_dim):
+                    for j in range(left_up, left_up+block_dim):
+                        if i==j:
+                            pass
+                        else:
+                            self.mutable_edges.append((i,j))
+        
+        elif is_formation:
+            constraint_net_structure = self.constraint_net.structure
+            # we can change 0s
+            for left_up in range(0, self.node_num, block_dim):
+                for i in range(left_up, left_up+block_dim):
+                    for j in range(left_up, left_up+block_dim):
+                        if i==j:
+                            pass
+                        elif constraint_net_structure[i][j]==0:
+                            self.mutable_edges.append((i,j))
+
+        else: #dissolution
+            constraint_net_structure = self.constraint_net.structure
+            # we can change 1s
+            for left_up in range(0, self.node_num, block_dim):
+                for i in range(left_up, left_up+block_dim):
+                    for j in range(left_up, left_up+block_dim):
+                        if i==j:
+                            pass
+                        elif constraint_net_structure[i][j]==1:
+                            self.mutable_edges.append((i,j))
 
     def choose_mutable_edge(self):
         rnd_idx = self.random_gen.integers(low=0, high=len(self.mutable_edges))
@@ -153,16 +190,31 @@ if __name__ == "__main__":
         )
     test_initnet = UndirectedNetwork(test_structure)
 
+    test_constraint_structure = np.array(
+        [
+            [0,1,0,0,0,0,0,0,0,0],
+            [1,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,1],
+            [0,0,0,0,0,0,0,0,1,0],
+        ]
+    )
+    test_constraint_net = UndirectedNetwork(test_constraint_structure)
     #1
     
-    test_netSampler = NetworkSampler(model_netStat, np.array([0, 0]), test_initnet)
-    # test_netSampler.make_mutable_edges_list(is_formation=False)
-    # print(test_netSampler.mutable_edges)
+    test_netSampler = NetworkSampler(model_netStat, np.array([0, 0]), test_initnet, is_formation=False, constraint_net=test_constraint_net, num_joint_blocks=2)
+    # test_netSampler.make_mutable_edges_list_block_diag(None,None,num_joint_blocks=2)
+    print(test_netSampler.mutable_edges)
     # print(test_netSampler.choose_mutable_edge())
     
 
-    test_netSampler.run(500)
-    test_netSampler.show_traceplot()
+    # test_netSampler.run(500)
+    # test_netSampler.show_traceplot()
 
 
     #2
