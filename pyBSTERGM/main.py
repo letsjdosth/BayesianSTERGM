@@ -125,7 +125,7 @@ if __name__=="__main__":
         process_unit = mp.Process(target=procedure_joint_sampler, 
         args=(proc_queue, samplk_sequence, model_netStat_samplk_vignettesEx, 
             samplk_vignettesEx_initial_formation_vec[i], samplk_vignettesEx_initial_dissolution_vec[i], 
-            "samplk_jointtimelag_normPrior_vignettesEx_"+str(i)+"chain", 2021+i*10, 80000, 100))
+            "samplk_jointtimelag_normPrior_vignettesEx_"+str(i)+"chain", 2021+i*10, 60000, 30))
         process_vec.append(process_unit)
 
 
