@@ -5,37 +5,39 @@ from network import UndirectedNetwork, DirectedNetwork
 from network_sampler import NetworkSampler
 from BSTERGM import BSTERGM
 
-def dissociate_network(last_network, now_network):
-    y_last_structure = last_network.structure
-    y_now_structure = now_network.structure
-    y_plus = y_last_structure.copy()
-    y_minus = y_last_structure.copy()
-    for row in range(last_network.node_num):
-        for col in range(last_network.node_num):
-            if y_now_structure[row,col]==1:
-                y_plus[row,col]=1
-            if y_now_structure[row,col]==0:
-                y_minus[row,col]=0
-    result = 0
-    if isinstance(last_network,DirectedNetwork):
-        result = (DirectedNetwork(y_plus), DirectedNetwork(y_minus))
-    else:
-        result = (UndirectedNetwork(y_plus), UndirectedNetwork(y_minus))
-    return result
+# def dissociate_network(last_network, now_network):
+#     y_last_structure = last_network.structure
+#     y_now_structure = now_network.structure
+#     y_plus = y_last_structure.copy()
+#     y_minus = y_last_structure.copy()
+#     for row in range(last_network.node_num):
+#         for col in range(last_network.node_num):
+#             if y_now_structure[row,col]==1:
+#                 y_plus[row,col]=1
+#             if y_now_structure[row,col]==0:
+#                 y_minus[row,col]=0
+#     result = 0
+#     if isinstance(last_network,DirectedNetwork):
+#         result = (DirectedNetwork(y_plus), DirectedNetwork(y_minus))
+#     else:
+#         result = (UndirectedNetwork(y_plus), UndirectedNetwork(y_minus))
+#     return result
 
 class BSTERGM_GOF:
-    def __init__(self, model_function, posterior_parameter_samples, init_network, is_formation, additional_netstat_function=None , rng_seed=2021):
-        self.model = model_function
+    def __init__(self, model_fn, posterior_parameter_samples, is_formation, obs_network_seq, time_lag, additional_netstat_function=None , rng_seed=2021):
+        self.model = model_fn
         self.additional_netstats = additional_netstat_function
         self.posterior_parameter_samples = posterior_parameter_samples
-        self.init_network = init_network
+        self.obs_network_seq = obs_network_seq
+        self.node_num = self.obs_network_seq[0].node_num
         self.is_formation = is_formation
+        self.time_lag = time_lag
 
         self.random_seed = rng_seed
         self.random_gen = np.random.default_rng(seed=rng_seed)
         self.additional_netstat_list = []
         self.isDirected = False
-        if isinstance(init_network, DirectedNetwork):
+        if isinstance(obs_network_seq[0], DirectedNetwork):
             self.isDirected = True
             self.sample_nodeInDegreeDist = []
             self.sample_nodeOutDegreeDist = []
@@ -49,6 +51,29 @@ class BSTERGM_GOF:
             self.sample_ESPDist = []
             self.sample_minGeodesicDist = []
 
+        y_plus, y_minus = self.dissociate_network(self.obs_network_seq[time_lag], self.obs_network_seq[time_lag+1])
+        if self.is_formation:
+            self.target = y_plus
+        else:
+            self.target = y_minus
+
+    def dissociate_network(self, last_network, now_network):
+        y_last_structure = last_network.structure
+        y_now_structure = now_network.structure
+        y_plus = y_last_structure.copy()
+        y_minus = y_last_structure.copy()
+        for row in range(self.node_num):
+            for col in range(self.node_num):
+                if y_now_structure[row,col]==1:
+                    y_plus[row,col]=1
+                if y_now_structure[row,col]==0:
+                    y_minus[row,col]=0
+        result = 0
+        if self.isDirected:
+            result = (DirectedNetwork(y_plus), DirectedNetwork(y_minus))
+        else:
+            result = (UndirectedNetwork(y_plus), UndirectedNetwork(y_minus))
+        return result
 
     def choose_samples(self):
         num_posterior_sample = len(self.posterior_parameter_samples)
@@ -80,7 +105,10 @@ class BSTERGM_GOF:
 
 
     def gof_sampler(self, parameter, exchange_iter, rng_seed):
-        Net_sampler = NetworkSampler(self.model, parameter, self.init_network, self.is_formation, rng_seed)
+        
+        # def __init__(self, model_fn, param, init_network, is_formation=None, constraint_net=None, num_joint_blocks=0, rng_seed=2021):
+        Net_sampler = NetworkSampler(self.model, parameter, self.target, 
+            is_formation=self.is_formation, constraint_net=self.obs_network_seq[self.time_lag], rng_seed=rng_seed)
         Net_sampler.run(exchange_iter)
 
         return Net_sampler.network_samples[-1]
@@ -126,15 +154,16 @@ class BSTERGM_GOF:
             self.netstat_make_trace(self.additional_netstat_list)
         )
 
-    def make_boxplot_directed(self, next_net=None):
+    def make_boxplot_directed(self, compare=True):
         node_InDegree, node_OutDegree, ESP, minGeoDist, modelStats, additional = self.each_netstat_trace_directed()
+        next_net = self.target
         grid_column = 6
         grid_row = 1
         plt.figure(figsize=(3*grid_column, 5*grid_row))
 
         plt.subplot(grid_row, grid_column, 1)
         plt.boxplot(node_InDegree)
-        if next_net is not None:
+        if compare:
             line_val = next_net.statCal_nodeInDegreeDist()
             plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
             plt.xlabel("in degree")
@@ -143,7 +172,7 @@ class BSTERGM_GOF:
 
         plt.subplot(grid_row, grid_column, 2)
         plt.boxplot(node_OutDegree)
-        if next_net is not None:
+        if compare:
             line_val = next_net.statCal_nodeOutDegreeDist()
             plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
             plt.xlabel("out degree")
@@ -151,7 +180,7 @@ class BSTERGM_GOF:
 
         plt.subplot(grid_row, grid_column, 3)
         plt.boxplot(ESP)
-        if next_net is not None:
+        if compare:
             line_val = next_net.statCal_EdgewiseSharedPartnerDist()
             plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
             plt.xlabel("edge-wise shared partners")
@@ -159,7 +188,7 @@ class BSTERGM_GOF:
         
         plt.subplot(grid_row, grid_column, 4)
         plt.boxplot(minGeoDist)
-        if next_net is not None:
+        if compare:
             line_val = next_net.statCal_MinGeodesicDist()
             plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
             plt.xlabel("minimum geodesic distance")
@@ -167,7 +196,7 @@ class BSTERGM_GOF:
 
         plt.subplot(grid_row, grid_column, 5)
         plt.boxplot(modelStats)
-        if next_net is not None:
+        if compare:
             line_val = [next_net.statCal_edgeNum(), next_net.statCal_mutuality(),
                 next_net.statCal_transitiveTies(), next_net.statCal_cyclicalTies()]
             plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
@@ -176,7 +205,7 @@ class BSTERGM_GOF:
 
         plt.subplot(grid_row, grid_column, 6)
         plt.boxplot(additional)
-        if next_net is not None:
+        if compare:
             line_val = self.additional_netstats(next_net)
             plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
             plt.xlabel("additional statistics")
@@ -192,15 +221,16 @@ class BSTERGM_GOF:
         )
 
 
-    def make_boxplot_undirected(self, next_net=None):
+    def make_boxplot_undirected(self, compare=True):
         node_Degree, ESP, minGeoDist, additional = self.each_netstat_trace_undirected()
+        next_net = self.target
         grid_column = 4
         grid_row = 1
         plt.figure(figsize=(3*grid_column, 5*grid_row))
 
         plt.subplot(grid_row, grid_column, 1)
         plt.boxplot(node_Degree)
-        if next_net is not None:
+        if compare:
             line_val = next_net.statCal_nodeDegreeDist()
             plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
             plt.xlabel("degree")
@@ -208,7 +238,7 @@ class BSTERGM_GOF:
 
         plt.subplot(grid_row, grid_column, 2)
         plt.boxplot(ESP)
-        if next_net is not None:
+        if compare:
             line_val = next_net.statCal_EdgewiseSharedPartnerDist()
             plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
             plt.xlabel("edge-wise shared partners")
@@ -216,7 +246,7 @@ class BSTERGM_GOF:
         
         plt.subplot(grid_row, grid_column, 3)
         plt.boxplot(minGeoDist)
-        if next_net is not None:
+        if compare:
             line_val = next_net.statCal_MinGeodesicDist()
             plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
             plt.xlabel("minimum geodesic distance")
@@ -224,17 +254,17 @@ class BSTERGM_GOF:
 
         plt.subplot(grid_row, grid_column, 4)
         plt.boxplot(additional)
-        if next_net is not None:
+        if compare:
             line_val = self.additional_netstats(next_net)
             plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
             plt.xlabel("additional statistics")
 
 
-    def show_boxplot(self, next_net=None, show=True):
+    def show_boxplot(self, compare=True, show=True):
         if self.isDirected:
-            self.make_boxplot_directed(next_net=next_net)        
+            self.make_boxplot_directed(compare=True)        
         else:
-            self.make_boxplot_undirected(next_net=next_net)
+            self.make_boxplot_undirected(compare=True)
 
         if show:
             plt.show()
@@ -254,17 +284,17 @@ if __name__ == "__main__":
         [0,0,0,1,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0]
+        [0,0,1,1,0,0,0,0,0,0],
+        [0,0,0,1,0,0,0,0,0,0],
+        [0,0,0,1,0,0,0,0,0,0]
     ]
     )
     test_structure2 = np.array(
     [
-        [0,1,1,0,0,0,0,0,0,0],
-        [1,0,1,1,0,0,0,0,0,0],
-        [1,1,0,1,0,0,0,0,0,0],
-        [0,1,1,0,1,1,0,0,0,0],
+        [0,1,1,0,0,0,0,1,1,0],
+        [1,0,1,1,0,0,0,1,1,0],
+        [1,1,0,1,0,0,0,0,1,0],
+        [0,1,1,0,1,1,0,0,1,0],
         [0,0,0,1,0,0,0,0,0,0],
         [0,0,0,1,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,1,1,0],
@@ -304,40 +334,25 @@ if __name__ == "__main__":
     def gof_additional_netStat(network):
         gof_netstat = []
         gof_netstat.append(network.statCal_edgeNum())
+        gof_netstat.append(network.statCal_geoWeightedESP(0.5))
         return np.array(gof_netstat)
 
 
     initial_formation_param = np.array([0.1, 0.1])
     initial_dissolution_param = np.array([0.1, 0.1])
+    #def __init__(self, model_fn, initial_formation_param, initial_dissolution_param, obs_network_seq, rng_seed=2021, pid=None):
     test_BSTERGM_sampler = BSTERGM(model_netStat, initial_formation_param, initial_dissolution_param, test_obs_seq, 2021)
-    test_BSTERGM_sampler.run(3000, exchange_iter=10)
+    #def run(self, iter, exchange_iter=30, time_lag=None, proposal_cov_rate=0.01, console_string=''):
+    test_BSTERGM_sampler.run(5000, exchange_iter=30, time_lag=0, console_string='timelag0')
 
 
-    # def __init__(self, model_function, posterior_parameter_samples, init_network, additional_netstat_function=None , rng_seed=2021):
-    #first lag
-    yplus2_net, yminus2_net = dissociate_network(test_initnet1, test_initnet2)
+    # def __init__(self, model_fn, posterior_parameter_samples, is_formation, obs_network_seq, time_lag, additional_netstat_function=None , rng_seed=2021):
+    gof_inst01f = BSTERGM_GOF(model_netStat, test_BSTERGM_sampler.formation_BERGM.MC_sample[1000::10], 
+        is_formation=True, obs_network_seq=test_obs_seq, time_lag=0, additional_netstat_function=gof_additional_netStat)
+    gof_inst01f.gof_run(num_sim=300, exchange_iter=200)
+    gof_inst01f.show_boxplot(compare=True)
 
-    gof_inst11 = BSTERGM_GOF(model_netStat, test_BSTERGM_sampler.MC_formation_samples[-2000::10], 
-        test_initnet1, is_formation=True, additional_netstat_function=gof_additional_netStat)
-    gof_inst11.gof_run(num_sim=100, exchange_iter=50)
-    gof_inst11.show_boxplot(next_net=yplus2_net)
-
-    gof_inst12 = BSTERGM_GOF(model_netStat, test_BSTERGM_sampler.MC_dissolution_samples[-2000::10], 
-        test_initnet1, is_formation=False, additional_netstat_function=gof_additional_netStat)
-    gof_inst12.gof_run(num_sim=100, exchange_iter=50)
-    gof_inst12.show_boxplot(next_net=yminus2_net)
-
-    #second lag
-    yplus3_net, yminus3_net = dissociate_network(test_initnet2, test_initnet3)
-    
-    gof_inst11 = BSTERGM_GOF(model_netStat, test_BSTERGM_sampler.MC_formation_samples[-2000::10], 
-        test_initnet2, is_formation=True, additional_netstat_function=gof_additional_netStat)
-    gof_inst11.gof_run(num_sim=100, exchange_iter=50)
-    gof_inst11.show_boxplot(next_net=yplus3_net)
-
-    gof_inst12 = BSTERGM_GOF(model_netStat, test_BSTERGM_sampler.MC_dissolution_samples[-2000::10], 
-        test_initnet2, is_formation=False, additional_netstat_function=gof_additional_netStat)
-    gof_inst12.gof_run(num_sim=100, exchange_iter=50)
-    gof_inst12.show_boxplot(next_net=yminus3_net)
-
-
+    gof_inst01d = BSTERGM_GOF(model_netStat, test_BSTERGM_sampler.dissolution_BERGM.MC_sample[1000::10], 
+        is_formation=False, obs_network_seq=test_obs_seq, time_lag=0, additional_netstat_function=gof_additional_netStat)
+    gof_inst01d.gof_run(num_sim=300, exchange_iter=200)
+    gof_inst01d.show_boxplot(compare=True)

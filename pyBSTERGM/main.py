@@ -92,7 +92,7 @@ def procedure_joint_sampler(result_queue, network_sequence, model_netStat_func,
 
 if __name__=="__main__":
     #core
-    core_num = 8
+    core_num = 6
     process_vec = []
     proc_queue = mp.Queue()
 
