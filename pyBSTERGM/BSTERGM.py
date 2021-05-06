@@ -101,7 +101,7 @@ class BSTERGM:
             dissolution_cov_rate = proposal_cov_rate["disolution_cov_rate"]
         return formation_cov_rate, dissolution_cov_rate
 
-    def run(self, iter, exchange_iter=30, time_lag=None, proposal_cov_rate=0.01):
+    def run(self, iter, exchange_iter=30, time_lag=None, proposal_cov_rate=0.01, console_string=''):
         # proposal_cov_rate: float or
         #   dict structured by {"formation_cov_rate": [0,...], "dissolution_cov_rate":[0,...]}
         start_time = time.time()
@@ -121,8 +121,8 @@ class BSTERGM:
             is_formation = False, constraint_net=self.obs_network_seq[time_lag], 
             pid=self.pid)
 
-        self.formation_BERGM.run(iter, exchange_iter, formation_cov_rate, console_output_str='formation')
-        self.dissolution_BERGM.run(iter, exchange_iter, dissolution_cov_rate, console_output_str='dissolution')
+        self.formation_BERGM.run(iter, exchange_iter, formation_cov_rate, console_output_str=console_string+' formation')
+        self.dissolution_BERGM.run(iter, exchange_iter, dissolution_cov_rate, console_output_str=console_string+' dissolution')
         print("BSTERGM complete: time elapsed(second): ", round(time.time()-start_time,1))
 
     def make_block_diag_net(self, network_list):
@@ -135,7 +135,7 @@ class BSTERGM:
         else:
             return UndirectedNetwork(block_mat)
 
-    def run_fullTimeLag_jointly(self, iter, exchange_iter=30, proposal_cov_rate=0.01):
+    def run_fullTimeLag_jointly(self, iter, exchange_iter=30, proposal_cov_rate=0.01, console_string=''):
         start_time = time.time()
         formation_cov_rate, dissolution_cov_rate = self.proposal_cov_rate_setting(proposal_cov_rate)
 
@@ -145,7 +145,7 @@ class BSTERGM:
         # print(joint_constraint.structure.shape, joint_obs_formation.structure.shape, joint_obs_dissolution.structure.shape)
         
         num_block = len(self.obs_network_formation_seq[1:])
-        print("num_block:", num_block)
+        # print("num_block:", num_block)
 
         self.formation_BERGM = BERGM(self.model, 
             self.initial_formation_param, joint_obs_formation,
@@ -160,8 +160,8 @@ class BSTERGM:
             num_joint_blocks= num_block,
             pid=self.pid)
 
-        self.formation_BERGM.run(iter, exchange_iter, formation_cov_rate, console_output_str='joint-formation')
-        self.dissolution_BERGM.run(iter, exchange_iter, dissolution_cov_rate, console_output_str='joint-dissolution')
+        self.formation_BERGM.run(iter, exchange_iter, formation_cov_rate, console_output_str=console_string+' joint-formation')
+        self.dissolution_BERGM.run(iter, exchange_iter, dissolution_cov_rate, console_output_str=console_string+' joint-dissolution')
         print("BSTERGM complete: time elapsed(second): ", round(time.time()-start_time,1))
 
     #=============================================================================================
