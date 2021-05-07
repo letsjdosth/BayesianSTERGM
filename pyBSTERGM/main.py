@@ -96,14 +96,14 @@ if __name__=="__main__":
     process_vec = []
     proc_queue = mp.Queue()
 
-    from model_settings import model_netStat_edgeonly, edgeonly_initial_formation_vec, edgeonly_initial_dissolution_vec
-    from model_settings import model_netStat_edgeGWdgre, edgeGWdgre_initial_formation_vec, edgeGWdgre_initial_dissolution_vec
-    from model_settings import model_netStat_edgeGWESP, edgeGWESP_initial_formation_vec, edgeGWESP_initial_dissolution_vec
-    from model_settings import model_netStat_edgeGWDSP, edgeGWDSP_initial_formation_vec, edgeGWDSP_initial_dissolution_vec
+    # from model_settings import model_netStat_edgeonly, edgeonly_initial_formation_vec, edgeonly_initial_dissolution_vec
+    # from model_settings import model_netStat_edgeGWdgre, edgeGWdgre_initial_formation_vec, edgeGWdgre_initial_dissolution_vec
+    # from model_settings import model_netStat_edgeGWESP, edgeGWESP_initial_formation_vec, edgeGWESP_initial_dissolution_vec
+    # from model_settings import model_netStat_edgeGWDSP, edgeGWDSP_initial_formation_vec, edgeGWDSP_initial_dissolution_vec
 
-    from model_settings import model_netStat_samplk_vignettesEx, samplk_vignettesEx_initial_formation_vec, samplk_vignettesEx_initial_dissolution_vec
+    # from model_settings import model_netStat_samplk_vignettesEx, samplk_vignettesEx_initial_formation_vec, samplk_vignettesEx_initial_dissolution_vec
 
-    # from model_settings import model_netStat_friendship_KHEx, friendship_KHEx_initial_formation_vec, friendship_KHEx_initial_dissolution_vec
+    from model_settings import model_netStat_friendship_KHEx, friendship_KHEx_initial_formation_vec, friendship_KHEx_initial_dissolution_vec
     # from model_settings import model_netStat_friendship_2hom, friendship_2hom_initial_formation_vec, friendship_2hom_initial_dissolution_vec
     # from model_settings import model_netStat_friendship_2hom_noprisch, friendship_2hom_noprisch_initial_formation_vec, friendship_2hom_noprisch_initial_dissolution_vec
     # from model_settings import model_netstat_friendship_nondds, friendship_nondds_initial_formation_vec, friendship_nondds_initial_dissolution_vec
@@ -121,26 +121,20 @@ if __name__=="__main__":
         # def procedure_joint_sampler(result_queue, network_sequence, model_netStat_func, 
         #     initial_formation_param, initial_dissolution_param, result_string, rng_seed=2021, main_iter=30000, ex_iter=50):
 
-        # samplk
+        # # samplk
+        # process_unit = mp.Process(target=procedure_joint_sampler, 
+        # args=(proc_queue, samplk_sequence, model_netStat_samplk_vignettesEx, 
+        #     samplk_vignettesEx_initial_formation_vec[i], samplk_vignettesEx_initial_dissolution_vec[i], 
+        #     "samplk_jointtimelag_normPrior_vignettesEx_"+str(i)+"chain", 2021+i*10, 60000, 30))
+        # process_vec.append(process_unit)
+
+
+        # friendship
         process_unit = mp.Process(target=procedure_joint_sampler, 
-        args=(proc_queue, samplk_sequence, model_netStat_samplk_vignettesEx, 
-            samplk_vignettesEx_initial_formation_vec[i], samplk_vignettesEx_initial_dissolution_vec[i], 
-            "samplk_jointtimelag_normPrior_vignettesEx_"+str(i)+"chain", 2021+i*10, 60000, 30))
+        args=(proc_queue, friendship_sequence, model_netStat_friendship_KHEx, 
+            friendship_KHEx_initial_formation_vec[i], friendship_KHEx_initial_dissolution_vec[i], 
+            "friendship_jointtimelag_normPrior_KHEx_"+str(i)+"chain", 2021+i*10, 60000, 30))
         process_vec.append(process_unit)
-
-
-        # # friendship
-        # process_unit = mp.Process(target=procedure_by_group_sampler, 
-        # args=(proc_queue, friendship_sequence, model_netStat_edgeonly, 
-        #     edgeonly_initial_formation_vec[i], edgeonly_initial_dissolution_vec[i], 
-        #     "friendship_bygroupsample_normPrior_edgeonly_"+str(i)+"chain", 2021+i*10, 80000, 100, 0.1*i+0.1))
-        # process_vec.append(process_unit)
-
-        # process_unit = mp.Process(target=procedure_by_group_sampler, 
-        # args=(proc_queue, friendship_sequence, model_netStat_edgeGWESP, 
-        #     edgeGWESP_initial_formation_vec[i], edgeGWESP_initial_dissolution_vec[i], 
-        #     "friendship_bygroupsample_normPrior_edgeGWESP_"+str(i)+"chain", 2021+i*10, 80000, 100, 0.1*i+0.1))
-        # process_vec.append(process_unit)
 
         # # tailorshop-social
         # process_unit = mp.Process(target=procedure_by_group_sampler, 
