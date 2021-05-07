@@ -137,6 +137,18 @@ samplk_vignettesEx_initial_dissolution_vec = [
 ]
 
 
+# extended things
+from scipy.linalg import block_diag
+friendship_joint_times = 3 #length 4
+friendship_node_num = 25
+extended_friendship_sex_girl_index = []
+extended_friendship_sex_boy_index = []
+extended_primary_matrix = np.array(data_knecht_friendship.friendship_primary)
+for i in range(friendship_joint_times):
+    extended_friendship_sex_girl_index = extended_friendship_sex_girl_index + [val+i*friendship_node_num for val in data_knecht_friendship.friendship_sex_girl_index]
+    extended_friendship_sex_boy_index = extended_friendship_sex_boy_index + [val+i*friendship_node_num for val in data_knecht_friendship.friendship_sex_boy_index]
+    extended_primary_matrix = block_diag(extended_primary_matrix, np.array(data_knecht_friendship.friendship_primary))
+
 
 #friendship model
 def model_netStat_friendship_KHEx(network):
@@ -144,10 +156,18 @@ def model_netStat_friendship_KHEx(network):
     model = []
     #define model
     model.append(network.statCal_edgeNum())
-    model.append(network.statCal_homophily(data_knecht_friendship.friendship_sex_girl_index)) #girls
-    model.append(network.statCal_homophily(data_knecht_friendship.friendship_sex_boy_index)) #boys
-    model.append(network.statCal_heterophily(data_knecht_friendship.friendship_sex_girl_index, data_knecht_friendship.friendship_sex_boy_index))#girls->boys
-    model.append(network.statCal_match_matrix(np.array(data_knecht_friendship.friendship_primary)))
+    # model.append(network.statCal_homophily(data_knecht_friendship.friendship_sex_girl_index, joint_model=True, network_seq_length=4)) #girls
+    # model.append(network.statCal_homophily(data_knecht_friendship.friendship_sex_boy_index, joint_model=True, network_seq_length=4)) #boys
+    # model.append(network.statCal_heterophily(data_knecht_friendship.friendship_sex_girl_index, 
+    #                                             data_knecht_friendship.friendship_sex_boy_index, joint_model=True, network_seq_length=4))#girls->boys
+    # model.append(network.statCal_match_matrix(np.array(data_knecht_friendship.friendship_primary), joint_model=True, network_seq_length=4))
+
+    model.append(network.statCal_homophily(extended_friendship_sex_girl_index)) #girls
+    model.append(network.statCal_homophily(extended_friendship_sex_boy_index)) #boys
+    model.append(network.statCal_heterophily(extended_friendship_sex_girl_index, 
+                                                extended_friendship_sex_boy_index))#girls->boys
+    model.append(network.statCal_match_matrix(np.array(extended_primary_matrix)))
+
     model.append(network.statCal_mutuality())
     model.append(network.statCal_transitiveTies())
     model.append(network.statCal_cyclicalTies())

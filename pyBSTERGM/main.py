@@ -133,7 +133,7 @@ if __name__=="__main__":
         process_unit = mp.Process(target=procedure_joint_sampler, 
         args=(proc_queue, friendship_sequence, model_netStat_friendship_KHEx, 
             friendship_KHEx_initial_formation_vec[i], friendship_KHEx_initial_dissolution_vec[i], 
-            "friendship_jointtimelag_normPrior_KHEx_"+str(i)+"chain", 2021+i*10, 60000, 30))
+            "friendship_jointtimelag_normPrior_KHEx_"+str(i)+"chain", 2021+i*10, 10000, 30))
         process_vec.append(process_unit)
 
         # # tailorshop-social

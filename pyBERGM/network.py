@@ -333,26 +333,65 @@ class DirectedNetwork:
                     result += 1
         return result
 
-    def statCal_homophily(self, indexList_samegroup):
+    def statCal_homophily(self, indexList_samegroup, joint_model=False, joint_times=0):
         #Lists : python list
         result = 0
+        if joint_model:
+            if joint_times == 0:
+                ValueError("Set the 'joint_times' argument.")
+            extended_indexList_samegroup = []
+            before_joint_node_num = self.node_num // joint_times
+            
+            for i in range(joint_times):
+                adding_index = [val+i*before_joint_node_num for val in indexList_samegroup]
+                extended_indexList_samegroup = extended_indexList_samegroup + adding_index
+            print(before_joint_node_num, indexList_samegroup, extended_indexList_samegroup)
+            indexList_samegroup = extended_indexList_samegroup
+            
+
+
         for row in indexList_samegroup:
             for col in indexList_samegroup:
                 if self.structure[row,col]==1:
                     result +=1
         return result
     
-    def statCal_heterophily(self, indexList_from, indexList_to):
+    def statCal_heterophily(self, indexList_from, indexList_to, joint_model=False, joint_times=0):
         #Lists : python list
         result = 0
+        if joint_model:
+            if joint_times == 0:
+                ValueError("Set the 'joint_times' argument.")
+            extended_indexList_from = []
+            extended_indexList_to = []
+            before_joint_node_num = self.node_num // joint_times
+            for i in range(joint_times):
+                adding_index_from = [val+i*before_joint_node_num for val in indexList_from]
+                adding_index_to = [val+i*before_joint_node_num for val in indexList_to]
+                extended_indexList_from = extended_indexList_from + adding_index_from
+                extended_indexList_to = extended_indexList_to + adding_index_to
+            indexList_from = extended_indexList_from
+            indexList_to = extended_indexList_to
+
         for row in indexList_from:
             for col in indexList_to:
                 if self.structure[row,col]==1:
                     result +=1
         return result
     
-    def statCal_match_matrix(self, match_matrix):
+    def statCal_match_matrix(self, match_matrix, joint_model=False, joint_times=0):
         #match_matrix: np array
+        result = 0
+        if joint_model:
+            if joint_times == 0:
+                ValueError("Set the 'joint_times' argument.")
+            
+            from scipy.linalg import block_diag
+            extended_match_matrix = match_matrix
+            for _ in range(1, joint_times):
+                extended_match_matrix = block_diag(extended_match_matrix, match_matrix)
+            match_matrix = extended_match_matrix
+
         result = 0
         for row in range(self.node_num):
             for col in range(self.node_num):
