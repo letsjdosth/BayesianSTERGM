@@ -183,91 +183,33 @@ class BSTERGM_latest_exchangeSampler_work:
 
 
 if __name__ == "__main__":
-    pass
-    # #3
-    # reader_inst0 = BSTERGM_posterior_work()
-    # reader_inst0.read_from_csv("example_results_pairProposal/samplk_pairsample_normPrior_edgeonly_1chain", 1, 1)
-    # reader_inst0.read_from_csv("example_results_1dimProposal/samplk_1dimsample_normPrior_edgeonly_1chain", 1, 1)
-    # reader_inst0.read_from_csv("example_results_bygroupProposal/samplk_bygroupsample_normPrior_edgeonly_1chain", 1, 1)
-    # reader_inst0.MC_formation_samples = reader_inst0.MC_formation_samples[10000::10]
-    # reader_inst0.MC_dissolution_samples = reader_inst0.MC_dissolution_samples[10000::10]
-    # reader_inst0.show_traceplot()
-    # reader_inst0.show_histogram(formation_mark=[-2.4980],
-    #     dissolution_mark=[0.7066])
-    # # reader_inst0.show_acfplot()
+    #samplk joint
+    #good: 2/3/4 chain / others: bad
+    reader_inst_samplk_vig = BSTERGM_posterior_work()
+    reader_inst_samplk_vig.read_from_BSTERGM_csv("example_results_joint/samplk_jointtimelag_normPrior_vignettesEx_4chain", 4, 4)
+    reader_inst_samplk_vig.MC_formation_samples = reader_inst_samplk_vig.MC_formation_samples[10000::20]
+    reader_inst_samplk_vig.MC_dissolution_samples = reader_inst_samplk_vig.MC_dissolution_samples[10000::20]
+    reader_inst_samplk_vig.show_traceplot()
+    reader_inst_samplk_vig.show_histogram(formation_mark=[-3.5586, 2.2624, -0.4994, 0.2945],
+        dissolution_mark=[-0.1164, 1.5791, -1.6957, 0.6847])
+    reader_inst_samplk_vig.show_acfplot()
     
-    # reader_inst1 = BSTERGM_posterior_work()
-    # reader_inst1.read_from_csv("example_results_pairProposal/samplk_pairsample_normPrior_edgeGWESP_3chain", 2, 2)
-    # reader_inst1.read_from_csv("example_results_1dimProposal/samplk_1dimsample_normPrior_edgeGWESP_1chain", 2, 2)
-    # reader_inst1.read_from_csv("example_results_bygroupProposal/samplk_bygroupsample_normPrior_edgeGWESP_1chain", 2, 2)
-    # reader_inst1.MC_formation_samples = reader_inst1.MC_formation_samples[10000::20]
-    # reader_inst1.MC_dissolution_samples = reader_inst1.MC_dissolution_samples[10000::20]
-    # reader_inst1.show_traceplot()
-    # reader_inst1.show_histogram(formation_mark=[-3.3218, 0.4941],
-    #     dissolution_mark=[0.4159, 0.4174])
-    # reader_inst1.show_acfplot()
+    netstat_reader_inst_samplk_vig = BSTERGM_latest_exchangeSampler_work()
+    netstat_reader_inst_samplk_vig.read_from_csv("example_results_joint/samplk_jointtimelag_normPrior_vignettesEx_4chain_NetworkStat")
+    netstat_reader_inst_samplk_vig.show_traceplot()
 
-
-    # reader_inst2 = BSTERGM_posterior_work()
-    # reader_inst2.read_from_csv("example_results_pairProposal/friendship_pairsample_normPrior_edgeonly_0chain", 1, 1)
-    # reader_inst2.read_from_csv("example_results_1dimProposal/friendship_1dimsample_normPrior_edgeonly_1chain", 1, 1)
-    # reader_inst2.read_from_csv("example_results_bygroupProposal/friendship_bygroupsample_normPrior_edgeonly_1chain", 1, 1)
-    # reader_inst2.MC_formation_samples = reader_inst2.MC_formation_samples[10000::10]
-    # reader_inst2.MC_dissolution_samples = reader_inst2.MC_dissolution_samples[10000::10]
-    # reader_inst2.show_traceplot()
-    # reader_inst2.show_histogram(formation_mark=[-2.12535],
-    #     dissolution_mark=[0.4720])
-    # reader_inst2.show_acfplot()
-
-
-    # reader_inst3 = BSTERGM_posterior_work()
-    # reader_inst3.read_from_csv("example_results_pairProposal/friendship_pairsample_normPrior_edgeGWESP_0chain", 2, 2)
-    # reader_inst3.read_from_csv("example_results_1dimProposal/friendship_1dimsample_normPrior_edgeGWESP_1chain", 2, 2)
-    # reader_inst3.MC_formation_samples = reader_inst3.MC_formation_samples[10000::20]
-    # reader_inst3.MC_dissolution_samples = reader_inst3.MC_dissolution_samples[10000::20]
-    # reader_inst3.show_traceplot()
-    # reader_inst3.show_histogram(formation_mark=[-3.9368, 1.2713],
-    #     dissolution_mark=[-0.1159, 0.4066])
-    # reader_inst3.show_acfplot()
-
-
-    # reader_inst4 = BSTERGM_posterior_work()
-    # reader_inst4.read_from_csv("example_results_pairProposal/tailorshop_pairsample_normPrior_edgeonly_2chain", 1, 1)
-    # reader_inst4.read_from_csv("example_results_1dimProposal/tailorshop_1dimsample_normPrior_edgeonly_1chain", 1, 1)
-    # reader_inst4.read_from_csv("example_results_bygroupProposal/tailorshop_bygroupsample_normPrior_edgeonly_1chain", 1, 1)
-    # reader_inst4.MC_formation_samples = reader_inst4.MC_formation_samples[10000::10]
-    # reader_inst4.MC_dissolution_samples = reader_inst4.MC_dissolution_samples[10000::10]
-    # reader_inst4.show_traceplot()
-    # reader_inst4.show_histogram(formation_mark=[-1.3502],
-    #     dissolution_mark=[0.6274])
-    # reader_inst4.show_acfplot()
-
-
-    # reader_inst5 = BSTERGM_posterior_work()
-    # # reader_inst5.read_from_csv("example_results_pairProposal/tailorshop_pairsample_normPrior_edgeGWESP_1chain", 2, 2)
-    # reader_inst5.read_from_csv("example_results_1dimProposal/tailorshop_1dimsample_normPrior_edgeGWESP_1chain", 2, 2)
-    # reader_inst5.MC_formation_samples = reader_inst5.MC_formation_samples[10000::20]
-    # reader_inst5.MC_dissolution_samples = reader_inst5.MC_dissolution_samples[10000::20]
-    # reader_inst5.show_traceplot()
-    # reader_inst5.show_histogram(formation_mark=[-2.5611, 0.8806], dissolution_mark=[-0.1880, 0.5129])
-    # reader_inst5.show_acfplot()
-
-
+    #friendship joint
+    #good: 2 or 5 (-_-)
+    reader_inst_friendship_KHEx = BSTERGM_posterior_work()
+    reader_inst_friendship_KHEx.read_from_BSTERGM_csv("example_results_joint/friendship_jointtimelag_normPrior_KHEx_2chain", 8, 8)
+    reader_inst_friendship_KHEx.MC_formation_samples = reader_inst_friendship_KHEx.MC_formation_samples[1000::20]
+    reader_inst_friendship_KHEx.MC_dissolution_samples = reader_inst_friendship_KHEx.MC_dissolution_samples[1000::20]
+    reader_inst_friendship_KHEx.show_traceplot()
+    reader_inst_friendship_KHEx.show_histogram(formation_mark=[-3.336, 0.480, 0.973, -0.358, 0.650, 1.384, 0.886, -0.389],
+        dissolution_mark=[-1.132, 0.122, 1.168, -0.577, 0.451, 2.682, 1.121, -1.016])
+    reader_inst_friendship_KHEx.show_acfplot()
     
+    netstat_reader_inst_friendship_KHEx = BSTERGM_latest_exchangeSampler_work()
+    netstat_reader_inst_friendship_KHEx.read_from_csv("example_results_joint/friendship_jointtimelag_normPrior_KHEx_2chain_NetworkStat")
+    netstat_reader_inst_friendship_KHEx.show_traceplot()
 
-    # 4 mutable
-    # reader_inst0 = BSTERGM_posterior_work()
-    # reader_inst0.read_from_csv("example_results_mutableEdge/tailorshop_social_mutableEdge_normPrior_edgeonly_main40000_aux400_0chain", 1, 1)
-    # reader_inst0.read_from_csv("example_results_mutableEdge/tailorshop_social_mutableEdge_normPrior_edgeonly_main40000_aux1000_0chain", 1, 1)
-    # reader_inst0.read_from_csv("example_results_mutableEdge/tailorshop_social_mutableEdge_normPrior_edgeonly_main40000_aux2000_0chain", 1, 1)
-    # reader_inst0.read_from_csv("example_results_mutableEdge/tailorshop_social_mutableEdge_normPrior_edgeonly_main40000_aux4000_0chain", 1, 1)
-    # reader_inst0.MC_formation_samples = reader_inst0.MC_formation_samples[10000::10]
-    # reader_inst0.MC_dissolution_samples = reader_inst0.MC_dissolution_samples[10000::10]
-    # reader_inst0.show_traceplot()
-    # reader_inst0.show_histogram(formation_mark=[-1.3502],
-    #     dissolution_mark=[0.6274])
-    # # reader_inst0.show_acfplot()
-
-    # netstat_reader_inst0 = BSTERGM_latest_exchangeSampler_work()
-    # netstat_reader_inst0.read_from_csv("example_results_mutableEdge/tailorshop_social_mutableEdge_normPrior_edgeonly_main40000_aux4000_0chain_NetworkStat")
-    # netstat_reader_inst0.show_traceplot()
