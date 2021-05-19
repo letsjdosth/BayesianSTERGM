@@ -156,20 +156,28 @@ def model_netStat_friendship_KHEx(network):
     model = []
     #define model
     model.append(network.statCal_edgeNum())
-    #default args
     model.append(network.statCal_homophily(data_knecht_friendship.friendship_sex_girl_index, joint_model=False, network_seq_length=4)) #girls
     model.append(network.statCal_homophily(data_knecht_friendship.friendship_sex_boy_index, joint_model=False, network_seq_length=4)) #boys
     model.append(network.statCal_heterophily(data_knecht_friendship.friendship_sex_girl_index, 
                                                 data_knecht_friendship.friendship_sex_boy_index, joint_model=False, network_seq_length=4))#girls->boys
     model.append(network.statCal_match_matrix(np.array(data_knecht_friendship.friendship_primary), joint_model=False, network_seq_length=4))
+    model.append(network.statCal_mutuality())
+    model.append(network.statCal_transitiveTies())
+    model.append(network.statCal_cyclicalTies())
+    return np.array(model)
 
+def model_netStat_friendship_KHEx_jointly(network):
+    #directed network
+    model = []
+    #define model
+    model.append(network.statCal_edgeNum())
+    
     #extended args
-    # model.append(network.statCal_homophily(extended_friendship_sex_girl_index)) #girls
-    # model.append(network.statCal_homophily(extended_friendship_sex_boy_index)) #boys
-    # model.append(network.statCal_heterophily(extended_friendship_sex_girl_index, 
-    #                                             extended_friendship_sex_boy_index))#girls->boys
-    # model.append(network.statCal_match_matrix(np.array(extended_primary_matrix)))
-
+    model.append(network.statCal_homophily(extended_friendship_sex_girl_index)) #girls
+    model.append(network.statCal_homophily(extended_friendship_sex_boy_index)) #boys
+    model.append(network.statCal_heterophily(extended_friendship_sex_girl_index, 
+                                                extended_friendship_sex_boy_index))#girls->boys
+    model.append(network.statCal_match_matrix(np.array(extended_primary_matrix)))
     #others
     model.append(network.statCal_mutuality())
     model.append(network.statCal_transitiveTies())
@@ -178,19 +186,19 @@ def model_netStat_friendship_KHEx(network):
 
 friendship_KHEx_initial_formation_vec = [
     np.array([0, 0, 0, 0, 0, 0, 0, 0]), 
-    np.array([-1, 0, 0, 0, 0, 0, 0, 0]), 
     np.array([1, 0, 0, 0, 0, 0, 0, 0]), 
-    np.array([0, 0, 1, 0, 1, 1, 0, 0]),
-    np.array([1, 0, 1, 0, 1, 1, 0, 0]),
     np.array([-1, 0, 1, 0, 1, 1, 0, 0]), 
+    np.array([0, -1, -1, 1, 0, 0, 0, 0]),
+    np.array([0, 1, 1, -1, 0, 0, 0, 0]),
+    np.array([0, 1, -1, 0, 1, 0, 0, 0]),
 ]
 friendship_KHEx_initial_dissolution_vec = [
     np.array([0, 0, 0, 0, 0, 0, 0, 0]), 
-    np.array([-1, 0, 0, 0, 0, 0, 0, 0]), 
     np.array([1, 0, 0, 0, 0, 0, 0, 0]), 
-    np.array([0, 0, 1, 0, 1, 1, 0, 0]),
-    np.array([1, 0, 1, 0, 1, 1, 0, 0]),
     np.array([-1, 0, 1, 0, 1, 1, 0, 0]), 
+    np.array([0, -1, -1, 1, 0, 0, 0, 0]),
+    np.array([0, 1, 1, -1, 0, 0, 0, 0]),
+    np.array([0, 1, -1, 0, 1, 0, 0, 0]),
 ]
 
 

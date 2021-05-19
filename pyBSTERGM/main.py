@@ -3,13 +3,13 @@ from os import getpid
 
 import numpy as np
 
-import data_samplk, data_knecht_friendship, data_tailor
 from network import UndirectedNetwork, DirectedNetwork
 from network_sampler import NetworkSampler
 from BSTERGM import BSTERGM
 
-#data
 
+#import data
+import data_samplk, data_knecht_friendship, data_tailor
 #Jdata
 # sequence1 = [UndirectedNetwork(np.array(data_Jdata.m1_19_structure)),
 #     UndirectedNetwork(np.array(data_Jdata.w1_19_structure)),
@@ -39,39 +39,42 @@ friendship_sequence = [
     DirectedNetwork(np.array(data_knecht_friendship.friendship_t4))
 ]
 
-# # tailor shop
+# # tailorshop
 # instrumental_interactions = [
 #     DirectedNetwork(np.array(data_tailor.KAPFTI1)),
 #     DirectedNetwork(np.array(data_tailor.KAPFTI2)),
 # ]
-
 sociational_interactions = [
     UndirectedNetwork(np.array(data_tailor.KAPFTS1)),
     UndirectedNetwork(np.array(data_tailor.KAPFTS2))
 ]
 
 
+#import model
+from model_settings import model_netStat_edgeonly, edgeonly_initial_formation_vec, edgeonly_initial_dissolution_vec
+# from model_settings import model_netStat_edgeGWdgre, edgeGWdgre_initial_formation_vec, edgeGWdgre_initial_dissolution_vec
+# from model_settings import model_netStat_edgeGWESP, edgeGWESP_initial_formation_vec, edgeGWESP_initial_dissolution_vec
+# from model_settings import model_netStat_edgeGWDSP, edgeGWDSP_initial_formation_vec, edgeGWDSP_initial_dissolution_vec
+
+# from model_settings import model_netStat_samplk_vignettesEx, samplk_vignettesEx_initial_formation_vec, samplk_vignettesEx_initial_dissolution_vec
+
+from model_settings import model_netStat_friendship_KHEx, model_netStat_friendship_KHEx_jointly, friendship_KHEx_initial_formation_vec, friendship_KHEx_initial_dissolution_vec
+# from model_settings import model_netStat_friendship_2hom, friendship_2hom_initial_formation_vec, friendship_2hom_initial_dissolution_vec
+# from model_settings import model_netStat_friendship_2hom_noprisch, friendship_2hom_noprisch_initial_formation_vec, friendship_2hom_noprisch_initial_dissolution_vec
+# from model_settings import model_netstat_friendship_nondds, friendship_nondds_initial_formation_vec, friendship_nondds_initial_dissolution_vec
+# from model_settings import model_netstat_friendship_edge1hom, friendship_edge1hom_initial_formation_vec, friendship_edge1hom_initial_dissolution_vec
+# from model_settings import model_netstat_friendship_edge1homMs, friendship_edge1homMs_initial_formation_vec, friendship_edge1homMs_initial_dissolution_vec
+
+# from model_settings import model_netStat_tailor_social_edgeDegrESP, tailor_social_edgeDegrESP_initial_formation_vec, tailor_social_edgeDegrESP_initial_dissolution_vec
+# from model_settings import model_netStat_tailor_social_edgeDegrESPDSP, tailor_social_edgeDegrESPDSP_initial_formation_vec, tailor_social_edgeDegrESPDSP_initial_dissolution_vec
+
+
+
 #for multiprocessing
-def procedure_joint_sampler(result_queue, network_sequence, model_netStat_func, 
-        initial_formation_param, initial_dissolution_param, result_string, rng_seed=2021, main_iter=30000, ex_iter=50):
-    
+def procedure_run_each_bergm(result_queue, bergm_object, main_iter, ex_iter, proposal_cov_rate, result_string):
     proc_pid = getpid()
     print("pid: ", proc_pid, "start!")
-
-
-    BSTERGM_sampler = BSTERGM(model_netStat_func, initial_formation_param, initial_dissolution_param, network_sequence, rng_seed, pid=proc_pid)
-    BSTERGM_sampler.run(main_iter, ex_iter, time_lag='joint', proposal_cov_rate=0.01, console_string=result_string)
-    BSTERGM_sampler.write_posterior_samples(result_string)
-    BSTERGM_sampler.write_latest_exchangeSampler_netStat(result_string + "_NetworkStat")
-    
-    result_queue.put(BSTERGM_sampler)
-
-    BSTERGM_sampler.show_traceplot()
-    
-    # BSTERGM_sampler.show_histogram(formation_param_mark_vec=[-1.3502], dissolution_param_mark_vec=[0.6274])
-    # BSTERGM_sampler.show_latest_exchangeSampler_netStat_traceplot()
-    
-def procedure_run_each_bergm(result_queue, bergm_object, main_iter, ex_iter, proposal_cov_rate, result_string):
+    bergm_object.pid = proc_pid
     bergm_object.run(main_iter, ex_iter, proposal_cov_rate, console_output_str=result_string)
     bergm_object.write_posterior_samples(result_string)
     bergm_object.write_latest_exchangeSampler_netStat(result_string + "_NetworkStat")
@@ -79,82 +82,27 @@ def procedure_run_each_bergm(result_queue, bergm_object, main_iter, ex_iter, pro
 
     bergm_object.show_traceplot()
 
-# def procedure_1dim_sampler(result_queue, network_sequence, model_netStat_func,
-#         initial_formation_param, initial_dissolution_param, result_string, rng_seed=2021, main_iter=30000, ex_iter=50, proposal_cov_rate=0.1):
-    
-#     proc_pid = getpid()
-#     print("pid: ", proc_pid, "start!")
-
-#     BSTERGM_sampler = BSTERGM(model_netStat_func, initial_formation_param, initial_dissolution_param, network_sequence, rng_seed, pid=proc_pid)
-#     BSTERGM_sampler.run_1dim(main_iter, exchange_iter=ex_iter, proposal_cov_rate=0.5)
-#     # print(BSTERGM_sampler.MC_formation_samples)
-#     # print(BSTERGM_sampler.MC_dissolution_samples)
-#     BSTERGM_sampler.write_posterior_samples(result_string)
-#     BSTERGM_sampler.write_latest_exchangeSampler_netStat(result_string + "_NetworkStat")
-
-#     result_queue.put(BSTERGM_sampler)
-
-#     BSTERGM_sampler.show_traceplot()
-#     # BSTERGM_sampler.show_latest_exchangeSampler_netStat_traceplot()
 
 if __name__=="__main__":
-    #core
-    core_num = 6
+    parallel_BSTERGM_num = 5
     process_vec = []
     proc_queue = mp.Queue()
+    for i in range(parallel_BSTERGM_num):
+        # BSTERGM:: def __init__(self, model_fn, initial_formation_param, initial_dissolution_param, obs_network_seq, rng_seed=2021, pid=None):
+        bstergm_object = BSTERGM(model_netStat_friendship_KHEx_jointly, 
+                            friendship_KHEx_initial_formation_vec[i], friendship_KHEx_initial_dissolution_vec[i],
+                            friendship_sequence, rng_seed=i*10+1)
 
-    # from model_settings import model_netStat_edgeonly, edgeonly_initial_formation_vec, edgeonly_initial_dissolution_vec
-    # from model_settings import model_netStat_edgeGWdgre, edgeGWdgre_initial_formation_vec, edgeGWdgre_initial_dissolution_vec
-    # from model_settings import model_netStat_edgeGWESP, edgeGWESP_initial_formation_vec, edgeGWESP_initial_dissolution_vec
-    # from model_settings import model_netStat_edgeGWDSP, edgeGWDSP_initial_formation_vec, edgeGWDSP_initial_dissolution_vec
-
-    # from model_settings import model_netStat_samplk_vignettesEx, samplk_vignettesEx_initial_formation_vec, samplk_vignettesEx_initial_dissolution_vec
-
-    from model_settings import model_netStat_friendship_KHEx, friendship_KHEx_initial_formation_vec, friendship_KHEx_initial_dissolution_vec
-    # from model_settings import model_netStat_friendship_2hom, friendship_2hom_initial_formation_vec, friendship_2hom_initial_dissolution_vec
-    # from model_settings import model_netStat_friendship_2hom_noprisch, friendship_2hom_noprisch_initial_formation_vec, friendship_2hom_noprisch_initial_dissolution_vec
-    # from model_settings import model_netstat_friendship_nondds, friendship_nondds_initial_formation_vec, friendship_nondds_initial_dissolution_vec
-    # from model_settings import model_netstat_friendship_edge1hom, friendship_edge1hom_initial_formation_vec, friendship_edge1hom_initial_dissolution_vec
-    # from model_settings import model_netstat_friendship_edge1homMs, friendship_edge1homMs_initial_formation_vec, friendship_edge1homMs_initial_dissolution_vec
-
-
-    # from model_settings import model_netStat_tailor_social_edgeDegrESP, tailor_social_edgeDegrESP_initial_formation_vec, tailor_social_edgeDegrESP_initial_dissolution_vec
-    # from model_settings import model_netStat_tailor_social_edgeDegrESPDSP, tailor_social_edgeDegrESPDSP_initial_formation_vec, tailor_social_edgeDegrESPDSP_initial_dissolution_vec
-    
-
-
-    for i in range(core_num):
-        # format
-        # def procedure_joint_sampler(result_queue, network_sequence, model_netStat_func, 
-        #     initial_formation_param, initial_dissolution_param, result_string, rng_seed=2021, main_iter=30000, ex_iter=50):
-
-        # # samplk
-        # process_unit = mp.Process(target=procedure_joint_sampler, 
-        # args=(proc_queue, samplk_sequence, model_netStat_samplk_vignettesEx, 
-        #     samplk_vignettesEx_initial_formation_vec[i], samplk_vignettesEx_initial_dissolution_vec[i], 
-        #     "samplk_jointtimelag_normPrior_vignettesEx_"+str(i)+"chain", 2021+i*10, 60000, 30))
-        # process_vec.append(process_unit)
-
-
-        # friendship
-        process_unit = mp.Process(target=procedure_joint_sampler, 
-        args=(proc_queue, friendship_sequence, model_netStat_friendship_KHEx, 
-            friendship_KHEx_initial_formation_vec[i], friendship_KHEx_initial_dissolution_vec[i], 
-            "friendship_jointtimelag_normPrior_KHEx_"+str(i)+"chain", 2021+i*10, 10000, 30))
-        process_vec.append(process_unit)
-
-        # # tailorshop-social
-        # process_unit = mp.Process(target=procedure_by_group_sampler, 
-        # args=(proc_queue, sociational_interactions, model_netStat_edgeonly, 
-        #     edgeonly_initial_formation_vec[i], edgeonly_initial_dissolution_vec[i], 
-        #     "tailorshop_bygroupsample_normPrior_edgeonly_"+str(i)+"chain", 2021+i*10, 80000, 100, 0.1*i+0.1))
-        # process_vec.append(process_unit)
-
-        # process_unit = mp.Process(target=procedure_by_group_sampler, 
-        # args=(proc_queue, sociational_interactions, model_netStat_edgeGWESP, 
-        #     edgeGWESP_initial_formation_vec[i], edgeGWESP_initial_dissolution_vec[i], 
-        #     "tailorshop_bygroupsample_normPrior_edgeGWESP_"+str(i)+"chain", 2021+i*10, 80000, 100, 0.1*i+0.1))
-        # process_vec.append(process_unit)
+        bergm_object_formation, bergm_object_disolution = bstergm_object.get_bergm_objects_with_setting(time_lag='joint')
+        # def procedure_run_each_bergm(result_queue, bergm_object, main_iter, ex_iter, proposal_cov_rate, result_string):
+        process_unit_f = mp.Process(target=procedure_run_each_bergm, 
+                                args=(proc_queue, bergm_object_formation, 80000, 50, 0.01,
+                                    "friendship_jointtimelag_normPrior_KHEx_"+str(i)+"chain_formation"))
+        process_vec.append(process_unit_f)
+        process_unit_d = mp.Process(target=procedure_run_each_bergm, 
+                                args=(proc_queue, bergm_object_disolution, 80000, 50, 0.01,
+                                    "friendship_jointtimelag_normPrior_KHEx_"+str(i)+"chain_dissolution"))
+        process_vec.append(process_unit_d)
 
 
 

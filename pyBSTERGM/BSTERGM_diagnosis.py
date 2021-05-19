@@ -31,8 +31,20 @@ class BSTERGM_posterior_work:
         self.initial_formation_param = self.MC_formation_samples[0]
         self.initial_dissolution_param = self.MC_dissolution_samples[0]
 
-    def read_from_BERGM_csv(self, file_name, param_dim, is_formation):
-        pass
+    def read_from_BERGM_csv(self, formation_file_name, dissolution_file_name):
+        with open("pyBSTERGM/" + formation_file_name + '.csv', 'r', newline='', encoding='utf-8') as csvfile:
+            reader = csv.reader(csvfile)
+            for csv_row in reader:
+                csv_row = [float(elem) for elem in csv_row]
+                self.MC_formation_samples.append(np.array(csv_row))
+        with open("pyBSTERGM/" + dissolution_file_name + '.csv', 'r', newline='', encoding='utf-8') as csvfile:
+            reader = csv.reader(csvfile)
+            for csv_row in reader:
+                csv_row = [float(elem) for elem in csv_row]
+                self.MC_dissolution_samples.append(np.array(csv_row))
+
+        self.initial_formation_param = self.MC_formation_samples[0]
+        self.initial_dissolution_param = self.MC_dissolution_samples[0]
 
     def read_from_BSTERGM_instance(self, BSTERGM_obj):
         pass
@@ -183,6 +195,7 @@ class BSTERGM_latest_exchangeSampler_work:
 
 
 if __name__ == "__main__":
+    pass
     #samplk joint
     #good: 2/3/4 chain / others: bad
     # reader_inst_samplk_vig = BSTERGM_posterior_work()
@@ -200,16 +213,32 @@ if __name__ == "__main__":
 
     #friendship joint
     #good: 2 or 5 (-_-)
-    reader_inst_friendship_KHEx = BSTERGM_posterior_work()
-    reader_inst_friendship_KHEx.read_from_BSTERGM_csv("example_results_joint/friendship_jointtimelag_normPrior_KHEx_2chain", 8, 8)
-    reader_inst_friendship_KHEx.MC_formation_samples = reader_inst_friendship_KHEx.MC_formation_samples[1000::20]
-    reader_inst_friendship_KHEx.MC_dissolution_samples = reader_inst_friendship_KHEx.MC_dissolution_samples[1000::20]
-    reader_inst_friendship_KHEx.show_traceplot()
-    reader_inst_friendship_KHEx.show_histogram(formation_mark=[-3.336, 0.480, 0.973, -0.358, 0.650, 1.384, 0.886, -0.389],
-        dissolution_mark=[-1.132, 0.122, 1.168, -0.577, 0.451, 2.682, 1.121, -1.016])
-    reader_inst_friendship_KHEx.show_acfplot()
+    # reader_inst_friendship_KHEx = BSTERGM_posterior_work()
+    # reader_inst_friendship_KHEx.read_from_BSTERGM_csv("example_results_joint/friendship_jointtimelag_normPrior_KHEx_2chain", 8, 8)
+    # reader_inst_friendship_KHEx.MC_formation_samples = reader_inst_friendship_KHEx.MC_formation_samples[1000::20]
+    # reader_inst_friendship_KHEx.MC_dissolution_samples = reader_inst_friendship_KHEx.MC_dissolution_samples[1000::20]
+    # reader_inst_friendship_KHEx.show_traceplot()
+    # reader_inst_friendship_KHEx.show_histogram(formation_mark=[-3.336, 0.480, 0.973, -0.358, 0.650, 1.384, 0.886, -0.389],
+    #     dissolution_mark=[-1.132, 0.122, 1.168, -0.577, 0.451, 2.682, 1.121, -1.016])
+    # reader_inst_friendship_KHEx.show_acfplot()
     
-    netstat_reader_inst_friendship_KHEx = BSTERGM_latest_exchangeSampler_work()
-    netstat_reader_inst_friendship_KHEx.read_from_csv("example_results_joint/friendship_jointtimelag_normPrior_KHEx_2chain_NetworkStat")
-    netstat_reader_inst_friendship_KHEx.show_traceplot()
+    # netstat_reader_inst_friendship_KHEx = BSTERGM_latest_exchangeSampler_work()
+    # netstat_reader_inst_friendship_KHEx.read_from_csv("example_results_joint/friendship_jointtimelag_normPrior_KHEx_2chain_NetworkStat")
+    # netstat_reader_inst_friendship_KHEx.show_traceplot()
 
+    #test
+    # reader_inst_test = BSTERGM_posterior_work()
+    # reader_inst_test.read_from_BERGM_csv("test_0chain_formation", "test_0chain_dissolution")
+    # reader_inst_test.MC_formation_samples = reader_inst_test.MC_formation_samples[1000::20]
+    # reader_inst_test.MC_dissolution_samples = reader_inst_test.MC_dissolution_samples[1000::20]
+    # reader_inst_test.show_traceplot()
+    # reader_inst_test.show_histogram(formation_mark=[-2.2235],
+    #     dissolution_mark=[0.6091])
+    # reader_inst_test.show_acfplot()
+    
+    # netstat_reader_inst_test = BSTERGM_latest_exchangeSampler_work()
+    # netstat_reader_inst_test.read_from_csv("test_0chain_formation_NetworkStat")
+    # netstat_reader_inst_test.show_traceplot()
+    # netstat_reader_inst_test = BSTERGM_latest_exchangeSampler_work()
+    # netstat_reader_inst_test.read_from_csv("test_0chain_dissolution_NetworkStat")
+    # netstat_reader_inst_test.show_traceplot()

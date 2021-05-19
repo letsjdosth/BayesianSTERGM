@@ -115,7 +115,7 @@ class BERGM:
         for i in range(iter):
             rng_seed = self.random_seed + i
             self.sampler(exchange_iter, cov_rate_vec, rng_seed)
-            if i%200==0:
+            if i==9 or i%200==0:
                 if self.pid is not None:
                     print("pid:",self.pid, " ", console_output_str, " iter: ", i, "/", iter, " time elapsed(second):", round(time.time()-start_time,1))
                 else:
