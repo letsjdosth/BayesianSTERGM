@@ -185,18 +185,18 @@ class BSTERGM_latest_exchangeSampler_work:
 if __name__ == "__main__":
     #samplk joint
     #good: 2/3/4 chain / others: bad
-    reader_inst_samplk_vig = BSTERGM_posterior_work()
-    reader_inst_samplk_vig.read_from_BSTERGM_csv("example_results_joint/samplk_jointtimelag_normPrior_vignettesEx_4chain", 4, 4)
-    reader_inst_samplk_vig.MC_formation_samples = reader_inst_samplk_vig.MC_formation_samples[10000::20]
-    reader_inst_samplk_vig.MC_dissolution_samples = reader_inst_samplk_vig.MC_dissolution_samples[10000::20]
-    reader_inst_samplk_vig.show_traceplot()
-    reader_inst_samplk_vig.show_histogram(formation_mark=[-3.5586, 2.2624, -0.4994, 0.2945],
-        dissolution_mark=[-0.1164, 1.5791, -1.6957, 0.6847])
-    reader_inst_samplk_vig.show_acfplot()
+    # reader_inst_samplk_vig = BSTERGM_posterior_work()
+    # reader_inst_samplk_vig.read_from_BSTERGM_csv("example_results_joint/samplk_jointtimelag_normPrior_vignettesEx_4chain", 4, 4)
+    # reader_inst_samplk_vig.MC_formation_samples = reader_inst_samplk_vig.MC_formation_samples[10000::20]
+    # reader_inst_samplk_vig.MC_dissolution_samples = reader_inst_samplk_vig.MC_dissolution_samples[10000::20]
+    # reader_inst_samplk_vig.show_traceplot()
+    # reader_inst_samplk_vig.show_histogram(formation_mark=[-3.5586, 2.2624, -0.4994, 0.2945],
+    #     dissolution_mark=[-0.1164, 1.5791, -1.6957, 0.6847])
+    # reader_inst_samplk_vig.show_acfplot()
     
-    netstat_reader_inst_samplk_vig = BSTERGM_latest_exchangeSampler_work()
-    netstat_reader_inst_samplk_vig.read_from_csv("example_results_joint/samplk_jointtimelag_normPrior_vignettesEx_4chain_NetworkStat")
-    netstat_reader_inst_samplk_vig.show_traceplot()
+    # netstat_reader_inst_samplk_vig = BSTERGM_latest_exchangeSampler_work()
+    # netstat_reader_inst_samplk_vig.read_from_csv("example_results_joint/samplk_jointtimelag_normPrior_vignettesEx_4chain_NetworkStat")
+    # netstat_reader_inst_samplk_vig.show_traceplot()
 
     #friendship joint
     #good: 2 or 5 (-_-)

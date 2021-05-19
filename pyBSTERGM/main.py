@@ -60,7 +60,7 @@ def procedure_joint_sampler(result_queue, network_sequence, model_netStat_func,
 
 
     BSTERGM_sampler = BSTERGM(model_netStat_func, initial_formation_param, initial_dissolution_param, network_sequence, rng_seed, pid=proc_pid)
-    BSTERGM_sampler.run_fullTimeLag_jointly(main_iter, ex_iter, proposal_cov_rate=0.01, console_string=result_string)
+    BSTERGM_sampler.run(main_iter, ex_iter, time_lag='joint', proposal_cov_rate=0.01, console_string=result_string)
     BSTERGM_sampler.write_posterior_samples(result_string)
     BSTERGM_sampler.write_latest_exchangeSampler_netStat(result_string + "_NetworkStat")
     
@@ -71,6 +71,13 @@ def procedure_joint_sampler(result_queue, network_sequence, model_netStat_func,
     # BSTERGM_sampler.show_histogram(formation_param_mark_vec=[-1.3502], dissolution_param_mark_vec=[0.6274])
     # BSTERGM_sampler.show_latest_exchangeSampler_netStat_traceplot()
     
+def procedure_run_each_bergm(result_queue, bergm_object, main_iter, ex_iter, proposal_cov_rate, result_string):
+    bergm_object.run(main_iter, ex_iter, proposal_cov_rate, console_output_str=result_string)
+    bergm_object.write_posterior_samples(result_string)
+    bergm_object.write_latest_exchangeSampler_netStat(result_string + "_NetworkStat")
+    result_queue.put(bergm_object)
+
+    bergm_object.show_traceplot()
 
 # def procedure_1dim_sampler(result_queue, network_sequence, model_netStat_func,
 #         initial_formation_param, initial_dissolution_param, result_string, rng_seed=2021, main_iter=30000, ex_iter=50, proposal_cov_rate=0.1):
