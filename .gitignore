@@ -437,5 +437,6 @@ FodyWeavers.xsd
 # miscel
 Rintrospection/
 paper_format/
-pyBSTERGM/example_results_*
+pyBSTERGM/example_*
+
 compare_testcode_introspection.r

@@ -97,11 +97,11 @@ if __name__=="__main__":
         # def procedure_run_each_bergm(result_queue, bergm_object, main_iter, ex_iter, proposal_cov_rate, result_string):
         process_unit_f = mp.Process(target=procedure_run_each_bergm, 
                                 args=(proc_queue, bergm_object_formation, 80000, 50, 0.01,
-                                    "friendship_t01_normPrior_edgeGWESP_"+str(i)+"chain_formation"))
+                                    "tailorshop_t01_normPrior_edgeGWESP_"+str(i)+"chain_formation"))
         process_vec.append(process_unit_f)
         process_unit_d = mp.Process(target=procedure_run_each_bergm, 
                                 args=(proc_queue, bergm_object_disolution, 80000, 50, 0.01,
-                                    "friendship_t01_normPrior_edgeGWESP_"+str(i)+"chain_dissolution"))
+                                    "tailorshop_t01_normPrior_edgeGWESP_"+str(i)+"chain_dissolution"))
         process_vec.append(process_unit_d)
 
 
