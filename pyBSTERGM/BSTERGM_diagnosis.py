@@ -195,9 +195,8 @@ class BSTERGM_latest_exchangeSampler_work:
 
 
 if __name__ == "__main__":
-    pass
-    #samplk joint
-    #good: 2/3/4 chain / others: bad
+    # #samplk joint
+    # #good: 2/3/4 chain / others: bad
     reader_inst_samplk_vig = BSTERGM_posterior_work()
     reader_inst_samplk_vig.read_from_BSTERGM_csv("example_results_samplk/samplk_jointtimelag_normPrior_vignettesEx_4chain", 4, 4)
     reader_inst_samplk_vig.MC_formation_samples = reader_inst_samplk_vig.MC_formation_samples[10000::20]
@@ -220,7 +219,7 @@ if __name__ == "__main__":
     reader_inst_friendship_KHEx.read_from_BERGM_csv("example_results_friendship/friendship_jointtimelag_normPrior_KHEx_4chain_formation",
                                                      "example_results_friendship/friendship_jointtimelag_normPrior_KHEx_1chain_dissolution")
     reader_inst_friendship_KHEx.MC_formation_samples = reader_inst_friendship_KHEx.MC_formation_samples[10000::30]
-    reader_inst_friendship_KHEx.MC_dissolution_samples = reader_inst_friendship_KHEx.MC_dissolution_samples[10000::30]
+    reader_inst_friendship_KHEx.MC_dissolution_samples = reader_inst_friendship_KHEx.MC_dissolution_samples[10000::30] #90000~110000/10000/40 -> 2000~2500
     reader_inst_friendship_KHEx.show_traceplot()
     reader_inst_friendship_KHEx.show_histogram(formation_mark=[-3.336, 0.480, 0.973, -0.358, 0.650, 1.384, 0.886, -0.389],
         dissolution_mark=[-1.132, 0.122, 1.168, -0.577, 0.451, 2.682, 1.121, -1.016])
@@ -233,13 +232,25 @@ if __name__ == "__main__":
     netstat_reader_inst_friendship_KHEx_d.read_from_csv("example_results_friendship/friendship_jointtimelag_normPrior_KHEx_1chain_dissolution_NetworkStat")
     netstat_reader_inst_friendship_KHEx_d.show_traceplot()
 
+    # print(len(reader_inst_friendship_KHEx.MC_formation_samples))
+    # print(reader_inst_friendship_KHEx.MC_formation_samples[-1].round(3).tolist(),"\n",
+    #     reader_inst_friendship_KHEx.MC_formation_samples[-205].round(3).tolist(),"\n",
+    #     reader_inst_friendship_KHEx.MC_formation_samples[-655].round(3).tolist(),"\n",
+    #     reader_inst_friendship_KHEx.MC_formation_samples[-802].round(3).tolist(),"\n",
+    #     reader_inst_friendship_KHEx.MC_formation_samples[-1000].round(3).tolist(), "~",
+    # )
+    # print(reader_inst_friendship_KHEx.MC_dissolution_samples[-1].round(3).tolist(),"\n",
+    #     reader_inst_friendship_KHEx.MC_dissolution_samples[-205].round(3).tolist(),"\n",
+    #     reader_inst_friendship_KHEx.MC_dissolution_samples[-655].round(3).tolist(),"\n",
+    #     reader_inst_friendship_KHEx.MC_dissolution_samples[-802].round(3).tolist(),"\n",
+    #     reader_inst_friendship_KHEx.MC_dissolution_samples[-1000].round(3).tolist()
+    # )   
 
-
-    #tailorshop joint(=t01)
-    #formation_good: 0 4
-    #formation_bad: 1 2 3
-    #dissolution_good: 2 0 3
-    #dissolution_bad: 4 1
+    # #tailorshop joint(=t01)
+    # #formation_good: 0 4
+    # #formation_bad: 1 2 3
+    # #dissolution_good: 2 0 3
+    # #dissolution_bad: 4 1
     reader_inst_tailorshop_edgeGWESP = BSTERGM_posterior_work()
     reader_inst_tailorshop_edgeGWESP.read_from_BERGM_csv("example_results_tailorshop/tailorshop_t01_normPrior_edgeGWESP_0chain_formation",
                                                      "example_results_tailorshop/tailorshop_t01_normPrior_edgeGWESP_2chain_dissolution")
