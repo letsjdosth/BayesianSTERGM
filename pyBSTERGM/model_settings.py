@@ -137,6 +137,22 @@ samplk_vignettesEx_initial_dissolution_vec = [
 ]
 
 
+samplk_vignettesEx_initial_formation_vec_conti = [
+    np.array([-4.027, 1.844, 0.287, 0.134]),
+    np.array([-7.958, 5.184, -2.728, 1.573]),
+    np.array([-2.89, 1.708, -1.339, 0.374]),
+    np.array([-6.325, 2.925, -0.778, 0.837]),
+    np.array([-5.574, -0.55, 0.6, -0.085]),
+]
+samplk_vignettesEx_initial_dissolution_vec_conti = [
+    np.array([-0.291, -0.05, -1.743, 1.586]),
+    np.array([-0.629, 1.956, 0.629, 1.051]),
+    np.array([0.307, -1.005, 0.711, 0.643]),
+    np.array([0.897, 0.507, -1.429, 0.01]),
+    np.array([0.49, 0.641, -1.589, -0.155]),
+]
+
+
 # extended things
 from scipy.linalg import block_diag
 friendship_joint_times = 3 #length 4

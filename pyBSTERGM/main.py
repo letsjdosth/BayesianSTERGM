@@ -51,12 +51,13 @@ sociational_interactions = [
 
 
 #import model
-from model_settings import model_netStat_edgeonly, edgeonly_initial_formation_vec, edgeonly_initial_dissolution_vec
+# from model_settings import model_netStat_edgeonly, edgeonly_initial_formation_vec, edgeonly_initial_dissolution_vec
 # from model_settings import model_netStat_edgeGWdgre, edgeGWdgre_initial_formation_vec, edgeGWdgre_initial_dissolution_vec
 from model_settings import model_netStat_edgeGWESP, edgeGWESP_initial_formation_vec, edgeGWESP_initial_dissolution_vec
 # from model_settings import model_netStat_edgeGWDSP, edgeGWDSP_initial_formation_vec, edgeGWDSP_initial_dissolution_vec
 
-# from model_settings import model_netStat_samplk_vignettesEx, samplk_vignettesEx_initial_formation_vec, samplk_vignettesEx_initial_dissolution_vec
+from model_settings import model_netStat_samplk_vignettesEx, samplk_vignettesEx_initial_formation_vec, samplk_vignettesEx_initial_dissolution_vec
+from model_settings import samplk_vignettesEx_initial_formation_vec_conti, samplk_vignettesEx_initial_dissolution_vec_conti
 
 from model_settings import model_netStat_friendship_KHEx, model_netStat_friendship_KHEx_jointly, friendship_KHEx_initial_formation_vec, friendship_KHEx_initial_dissolution_vec
 from model_settings import friendship_KHEx_initial_formation_vec_conti, friendship_KHEx_initial_dissolution_vec_conti
@@ -90,19 +91,19 @@ if __name__=="__main__":
     proc_queue = mp.Queue()
     for i in range(parallel_BSTERGM_num):
         # BSTERGM:: def __init__(self, model_fn, initial_formation_param, initial_dissolution_param, obs_network_seq, rng_seed=2021, pid=None):
-        bstergm_object = BSTERGM(model_netStat_friendship_KHEx_jointly, 
-                            friendship_KHEx_initial_formation_vec_conti[i], friendship_KHEx_initial_dissolution_vec_conti[i],
-                            friendship_sequence, rng_seed=i*10+1)
+        bstergm_object = BSTERGM(model_netStat_samplk_vignettesEx, 
+                            samplk_vignettesEx_initial_formation_vec_conti[i], samplk_vignettesEx_initial_dissolution_vec_conti[i],
+                            samplk_sequence, rng_seed=i*10+1)
 
         bergm_object_formation, bergm_object_disolution = bstergm_object.get_bergm_objects_with_setting(time_lag='joint')
         # def procedure_run_each_bergm(result_queue, bergm_object, main_iter, ex_iter, proposal_cov_rate, result_string):
         process_unit_f = mp.Process(target=procedure_run_each_bergm, 
-                                args=(proc_queue, bergm_object_formation, 60000, 30, 0.01,
-                                    "friendship_jointly_normPrior_KHEx_conti_"+str(i)+"chain_formation"))
+                                args=(proc_queue, bergm_object_formation, 50000, 30, 0.01,
+                                    "samplk_jointly_normPrior_vignettesEx_conti_"+str(i)+"chain_formation"))
         process_vec.append(process_unit_f)
         process_unit_d = mp.Process(target=procedure_run_each_bergm, 
-                                args=(proc_queue, bergm_object_disolution, 60000, 30, 0.01,
-                                    "friendship_jointly_normPrior_KHEx_conti_"+str(i)+"chain_dissolution"))
+                                args=(proc_queue, bergm_object_disolution, 50000, 30, 0.01,
+                                    "samplk_jointly_normPrior_vignettesEx_conti_"+str(i)+"chain_dissolution"))
         process_vec.append(process_unit_d)
 
 
