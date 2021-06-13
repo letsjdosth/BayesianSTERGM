@@ -105,8 +105,20 @@ edgeGWDSP_initial_dissolution_vec = [
     np.array([0.5,0.5])
 ]
 
-
-
+tailorshop_edgeGWESP_initial_formation_vec_conti = [
+    np.array([-1.331, 0.098]),
+    np.array([-0.662, -0.141]),
+    np.array([0.708, -1.956]),
+    np.array([1.675, -2.248]),
+    np.array([2.652, -3.028]),
+]
+tailorshop_edgeGWESP_initial_dissolution_vec_conti = [
+    np.array([0.453, 0.123]),
+    np.array([1.587, -0.149]),
+    np.array([-0.592, 0.885]),
+    np.array([1.118, -0.302]),
+    np.array([-0.076, 0.605]),
+]
 
 
 # samplk model
