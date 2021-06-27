@@ -195,42 +195,28 @@ class BSTERGM_latest_exchangeSampler_work:
 
 
 if __name__ == "__main__":
-    # #tailorshop joint(=t01)
-    # #formation_good: 0 4
-    # #formation_bad: 1 2 3
-    # #dissolution_good: 2 0 3
-    # #dissolution_bad: 4 1
+    #example:
     reader_inst_tailorshop_edgeGWESP = BSTERGM_posterior_work()
     reader_inst_tailorshop_edgeGWESP.read_from_BERGM_csv("example_results_tailorshop/tailorshop_t01_normPrior_edgeGWESP_0chain_formation",
-                                                     "example_results_tailorshop/tailorshop_t01_normPrior_edgeGWESP_2chain_dissolution")
-    
-    print(len(reader_inst_tailorshop_edgeGWESP.MC_formation_samples))
-    print(reader_inst_tailorshop_edgeGWESP.MC_formation_samples[-1].round(3).tolist(),"\n",
-        reader_inst_tailorshop_edgeGWESP.MC_formation_samples[-205].round(3).tolist(),"\n",
-        reader_inst_tailorshop_edgeGWESP.MC_formation_samples[-655].round(3).tolist(),"\n",
-        reader_inst_tailorshop_edgeGWESP.MC_formation_samples[-802].round(3).tolist(),"\n",
-        reader_inst_tailorshop_edgeGWESP.MC_formation_samples[-1000].round(3).tolist(), "~",
-    )
-    print(reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples[-1].round(3).tolist(),"\n",
-        reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples[-205].round(3).tolist(),"\n",
-        reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples[-655].round(3).tolist(),"\n",
-        reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples[-802].round(3).tolist(),"\n",
-        reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples[-1000].round(3).tolist()
-    )   
+                                                        "example_results_tailorshop/tailorshop_t01_normPrior_edgeGWESP_2chain_dissolution")
+    reader_inst_tailorshop_edgeGWESP_conti = BSTERGM_posterior_work()
+    reader_inst_tailorshop_edgeGWESP_conti.read_from_BERGM_csv("example_results_tailorshop/tailorshop_jointly_normPrior_edgeGWESP_conti_0chain_formation",
+                                                        "example_results_tailorshop/tailorshop_jointly_normPrior_edgeGWESP_conti_3chain_dissolution")
+    reader_inst_tailorshop_edgeGWESP.MC_formation_samples = reader_inst_tailorshop_edgeGWESP.MC_formation_samples + reader_inst_tailorshop_edgeGWESP_conti.MC_formation_samples
+    reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples = reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples + reader_inst_tailorshop_edgeGWESP_conti.MC_dissolution_samples
 
 
-    # reader_inst_tailorshop_edgeGWESP.MC_formation_samples = reader_inst_tailorshop_edgeGWESP.MC_formation_samples[8000::20]
-    # reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples = reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples[8000::20]
-    # reader_inst_tailorshop_edgeGWESP.show_traceplot()
-    # reader_inst_tailorshop_edgeGWESP.show_histogram(formation_mark=[-2.5621, 0.8827],
-    #     dissolution_mark=[-0.1878, 0.5118])
-    # reader_inst_tailorshop_edgeGWESP.show_acfplot()
-    
-    # netstat_reader_inst_tailorshop_edgeGWESP_f = BSTERGM_latest_exchangeSampler_work()
-    # netstat_reader_inst_tailorshop_edgeGWESP_f.read_from_csv("example_results_tailorshop/tailorshop_t01_normPrior_edgeGWESP_0chain_formation_NetworkStat")
-    # netstat_reader_inst_tailorshop_edgeGWESP_f.show_traceplot()
-    # netstat_reader_inst_tailorshop_edgeGWESP_d = BSTERGM_latest_exchangeSampler_work()
-    # netstat_reader_inst_tailorshop_edgeGWESP_d.read_from_csv("example_results_tailorshop/tailorshop_t01_normPrior_edgeGWESP_2chain_dissolution_NetworkStat")
-    # netstat_reader_inst_tailorshop_edgeGWESP_d.show_traceplot()
+    reader_inst_tailorshop_edgeGWESP.MC_formation_samples = reader_inst_tailorshop_edgeGWESP.MC_formation_samples[10000::40]
+    reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples = reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples[10000::40]
+    reader_inst_tailorshop_edgeGWESP.show_traceplot()
+    reader_inst_tailorshop_edgeGWESP.show_histogram(formation_mark=[-2.5621, 0.8827],
+        dissolution_mark=[-0.1878, 0.5118])
+    reader_inst_tailorshop_edgeGWESP.show_acfplot()
 
-    
+    netstat_reader_inst_tailorshop_edgeGWESP_f = BSTERGM_latest_exchangeSampler_work()
+    netstat_reader_inst_tailorshop_edgeGWESP_f.read_from_csv("example_results_tailorshop/tailorshop_jointly_normPrior_edgeGWESP_conti_0chain_formation_NetworkStat")
+    netstat_reader_inst_tailorshop_edgeGWESP_f.show_traceplot()
+    netstat_reader_inst_tailorshop_edgeGWESP_d = BSTERGM_latest_exchangeSampler_work()
+    netstat_reader_inst_tailorshop_edgeGWESP_d.read_from_csv("example_results_tailorshop/tailorshop_jointly_normPrior_edgeGWESP_conti_3chain_dissolution_NetworkStat")
+    netstat_reader_inst_tailorshop_edgeGWESP_d.show_traceplot()
+
