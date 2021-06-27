@@ -70,11 +70,37 @@ class BSTERGM_posterior_work:
         return formation_trace, dissolution_trace
 
 
-    def show_traceplot(self, mean_hline=False, show=True):
+    def print_summary(self):
         formation_trace, dissolution_trace = self.MC_sample_trace()
-        grid_column = 1
-        # grid_row = int(len(netStat)/2+0.51)
-        grid_row = len(self.initial_formation_param) + len(self.initial_dissolution_param)
+        formation_means = []
+        formation_sds = []
+        dissolution_means = []
+        dissolution_sds = []
+        for samples in formation_trace:
+            formation_means.append(np.mean(samples))
+            formation_sds.append(np.std(samples))
+        for samples in dissolution_trace:
+            dissolution_means.append(np.mean(samples))
+            dissolution_sds.append(np.std(samples))
+        print("formation")
+        for i, mean,sd in zip(range(len(formation_trace)), formation_means, formation_sds):
+            print("f",i, "\t", round(mean,3), " & ", round(sd,3))
+        
+        print("dissolution")
+        for i, mean,sd in zip(range(len(dissolution_trace)), dissolution_means, dissolution_sds):
+            print("f",i, "\t", round(mean,3), " & ", round(sd,3))
+
+    def show_traceplot(self, mean_hline=False, layout=None, show=True):
+        formation_trace, dissolution_trace = self.MC_sample_trace()
+        
+        grid_row, grid_column = (0,0)
+        if layout is not None:
+            grid_row, grid_column = layout
+        else:
+            grid_column = 1
+            # grid_row = int(len(netStat)/2+0.51)
+            grid_row = len(self.initial_formation_param) + len(self.initial_dissolution_param)
+
         plt.figure(figsize=(5*grid_column, 3*grid_row))
         for i, paramSeq in enumerate(formation_trace):
             plt.subplot(grid_row, grid_column, i+1)
@@ -89,11 +115,17 @@ class BSTERGM_posterior_work:
         if show:
             plt.show()
 
-    def show_histogram(self, bins=100, mean_vline=False, formation_mark=None, dissolution_mark=None, show=True):
+    def show_histogram(self, bins=100, mean_vline=False, formation_mark=None, dissolution_mark=None, layout=None, show=True):
         formation_trace, dissolution_trace = self.MC_sample_trace()
-        grid_column = 2
-        # grid_row = int(len(netStat)/2+0.51)
-        grid_row = (len(self.initial_formation_param) + len(self.initial_dissolution_param))/2
+        
+        grid_row, grid_column = (0,0)
+        if layout is not None:
+            grid_row, grid_column = layout
+        else:
+            grid_column = 2
+            # grid_row = int(len(netStat)/2+0.51)
+            grid_row = (len(self.initial_formation_param) + len(self.initial_dissolution_param))//2
+        
         plt.figure(figsize=(5*grid_column, 3*grid_row))
         for i, paramSeq in enumerate(formation_trace):
             plt.subplot(grid_row, grid_column, i+1)
@@ -129,11 +161,18 @@ class BSTERGM_posterior_work:
             acf.append(n_cov_term / n_var)
         return acf
 
-    def show_acfplot(self, maxLag=50, show=True):
+    def show_acfplot(self, maxLag=50, layout=None, show=True):
         formation_trace, dissolution_trace = self.MC_sample_trace()
-        grid_column = 1
-        # grid_row = int(len(netStat)/2+0.51)
-        grid_row = len(self.initial_formation_param) + len(self.initial_dissolution_param)
+        
+        
+        grid_row, grid_column = (0,0)
+        if layout is not None:
+            grid_row, grid_column = layout
+        else:
+            grid_column = 1
+            # grid_row = int(len(netStat)/2+0.51)
+            grid_row = len(self.initial_formation_param) + len(self.initial_dissolution_param)
+
         grid = [i for i in range(maxLag+1)]
 
         plt.figure(figsize=(5*grid_column, 3*grid_row))

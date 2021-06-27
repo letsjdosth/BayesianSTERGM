@@ -1,7 +1,7 @@
 from BSTERGM_diagnosis import BSTERGM_posterior_work, BSTERGM_latest_exchangeSampler_work
 basic_plots = False
 netStat_plots = False
-gof = True
+gof = False
 
 #friendship joint
 #formation_good: 4 > 2 > 1 
@@ -25,11 +25,14 @@ reader_inst_friendship_KHEx.MC_dissolution_samples = reader_inst_friendship_KHEx
 reader_inst_friendship_KHEx.MC_formation_samples = reader_inst_friendship_KHEx.MC_formation_samples[10000::40]
 reader_inst_friendship_KHEx.MC_dissolution_samples = reader_inst_friendship_KHEx.MC_dissolution_samples[10000::40] #90000~110000/10000/40 -> 2000~2500
 
+reader_inst_friendship_KHEx.print_summary()
+
+
 if basic_plots:
-    reader_inst_friendship_KHEx.show_traceplot()
+    reader_inst_friendship_KHEx.show_traceplot(layout=(16,1))
     reader_inst_friendship_KHEx.show_histogram(formation_mark=[-3.336, 0.480, 0.973, -0.358, 0.650, 1.384, 0.886, -0.389],
-        dissolution_mark=[-1.132, 0.122, 1.168, -0.577, 0.451, 2.682, 1.121, -1.016])
-    reader_inst_friendship_KHEx.show_acfplot()
+        dissolution_mark=[-1.132, 0.122, 1.168, -0.577, 0.451, 2.682, 1.121, -1.016], layout=(16,1), mean_vline=True)
+    reader_inst_friendship_KHEx.show_acfplot(layout=(16,1))
 
 if netStat_plots:
     netstat_reader_inst_friendship_KHEx_conti_f = BSTERGM_latest_exchangeSampler_work()

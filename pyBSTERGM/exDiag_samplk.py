@@ -1,7 +1,7 @@
 from BSTERGM_diagnosis import BSTERGM_posterior_work, BSTERGM_latest_exchangeSampler_work
 basic_plots = False
 netStat_plots = False
-gof = True
+gof = False
 
 
 # #samplk joint
@@ -16,23 +16,21 @@ reader_inst_samplk_vig.read_from_BSTERGM_csv("example_results_samplk/samplk_join
 reader_inst_samplk_vig_conti = BSTERGM_posterior_work()
 reader_inst_samplk_vig_conti.read_from_BERGM_csv("example_results_samplk/samplk_jointly_normPrior_vignettesEx_conti_2chain_formation",
                                                     "example_results_samplk/samplk_jointly_normPrior_vignettesEx_conti_2chain_dissolution")
-                                                    
+
 reader_inst_samplk_vig.MC_formation_samples = reader_inst_samplk_vig.MC_formation_samples + reader_inst_samplk_vig_conti.MC_formation_samples
 reader_inst_samplk_vig.MC_dissolution_samples = reader_inst_samplk_vig.MC_dissolution_samples + reader_inst_samplk_vig_conti.MC_dissolution_samples
 reader_inst_samplk_vig.MC_formation_samples = reader_inst_samplk_vig.MC_formation_samples[10000::40]
 reader_inst_samplk_vig.MC_dissolution_samples = reader_inst_samplk_vig.MC_dissolution_samples[10000::40]
 
+reader_inst_samplk_vig.print_summary()
 
 if basic_plots:
-    reader_inst_samplk_vig.show_traceplot()
+    reader_inst_samplk_vig.show_traceplot(layout=(8,1))
     reader_inst_samplk_vig.show_histogram(formation_mark=[-3.5586, 2.2624, -0.4994, 0.2945],
-        dissolution_mark=[-0.1164, 1.5791, -1.6957, 0.6847])
-    reader_inst_samplk_vig.show_acfplot()
+        dissolution_mark=[-0.1164, 1.5791, -1.6957, 0.6847], layout=(8,1), mean_vline=True)
+    reader_inst_samplk_vig.show_acfplot(layout=(8,1))
 
 
-    netstat_reader_inst_samplk_vig = BSTERGM_latest_exchangeSampler_work()
-    netstat_reader_inst_samplk_vig.read_from_csv("example_results_samplk/samplk_jointtimelag_normPrior_vignettesEx_4chain_NetworkStat")
-    netstat_reader_inst_samplk_vig.show_traceplot()
 
 if netStat_plots:
     netstat_reader_inst_samplk_vig_conti_f = BSTERGM_latest_exchangeSampler_work()

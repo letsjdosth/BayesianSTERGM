@@ -1,7 +1,7 @@
 from BSTERGM_diagnosis import BSTERGM_posterior_work, BSTERGM_latest_exchangeSampler_work
 basic_plots = False
 netStat_plots = False
-gof = True
+gof = False
 
 #============================================================================================
 # #tailorshop joint(=t01)
@@ -21,17 +21,20 @@ reader_inst_tailorshop_edgeGWESP.read_from_BERGM_csv("example_results_tailorshop
 reader_inst_tailorshop_edgeGWESP_conti = BSTERGM_posterior_work()
 reader_inst_tailorshop_edgeGWESP_conti.read_from_BERGM_csv("example_results_tailorshop/tailorshop_jointly_normPrior_edgeGWESP_conti_0chain_formation",
                                                     "example_results_tailorshop/tailorshop_jointly_normPrior_edgeGWESP_conti_3chain_dissolution")
-                                                    
+
 reader_inst_tailorshop_edgeGWESP.MC_formation_samples = reader_inst_tailorshop_edgeGWESP.MC_formation_samples + reader_inst_tailorshop_edgeGWESP_conti.MC_formation_samples
 reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples = reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples + reader_inst_tailorshop_edgeGWESP_conti.MC_dissolution_samples
 reader_inst_tailorshop_edgeGWESP.MC_formation_samples = reader_inst_tailorshop_edgeGWESP.MC_formation_samples[10000::40]
 reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples = reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples[10000::40]
 
+reader_inst_tailorshop_edgeGWESP.print_summary()
+
+
 if basic_plots:
-    reader_inst_tailorshop_edgeGWESP.show_traceplot()
+    reader_inst_tailorshop_edgeGWESP.show_traceplot(layout=(4,1))
     reader_inst_tailorshop_edgeGWESP.show_histogram(formation_mark=[-2.5621, 0.8827],
-        dissolution_mark=[-0.1878, 0.5118])
-    reader_inst_tailorshop_edgeGWESP.show_acfplot()
+        dissolution_mark=[-0.1878, 0.5118], layout=(4,1), mean_vline=True)
+    reader_inst_tailorshop_edgeGWESP.show_acfplot(layout=(4,1))
 
 if netStat_plots:
     netstat_reader_inst_tailorshop_edgeGWESP_f = BSTERGM_latest_exchangeSampler_work()
