@@ -2,7 +2,7 @@ from BSTERGM_diagnosis import BSTERGM_posterior_work, BSTERGM_latest_exchangeSam
 basic_plots = False
 netStat_plots = False
 gof = False
-
+table = True
 
 # #samplk joint
 # #good: 2/3/4 chain / others: bad
@@ -22,7 +22,7 @@ reader_inst_samplk_vig.MC_dissolution_samples = reader_inst_samplk_vig.MC_dissol
 reader_inst_samplk_vig.MC_formation_samples = reader_inst_samplk_vig.MC_formation_samples[10000::40]
 reader_inst_samplk_vig.MC_dissolution_samples = reader_inst_samplk_vig.MC_dissolution_samples[10000::40]
 
-reader_inst_samplk_vig.print_summary()
+# reader_inst_samplk_vig.print_summary()
 
 if basic_plots:
     reader_inst_samplk_vig.show_traceplot(layout=(8,1))
@@ -68,3 +68,67 @@ if gof:
     gof_inst_samplk_vig_d.gof_run(num_sim=300, exchange_iter=200)
     gof_inst_samplk_vig_d.show_boxplot(compare=True)
 
+
+
+#table info
+if table:
+    import numpy as np
+    #choose: head 4 and conti (2,2)
+    pair = {"head":[(4,4),(0,0),(1,1),(2,2),(3,3)], "conti":[(2,2),(0,0),(1,1),(3,3),(4,4)]}
+
+    f_mean_vec = []
+    f_sd_vec = []
+    d_mean_vec = []
+    d_sd_vec = []
+
+
+    for headidx, contiidx in zip(pair["head"], pair["conti"]):
+        fhead, dhead = headidx
+        fconti, dconti = contiidx
+        print("chain combination: formation-", fhead, fconti, " dissolution-", dhead, dconti)
+        
+        reader_inst_samplk_vig = BSTERGM_posterior_work()
+        reader_inst_samplk_vig.read_from_BSTERGM_csv("example_results_samplk/samplk_jointtimelag_normPrior_vignettesEx_"+str(fhead)+"chain", 4, 4)
+        
+        reader_inst_samplk_vig_conti = BSTERGM_posterior_work()
+        reader_inst_samplk_vig_conti.read_from_BERGM_csv("example_results_samplk/samplk_jointly_normPrior_vignettesEx_conti_"+str(fconti)+"chain_formation",
+                                                            "example_results_samplk/samplk_jointly_normPrior_vignettesEx_conti_"+str(dconti)+"chain_dissolution")
+
+        reader_inst_samplk_vig.MC_formation_samples = reader_inst_samplk_vig.MC_formation_samples + reader_inst_samplk_vig_conti.MC_formation_samples
+        reader_inst_samplk_vig.MC_dissolution_samples = reader_inst_samplk_vig.MC_dissolution_samples + reader_inst_samplk_vig_conti.MC_dissolution_samples
+        reader_inst_samplk_vig.MC_formation_samples = reader_inst_samplk_vig.MC_formation_samples[10000::40]
+        reader_inst_samplk_vig.MC_dissolution_samples = reader_inst_samplk_vig.MC_dissolution_samples[10000::40]
+
+
+        # reader_inst_tailorshop_edgeGWESP.print_summary()
+        formation_means, formation_sds, dissolution_means, dissolution_sds = reader_inst_samplk_vig.get_summary()
+
+        f_mean_vec.append(formation_means)
+        f_sd_vec.append(formation_sds)
+        d_mean_vec.append(dissolution_means)
+        d_sd_vec.append(dissolution_sds)
+
+    # reader_inst_friendship_KHEx.show_histogram(formation_mark=[-3.336, 0.480, 0.973, -0.358, 0.650, 1.384, 0.886, -0.389],
+    #     dissolution_mark=[-1.132, 0.122, 1.168, -0.577, 0.451, 2.682, 1.121, -1.016], layout=(16,1), mean_vline=True)
+
+   
+    print("\n")
+    print("f_mean")
+    print(np.array(f_mean_vec).T.round(3))
+    print("avg", np.array(f_mean_vec).T.mean(1).round(3))
+    print("std", np.array(f_mean_vec).T.std(1).round(3))
+    print("\n")
+    print("f_sd")
+    print(np.array(f_sd_vec).T.round(3))
+    print("avg", np.array(f_sd_vec).T.mean(1).round(3))
+    print("std", np.array(f_sd_vec).T.std(1).round(3))
+    print("\n")
+    print("d_mean")
+    print(np.array(d_mean_vec).T.round(3))
+    print("avg", np.array(d_mean_vec).T.mean(1).round(3))
+    print("std", np.array(d_mean_vec).T.std(1).round(3))
+    print("\n")
+    print("d_sd")
+    print(np.array(d_sd_vec).T.round(3))
+    print("avg", np.array(d_sd_vec).T.mean(1).round(3))
+    print("std", np.array(d_sd_vec).T.std(1).round(3))

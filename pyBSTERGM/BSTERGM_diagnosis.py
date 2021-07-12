@@ -70,7 +70,7 @@ class BSTERGM_posterior_work:
         return formation_trace, dissolution_trace
 
 
-    def print_summary(self):
+    def get_summary(self):
         formation_trace, dissolution_trace = self.MC_sample_trace()
         formation_means = []
         formation_sds = []
@@ -82,12 +82,17 @@ class BSTERGM_posterior_work:
         for samples in dissolution_trace:
             dissolution_means.append(np.mean(samples))
             dissolution_sds.append(np.std(samples))
+
+        return formation_means, formation_sds, dissolution_means, dissolution_sds
+
+    def print_summary(self):
+        formation_means, formation_sds, dissolution_means, dissolution_sds = self.get_summary()
         print("formation")
-        for i, mean,sd in zip(range(len(formation_trace)), formation_means, formation_sds):
+        for i, mean,sd in zip(range(len(formation_means)), formation_means, formation_sds):
             print("f",i, "\t", round(mean,3), " & ", round(sd,3))
         
         print("dissolution")
-        for i, mean,sd in zip(range(len(dissolution_trace)), dissolution_means, dissolution_sds):
+        for i, mean,sd in zip(range(len(dissolution_means)), dissolution_means, dissolution_sds):
             print("f",i, "\t", round(mean,3), " & ", round(sd,3))
 
     def show_traceplot(self, mean_hline=False, layout=None, show=True):

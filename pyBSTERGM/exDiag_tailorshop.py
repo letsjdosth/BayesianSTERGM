@@ -2,6 +2,7 @@ from BSTERGM_diagnosis import BSTERGM_posterior_work, BSTERGM_latest_exchangeSam
 basic_plots = False
 netStat_plots = False
 gof = False
+table = True
 
 #============================================================================================
 # #tailorshop joint(=t01)
@@ -27,7 +28,7 @@ reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples = reader_inst_tailorshop
 reader_inst_tailorshop_edgeGWESP.MC_formation_samples = reader_inst_tailorshop_edgeGWESP.MC_formation_samples[10000::40]
 reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples = reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples[10000::40]
 
-reader_inst_tailorshop_edgeGWESP.print_summary()
+# reader_inst_tailorshop_edgeGWESP.print_summary()
 
 
 if basic_plots:
@@ -70,3 +71,71 @@ if gof:
     gof_inst_tailorshop_KHEx_d.gof_run(num_sim=300, exchange_iter=200)
     gof_inst_tailorshop_KHEx_d.show_boxplot(compare=True)
 
+
+
+#table info
+if table:
+    import numpy as np
+    #choose: head (0,2) and conti (0,3)
+    pair = {"head":[(0,2),(1,1),(2,0),(3,3),(4,4)], "conti":[(0,3),(1,1),(2,2),(3,0),(4,4)]}
+
+    f_mean_vec = []
+    f_sd_vec = []
+    d_mean_vec = []
+    d_sd_vec = []
+
+
+    for headidx, contiidx in zip(pair["head"], pair["conti"]):
+        fhead, dhead = headidx
+        fconti, dconti = contiidx
+        print("chain combination: formation-", fhead, fconti, " dissolution-", dhead, dconti)
+
+
+
+        reader_inst_tailorshop_edgeGWESP = BSTERGM_posterior_work()
+        reader_inst_tailorshop_edgeGWESP.read_from_BERGM_csv("example_results_tailorshop/tailorshop_t01_normPrior_edgeGWESP_"+str(fhead)+"chain_formation",
+                                                            "example_results_tailorshop/tailorshop_t01_normPrior_edgeGWESP_"+str(dhead)+"chain_dissolution")
+
+        reader_inst_tailorshop_edgeGWESP_conti = BSTERGM_posterior_work()
+        reader_inst_tailorshop_edgeGWESP_conti.read_from_BERGM_csv("example_results_tailorshop/tailorshop_jointly_normPrior_edgeGWESP_conti_"+str(fconti)+"chain_formation",
+                                                            "example_results_tailorshop/tailorshop_jointly_normPrior_edgeGWESP_conti_"+str(dconti)+"chain_dissolution")
+
+        reader_inst_tailorshop_edgeGWESP.MC_formation_samples = reader_inst_tailorshop_edgeGWESP.MC_formation_samples + reader_inst_tailorshop_edgeGWESP_conti.MC_formation_samples
+        reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples = reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples + reader_inst_tailorshop_edgeGWESP_conti.MC_dissolution_samples
+        reader_inst_tailorshop_edgeGWESP.MC_formation_samples = reader_inst_tailorshop_edgeGWESP.MC_formation_samples[10000::40]
+        reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples = reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples[10000::40]
+
+        # reader_inst_tailorshop_edgeGWESP.print_summary()
+        formation_means, formation_sds, dissolution_means, dissolution_sds = reader_inst_tailorshop_edgeGWESP.get_summary()
+
+        f_mean_vec.append(formation_means)
+        f_sd_vec.append(formation_sds)
+        d_mean_vec.append(dissolution_means)
+        d_sd_vec.append(dissolution_sds)
+
+
+
+        # reader_inst_tailorshop_edgeGWESP.show_traceplot(layout=(4,1))
+        # reader_inst_tailorshop_edgeGWESP.show_histogram(formation_mark=[-2.5621, 0.8827],
+        #     dissolution_mark=[-0.1878, 0.5118], layout=(4,1), mean_vline=True)
+
+    print("\n")
+    print("f_mean")
+    print(np.array(f_mean_vec).T.round(3))
+    print("avg", np.array(f_mean_vec).T.mean(1).round(3))
+    print("std", np.array(f_mean_vec).T.std(1).round(3))
+    print("\n")
+    print("f_sd")
+    print(np.array(f_sd_vec).T.round(3))
+    print("avg", np.array(f_sd_vec).T.mean(1).round(3))
+    print("std", np.array(f_sd_vec).T.std(1).round(3))
+    print("\n")
+    print("d_mean")
+    print(np.array(d_mean_vec).T.round(3))
+    print("avg", np.array(d_mean_vec).T.mean(1).round(3))
+    print("std", np.array(d_mean_vec).T.std(1).round(3))
+    print("\n")
+    print("d_sd")
+    print(np.array(d_sd_vec).T.round(3))
+    print("avg", np.array(d_sd_vec).T.mean(1).round(3))
+    print("std", np.array(d_sd_vec).T.std(1).round(3))
