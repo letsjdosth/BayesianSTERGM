@@ -278,20 +278,30 @@ class DirectedNetwork:
                     mutual +=1
         return mutual
 
+    # def statCal_existTwoPath_old(self):
+    #     if self.statCal_existTwoPath_calculated is None:
+    #         existance = np.zeros((self.node_num, self.node_num))
+    #         for start_node in range(self.node_num):
+    #             for end_node in range(self.node_num):
+    #                 if start_node == end_node:
+    #                     pass
+    #                 else:
+    #                     idx_set = [i for i in range(self.node_num) if i != start_node and i != end_node]
+    #                     # print(start_node, end_node, idx_set)
+    #                     for inter_node in idx_set:
+    #                         if self.structure[start_node, inter_node]==1 and self.structure[inter_node,end_node]==1:
+    #                             existance[start_node, end_node] += 1
+            
+    #         self.statCal_existTwoPath_calculated = existance
+    #         return existance
+    #     else:
+    #         return self.statCal_existTwoPath_calculated
+
     def statCal_existTwoPath(self):
         if self.statCal_existTwoPath_calculated is None:
-            existance = np.zeros((self.node_num, self.node_num))
-            for start_node in range(self.node_num):
-                for end_node in range(self.node_num):
-                    if start_node == end_node:
-                        pass
-                    else:
-                        idx_set = [i for i in range(self.node_num) if i != start_node and i != end_node]
-                        # print(start_node, end_node, idx_set)
-                        for inter_node in idx_set:
-                            if self.structure[start_node, inter_node]==1 and self.structure[inter_node,end_node]==1:
-                                existance[start_node, end_node] += 1
-            
+            existance = np.matmul(self.structure, self.structure)
+            for i in range(existance.shape[0]): #make diagonal vanished (error protection)
+                existance[i,i]=0
             self.statCal_existTwoPath_calculated = existance
             return existance
         else:
@@ -431,26 +441,28 @@ if __name__ == "__main__":
     test_net = UndirectedNetwork(test_structure)
     # print(test_net.node_num, test_net.structure)
     # print(test_net.statCal_nodeDegree())
-    print(test_net.statCal_nodeDegreeDist()) #true: 0,1,1,3,0
-    print(test_net.statCal_edgeNum()) #true: 6
-    # print(test_net.statCal_EdgewiseSharedPartner())
-    print(test_net.statCal_EdgewiseSharedPartnerDist()) #true: 1,4,1,0
-    print(test_net.statCal_geoWeightedESP()) #true: 5.393469 (R과 cross check 완료)
-    print(test_net.statCal_MinGeodesic())
-    print(test_net.statCal_MinGeodesicDist())
-    print(test_net.statCal_DyadwiseSharedPartnerDist()) #true 2,6,2,0
-    print(test_net.statCal_geoWeightedDSP(0.3)) #true:8.518364
-    print(test_net.statCal_geoWeightedDegree(0.3)) #true: 6.238253
+    # print(test_net.statCal_nodeDegreeDist()) #true: 0,1,1,3,0
+    # print(test_net.statCal_edgeNum()) #true: 6
+    # # print(test_net.statCal_EdgewiseSharedPartner())
+    # print(test_net.statCal_EdgewiseSharedPartnerDist()) #true: 1,4,1,0
+    # print(test_net.statCal_geoWeightedESP()) #true: 5.393469 (R과 cross check 완료)
+    # print(test_net.statCal_MinGeodesic())
+    # print(test_net.statCal_MinGeodesicDist())
+    # print(test_net.statCal_DyadwiseSharedPartnerDist()) #true 2,6,2,0
+    # print(test_net.statCal_geoWeightedDSP(0.3)) #true:8.518364
+    # print(test_net.statCal_geoWeightedDegree(0.3)) #true: 6.238253
 
-    # test_structure_2 = np.array(
-    #     [
-    #     [0,1,1,0,0],
-    #     [1,0,0,0,1],
-    #     [1,1,0,1,0],
-    #     [0,0,0,0,1],
-    #     [1,0,0,1,0]]
-    # )
-    # test_net_2 = DirectedNetwork(test_structure_2)
+
+
+    test_structure_2 = np.array(
+        [
+        [0,1,1,0,0],
+        [1,0,0,0,1],
+        [1,1,0,1,0],
+        [0,0,0,0,1],
+        [1,0,0,1,0]]
+    )
+    test_net_2 = DirectedNetwork(test_structure_2)
     # print(test_net_2.statCal_edgeNum())
     # print(test_net_2.statCal_nodeOutDegreeDist()) #true [0,1,3,1,0]
     # print(test_net_2.statCal_nodeInDegreeDist()) #true [0,1,3,1,0]
@@ -471,6 +483,9 @@ if __name__ == "__main__":
     # print(test_net_2.statCal_k_out_star(2)) #true 6
     # print(test_net_2.statCal_homophily([0,1,2])) # true 5
     # print(test_net_2.statCal_heterophily([2,3,4],[0,1])) # true 3
+
+    print(test_net_2.statCal_existTwoPath())
+    
 
     # match_mat = np.array([
     #     [0,0,0,0,0],

@@ -108,8 +108,8 @@ if table:
         d_mean_vec.append(dissolution_means)
         d_sd_vec.append(dissolution_sds)
 
-    # reader_inst_friendship_KHEx.show_histogram(formation_mark=[-3.336, 0.480, 0.973, -0.358, 0.650, 1.384, 0.886, -0.389],
-    #     dissolution_mark=[-1.132, 0.122, 1.168, -0.577, 0.451, 2.682, 1.121, -1.016], layout=(16,1), mean_vline=True)
+    # reader_inst_samplk_vig.show_histogram(formation_mark=[-3.5586, 2.2624, -0.4994, 0.2945],
+    #     dissolution_mark=[-0.1164, 1.5791, -1.6957, 0.6847], layout=(8,1), mean_vline=True)
 
    
     print("\n")

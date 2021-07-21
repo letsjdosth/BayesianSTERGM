@@ -314,8 +314,8 @@ summary(stergm.fit2.tailor_social)
 
 
 stergm.fit3.tailor_social = stergm(tailor_social, 
-    formation = ~edges+gwesp(0.3, fixed=TRUE),
-    dissolution = ~edges+gwesp(0.3, fixed=TRUE),
+    formation = ~edges+gwesp(0.25, fixed=TRUE),
+    dissolution = ~edges+gwesp(0.25, fixed=TRUE),
     estimate='CMLE') #CMLE
 
 summary(stergm.fit3.tailor_social)
@@ -323,7 +323,7 @@ summary(stergm.fit3.tailor_social)
 # Summary of formation model fit
 # ==============================
 
-# Formula:   ~edges + gwesp(0.3, fixed = TRUE)
+# Formula:   ~edges + gwesp(0.25, fixed = TRUE)
 
 # Call:
 # ergm(formula = formation, constraints = constraints.form, offset.coef = offset.coef.form,
@@ -333,22 +333,22 @@ summary(stergm.fit3.tailor_social)
 # Iterations:  2 out of 20
 
 # Monte Carlo MLE Results:
-#                 Estimate Std. Error MCMC % z value Pr(>|z|)  
-# edges            -2.8992     1.2983      0  -2.233   0.0255 *
-# gwesp.fixed.0.3   1.0662     0.9043      0   1.179   0.2384
+#                  Estimate Std. Error MCMC % z value Pr(>|z|)  
+# edges             -2.6004     1.2241      0  -2.124   0.0336 *
+# gwesp.fixed.0.25   0.9076     0.9003      0   1.008   0.3134
 # ---
 # Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 #      Null Deviance: 808.2  on 583  degrees of freedom
-#  Residual Deviance: 590.7  on 581  degrees of freedom
+#  Residual Deviance: 591.3  on 581  degrees of freedom
 
-# AIC: 594.7    BIC: 603.4    (Smaller is better.)
+# AIC: 595.3    BIC: 604.1    (Smaller is better.)
 
 # ================================
 # Summary of dissolution model fit
 # ================================
 
-# Formula:   ~edges + gwesp(0.3, fixed = TRUE)
+# Formula:   ~edges + gwesp(0.25, fixed = TRUE)
 
 # Call:
 # ergm(formula = dissolution, constraints = constraints.diss, offset.coef = offset.coef.diss,
@@ -358,17 +358,16 @@ summary(stergm.fit3.tailor_social)
 # Iterations:  2 out of 20
 
 # Monte Carlo MLE Results:
-#                 Estimate Std. Error MCMC % z value Pr(>|z|)  
-# edges            -0.2389     0.3676      0  -0.650   0.5158
-# gwesp.fixed.0.3   0.5237     0.2138      0   2.449   0.0143 *
+#                  Estimate Std. Error MCMC % z value Pr(>|z|)  
+# edges             -0.1943     0.3680      0  -0.528   0.5975
+# gwesp.fixed.0.25   0.5179     0.2223      0   2.329   0.0198 *
 # ---
 # Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 #      Null Deviance: 219.0  on 158  degrees of freedom
-#  Residual Deviance: 196.6  on 156  degrees of freedom
+#  Residual Deviance: 197.8  on 156  degrees of freedom
 
-# AIC: 200.6    BIC: 206.8    (Smaller is better.)
-
+# AIC: 201.8    BIC: 207.9    (Smaller is better.)
 
 stergm.fit4.tailor_social = stergm(tailor_social, 
     formation = ~edges+gwesp(0.25, fixed=TRUE)+gwdsp(0.25, fixed=TRUE),
