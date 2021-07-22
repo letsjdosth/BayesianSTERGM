@@ -455,30 +455,33 @@ friendship_edge1homMs_initial_dissolution_vec = [
 ]
 
 #tailorshop model
-def model_netStat_tailor_social_edgeESP(network): #model_netStat_tailor_social
+def model_netStat_tailor_social_edgeGWESP(network): #model_netStat_tailor_social
     #undirected network
     model = []
     model.append(network.statCal_edgeNum())
-    model.append(network.statCal_geoWeightedESP(0.3))
+    model.append(network.statCal_geoWeightedESP(0.25))
     return np.array(model)
 
-tailor_social_edgeESP_initial_formation_vec = [
-    np.array([0,0]),
-    np.array([0.5,-0.5]),
-    np.array([-0.5,0.5]),
-    np.array([-0.5,-0.5]),
-    np.array([0,-0.5]),
-    np.array([0.5,0])
+
+
+tailor_social_edgeGWESP_initial_formation_vec = [
+    np.array([-3.03, 1.19]),
+    np.array([-2.73, 0.98]),
+    np.array([-2.60, 0.90]),
+    np.array([-2.69, 0.95]),
+    np.array([-3.28, 1.39]),
+    np.array([-3.23, 1.35])
 ]
 
-tailor_social_edgeESP_initial_dissolution_vec = [
-    np.array([0,0]),
-    np.array([0.5,-0.5]),
-    np.array([-0.5,0.5]),
-    np.array([-0.5,-0.5]),
-    np.array([0,-0.5]),
-    np.array([0.5,0])
+tailor_social_edgeGWESP_initial_dissolution_vec = [
+    np.array([0.05, 0.42]),
+    np.array([0.04, 0.44]),
+    np.array([-0.19, 0.51]),
+    np.array([-0.05, 0.41]),
+    np.array([-0.09, 0.40]),
+    np.array([0.03, 0.43])
 ]
+
 
 def model_netStat_tailor_social_edgeESPDSP(network):
     #undirected network
