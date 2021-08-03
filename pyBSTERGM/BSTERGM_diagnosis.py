@@ -85,6 +85,22 @@ class BSTERGM_posterior_work:
 
         return formation_means, formation_sds, dissolution_means, dissolution_sds
 
+    def get_summary_LATEXver(self, param_strings):
+        formation_means, formation_sds, dissolution_means, dissolution_sds = self.get_summary()
+        round_pt = 3
+        formation_means=np.array(formation_means).round(round_pt)
+        formation_sds=np.array(formation_sds).round(round_pt)
+        dissolution_means=np.array(dissolution_means).round(round_pt)
+        dissolution_sds=np.array(dissolution_sds).round(round_pt)
+
+        latex_code = ""
+        for i in range(len(formation_means)):
+            latex_code += ("& $\\theta_"+str(i+1)+"$ ("+param_strings[i]+") & "
+                            +str(formation_means[i])+" & "+str(formation_sds[i])+" & "
+                            +str(dissolution_means[i])+" & "+str(dissolution_sds[i])+" \\\\ \n")
+
+        return latex_code
+
     def print_summary(self):
         formation_means, formation_sds, dissolution_means, dissolution_sds = self.get_summary()
         print("formation")
@@ -120,6 +136,24 @@ class BSTERGM_posterior_work:
         if show:
             plt.show()
 
+    def save_traceplot(self, filename, mean_hline=False):
+        formation_trace, dissolution_trace = self.MC_sample_trace()
+        for i, paramSeq in enumerate(formation_trace):
+            plt.figure(i)
+            plt.plot(range(len(paramSeq)), paramSeq)
+            if mean_hline:
+                plt.axhline(np.mean(paramSeq), color='red', linewidth=1.5)
+            plt.savefig("pyBSTERGM/"+filename+"_traceplot_formation_param"+str(i)+".png", format='png', bbox_inches='tight')
+            plt.clf()
+
+        for i, paramSeq in enumerate(dissolution_trace):
+            plt.figure(i+len(formation_trace))
+            plt.plot(range(len(paramSeq)), paramSeq)
+            if mean_hline:
+                plt.axhline(np.mean(paramSeq), color='red', linewidth=1.5)
+            plt.savefig("pyBSTERGM/"+filename+"_traceplot_dissolution_param"+str(i)+".png", format='png', bbox_inches='tight')
+            plt.clf()
+
     def show_histogram(self, bins=100, mean_vline=False, formation_mark=None, dissolution_mark=None, layout=None, show=True):
         formation_trace, dissolution_trace = self.MC_sample_trace()
         
@@ -153,6 +187,34 @@ class BSTERGM_posterior_work:
         if show:
             plt.show()
 
+    
+    def save_histogram(self, filename, bins=100, mean_vline=False, formation_mark=None, dissolution_mark=None):
+        formation_trace, dissolution_trace = self.MC_sample_trace()
+        
+        for i, paramSeq in enumerate(formation_trace):
+            plt.figure(i)
+            plt.hist(paramSeq, bins=bins, density=True)
+            # plt.ylabel('formation'+str(i))
+            if formation_mark is not None:
+                plt.axvline(formation_mark[i], color='red', linewidth=1.5)
+            if mean_vline:
+                plt.axvline(np.mean(paramSeq), color='black', linewidth=1.5)
+
+            plt.savefig("pyBSTERGM/"+filename+"_histogram_formation_param"+str(i)+".png", format='png', bbox_inches='tight')
+            plt.clf()
+        
+        for i, paramSeq in enumerate(dissolution_trace):
+            plt.figure(i+len(formation_trace))
+            plt.hist(paramSeq, bins=bins, density=True)
+            # plt.ylabel('formation'+str(i))
+            if dissolution_mark is not None:
+                plt.axvline(dissolution_mark[i], color='red', linewidth=1.5)
+            if mean_vline:
+                plt.axvline(np.mean(paramSeq), color='black', linewidth=1.5)
+
+            plt.savefig("pyBSTERGM/"+filename+"_histogram_dissolution_param"+str(i)+".png", format='png', bbox_inches='tight')
+            plt.clf()
+
     def get_autocorr(self, trace, maxLag):
         acf = []
         trace_mean = np.mean(trace)
@@ -168,8 +230,7 @@ class BSTERGM_posterior_work:
 
     def show_acfplot(self, maxLag=50, layout=None, show=True):
         formation_trace, dissolution_trace = self.MC_sample_trace()
-        
-        
+                
         grid_row, grid_column = (0,0)
         if layout is not None:
             grid_row, grid_column = layout
@@ -198,6 +259,32 @@ class BSTERGM_posterior_work:
         if show:
             plt.show()
 
+    def save_acfplot(self, filename, maxLag=50):
+        formation_trace, dissolution_trace = self.MC_sample_trace()
+        grid = [i for i in range(maxLag+1)]
+
+        for i, paramSeq in enumerate(formation_trace):
+            nowseq_acf = self.get_autocorr(paramSeq, maxLag)
+            
+            plt.figure(i)
+            plt.ylim([-1,1])
+            plt.bar(grid, nowseq_acf, width=0.3)
+            plt.axhline(0, color="black", linewidth=0.8)
+            
+            plt.savefig("pyBSTERGM/"+filename+"_acfplot_formation_param"+str(i)+".png", format='png', bbox_inches='tight')
+            plt.clf()
+
+        for i, paramSeq in enumerate(dissolution_trace):
+            nowseq_acf = self.get_autocorr(paramSeq, maxLag)
+           
+            plt.figure(i+len(formation_trace))
+            plt.ylim([-1,1])
+            plt.bar(grid, nowseq_acf, width=0.3)
+            plt.axhline(0, color="black", linewidth=0.8)
+        
+            plt.savefig("pyBSTERGM/"+filename+"_acfplot_dissolution_param"+str(i)+".png", format='png', bbox_inches='tight')
+            plt.clf()
+        
 
 class BSTERGM_latest_exchangeSampler_work:
     def __init__(self):
@@ -241,26 +328,26 @@ class BSTERGM_latest_exchangeSampler_work:
 if __name__ == "__main__":
     #example:
     reader_inst_tailorshop_edgeGWESP = BSTERGM_posterior_work()
-    reader_inst_tailorshop_edgeGWESP.read_from_BERGM_csv("example_results_tailorshop/tailorshop_t01_normPrior_edgeGWESP_0chain_formation",
-                                                        "example_results_tailorshop/tailorshop_t01_normPrior_edgeGWESP_2chain_dissolution")
-    reader_inst_tailorshop_edgeGWESP_conti = BSTERGM_posterior_work()
-    reader_inst_tailorshop_edgeGWESP_conti.read_from_BERGM_csv("example_results_tailorshop/tailorshop_jointly_normPrior_edgeGWESP_conti_0chain_formation",
-                                                        "example_results_tailorshop/tailorshop_jointly_normPrior_edgeGWESP_conti_3chain_dissolution")
-    reader_inst_tailorshop_edgeGWESP.MC_formation_samples = reader_inst_tailorshop_edgeGWESP.MC_formation_samples + reader_inst_tailorshop_edgeGWESP_conti.MC_formation_samples
-    reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples = reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples + reader_inst_tailorshop_edgeGWESP_conti.MC_dissolution_samples
+    reader_inst_tailorshop_edgeGWESP.read_from_BERGM_csv("example_results_tailorshop_20210722/tailorshop_jointly_normPrior_edgeGWESP_20210722_0chain_formation",
+                                                        "example_results_tailorshop_20210722/tailorshop_jointly_normPrior_edgeGWESP_20210722_0chain_dissolution")
+    reader_inst_tailorshop_edgeGWESP.MC_formation_samples = reader_inst_tailorshop_edgeGWESP.MC_formation_samples[10000::20]
+    reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples = reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples[10000::20]
 
+    # reader_inst_tailorshop_edgeGWESP.show_traceplot()
+    # reader_inst_tailorshop_edgeGWESP.show_histogram(formation_mark=[-2.5621, 0.8827],
+    #     dissolution_mark=[-0.1878, 0.5118])
+    # reader_inst_tailorshop_edgeGWESP.show_acfplot()
+    # reader_inst_tailorshop_edgeGWESP.save_traceplot('test', mean_hline=True)
+    # reader_inst_tailorshop_edgeGWESP.save_histogram('test', formation_mark=[-2.5621, 0.8827], dissolution_mark=[-0.1878, 0.5118], mean_vline=True)
+    # reader_inst_tailorshop_edgeGWESP.save_acfplot('test')
 
-    reader_inst_tailorshop_edgeGWESP.MC_formation_samples = reader_inst_tailorshop_edgeGWESP.MC_formation_samples[10000::40]
-    reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples = reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples[10000::40]
-    reader_inst_tailorshop_edgeGWESP.show_traceplot()
-    reader_inst_tailorshop_edgeGWESP.show_histogram(formation_mark=[-2.5621, 0.8827],
-        dissolution_mark=[-0.1878, 0.5118])
-    reader_inst_tailorshop_edgeGWESP.show_acfplot()
+    reader_inst_tailorshop_edgeGWESP.print_summary()
+    param_string=["edges","GWESP"]
+    print(reader_inst_tailorshop_edgeGWESP.get_summary_LATEXver(param_string))
 
-    netstat_reader_inst_tailorshop_edgeGWESP_f = BSTERGM_latest_exchangeSampler_work()
-    netstat_reader_inst_tailorshop_edgeGWESP_f.read_from_csv("example_results_tailorshop/tailorshop_jointly_normPrior_edgeGWESP_conti_0chain_formation_NetworkStat")
-    netstat_reader_inst_tailorshop_edgeGWESP_f.show_traceplot()
-    netstat_reader_inst_tailorshop_edgeGWESP_d = BSTERGM_latest_exchangeSampler_work()
-    netstat_reader_inst_tailorshop_edgeGWESP_d.read_from_csv("example_results_tailorshop/tailorshop_jointly_normPrior_edgeGWESP_conti_3chain_dissolution_NetworkStat")
-    netstat_reader_inst_tailorshop_edgeGWESP_d.show_traceplot()
-
+    # netstat_reader_inst_tailorshop_edgeGWESP_f = BSTERGM_latest_exchangeSampler_work()
+    # netstat_reader_inst_tailorshop_edgeGWESP_f.read_from_csv("example_results_tailorshop_20210722/tailorshop_jointly_normPrior_edgeGWESP_20210722_0chain_formation_NetworkStat")
+    # netstat_reader_inst_tailorshop_edgeGWESP_f.show_traceplot()
+    # netstat_reader_inst_tailorshop_edgeGWESP_d = BSTERGM_latest_exchangeSampler_work()
+    # netstat_reader_inst_tailorshop_edgeGWESP_d.read_from_csv("example_results_tailorshop_20210722/tailorshop_jointly_normPrior_edgeGWESP_20210722_0chain_dissolution_NetworkStat")
+    # netstat_reader_inst_tailorshop_edgeGWESP_d.show_traceplot()

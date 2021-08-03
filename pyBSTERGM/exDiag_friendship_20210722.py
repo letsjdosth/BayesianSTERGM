@@ -1,8 +1,9 @@
 from BSTERGM_diagnosis import BSTERGM_posterior_work, BSTERGM_latest_exchangeSampler_work
 basic_plots = False
+basic_plots_save = False
 netStat_plots = False
-gof = False
-table = True
+gof = True
+table = False
 
 #friendship joint
 #formation_good: 
@@ -23,6 +24,14 @@ if basic_plots:
     reader_inst_friendship_KHEx.show_histogram(formation_mark=[-3.336, 0.480, 0.973, -0.358, 0.650, 1.384, 0.886, -0.389],
         dissolution_mark=[-1.132, 0.122, 1.168, -0.577, 0.451, 2.682, 1.121, -1.016], layout=(16,1), mean_vline=True)
     reader_inst_friendship_KHEx.show_acfplot(layout=(16,1))
+
+if basic_plots_save:
+    reader_inst_friendship_KHEx.save_traceplot("/example_results_friendship_20210722/friendship")
+    reader_inst_friendship_KHEx.save_histogram("/example_results_friendship_20210722/friendship", 
+        formation_mark=[-3.336, 0.480, 0.973, -0.358, 0.650, 1.384, 0.886, -0.389],
+        dissolution_mark=[-1.132, 0.122, 1.168, -0.577, 0.451, 2.682, 1.121, -1.016], mean_vline=True)
+    reader_inst_friendship_KHEx.save_acfplot("/example_results_friendship_20210722/friendship")
+
 
 if netStat_plots:
     netstat_reader_inst_friendship_KHEx_conti_f = BSTERGM_latest_exchangeSampler_work()
@@ -57,11 +66,13 @@ if gof:
         is_formation=True, obs_network_seq=friendship_sequence, time_lag=0, additional_netstat_function=model_netStat_friendship_KHEx)
     gof_inst_friendship_KHEx_f.gof_run(num_sim=300, exchange_iter=200)
     gof_inst_friendship_KHEx_f.show_boxplot(compare=True)
+    gof_inst_friendship_KHEx_f.save_boxplot("/example_results_friendship_20210722/friendship", compare=True)
 
     gof_inst_friendship_KHEx_d = BSTERGM_GOF(model_netStat_friendship_KHEx, reader_inst_friendship_KHEx.MC_dissolution_samples, 
         is_formation=False, obs_network_seq=friendship_sequence, time_lag=0, additional_netstat_function=model_netStat_friendship_KHEx)
     gof_inst_friendship_KHEx_d.gof_run(num_sim=300, exchange_iter=200)
     gof_inst_friendship_KHEx_d.show_boxplot(compare=True)
+    gof_inst_friendship_KHEx_d.save_boxplot("/example_results_friendship_20210722/friendship", compare=True)
 
 
 
@@ -95,6 +106,9 @@ if table:
         f_sd_vec.append(formation_sds)
         d_mean_vec.append(dissolution_means)
         d_sd_vec.append(dissolution_sds)
+
+        param_string=["edge","homophily-girls","homophily-boys","heterophily-girls to boys","primary school match","mutual","tties","cties"]
+        print(reader_inst_friendship_KHEx.get_summary_LATEXver(param_string))
 
     # reader_inst_friendship_KHEx.show_histogram(formation_mark=[-3.336, 0.480, 0.973, -0.358, 0.650, 1.384, 0.886, -0.389],
     #     dissolution_mark=[-1.132, 0.122, 1.168, -0.577, 0.451, 2.682, 1.121, -1.016], layout=(16,1), mean_vline=True)

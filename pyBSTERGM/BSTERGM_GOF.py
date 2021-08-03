@@ -163,55 +163,128 @@ class BSTERGM_GOF:
 
         plt.subplot(grid_row, grid_column, 1)
         plt.boxplot(node_InDegree)
+        plt.xlabel("in degree")
+        # print(node_InDegree, len(node_InDegree))
+        plt.xticks([i for i in range(1, len(node_InDegree)+1)],[i for i in range(0, len(node_InDegree))])
         if compare:
             line_val = next_net.statCal_nodeInDegreeDist()
             plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
-            plt.xlabel("in degree")
-            plt.xticks([i for i in range(1, len(line_val)+1)],[i for i in range(0, len(line_val))])
-
-
+            
         plt.subplot(grid_row, grid_column, 2)
         plt.boxplot(node_OutDegree)
+        plt.xlabel("out degree")
+        plt.xticks([i for i in range(1, len(node_OutDegree)+1)],[i for i in range(0, len(node_OutDegree))])
         if compare:
             line_val = next_net.statCal_nodeOutDegreeDist()
             plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
-            plt.xlabel("out degree")
-            plt.xticks([i for i in range(1, len(line_val)+1)],[i for i in range(0, len(line_val))])
 
         plt.subplot(grid_row, grid_column, 3)
         plt.boxplot(ESP)
+        plt.xlabel("edge-wise shared partners")
+        plt.xticks([i for i in range(1, len(ESP)+1)],[i for i in range(0, len(ESP))])
         if compare:
             line_val = next_net.statCal_EdgewiseSharedPartnerDist()
             plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
-            plt.xlabel("edge-wise shared partners")
-            plt.xticks([i for i in range(1, len(line_val)+1)],[i for i in range(0, len(line_val))])
+            
         
         plt.subplot(grid_row, grid_column, 4)
         plt.boxplot(minGeoDist)
+        plt.xlabel("minimum geodesic distance")
+        plt.xticks([i for i in range(1, len(minGeoDist)+1)],[i for i in range(1, len(minGeoDist))]+['NR'])
         if compare:
             line_val = next_net.statCal_MinGeodesicDist()
             plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
-            plt.xlabel("minimum geodesic distance")
-            plt.xticks([i for i in range(1, len(line_val)+1)],[i for i in range(1, len(line_val))]+['NR'])
+            
 
         plt.subplot(grid_row, grid_column, 5)
         plt.boxplot(modelStats)
+        plt.xlabel("model statistics")
+        plt.xticks([i for i in range(1, 4+1)],['edge','mutual','transitiveties','cyclicalties'])
         if compare:
             line_val = [next_net.statCal_edgeNum(), next_net.statCal_mutuality(),
                 next_net.statCal_transitiveTies(), next_net.statCal_cyclicalTies()]
             plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
-            plt.xlabel("model statistics")
-            plt.xticks([i for i in range(1, len(line_val)+1)],['edge','mutual','transitiveties','cyclicalties'])
+            
 
         plt.subplot(grid_row, grid_column, 6)
         plt.boxplot(additional)
+        
+        plt.xlabel("additional statistics")
         if compare:
             line_val = self.additional_netstats(next_net)
             plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
-            plt.xlabel("additional statistics")
-
-
+            
     
+    def save_boxplot_directed(self, filename, compare=True):
+        node_InDegree, node_OutDegree, ESP, minGeoDist, modelStats, additional = self.each_netstat_trace_directed()
+        next_net = self.target
+        is_formation_string = ""
+        if self.is_formation:
+            is_formation_string = "formation"
+        else:
+            is_formation_string = "dissolution"
+        
+        plt.figure(1)
+        plt.boxplot(node_InDegree)
+        plt.xlabel("in degree")
+        plt.xticks([i for i in range(1, len(node_InDegree)+1)],[i for i in range(0, len(node_InDegree))])
+        if compare:
+            line_val = next_net.statCal_nodeInDegreeDist()
+            plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
+        plt.savefig("pyBSTERGM/"+filename+"_gof_"+is_formation_string+"_nodeInDegree.png", format='png', bbox_inches='tight')
+        plt.clf()
+
+        plt.figure(2)
+        plt.boxplot(node_OutDegree)
+        plt.xlabel("out degree")
+        plt.xticks([i for i in range(1, len(node_OutDegree)+1)],[i for i in range(0, len(node_OutDegree))])
+        if compare:
+            line_val = next_net.statCal_nodeOutDegreeDist()
+            plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
+        plt.savefig("pyBSTERGM/"+filename+"_gof_"+is_formation_string+"_nodeOutDegree.png", format='png', bbox_inches='tight')
+        plt.clf()
+
+        plt.figure(3)
+        plt.boxplot(ESP)
+        plt.xlabel("edge-wise shared partners")
+        plt.xticks([i for i in range(1, len(ESP)+1)],[i for i in range(0, len(ESP))])
+        if compare:
+            line_val = next_net.statCal_EdgewiseSharedPartnerDist()
+            plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
+        plt.savefig("pyBSTERGM/"+filename+"_gof_"+is_formation_string+"_ESP.png", format='png', bbox_inches='tight')
+        plt.clf()
+        
+        plt.figure(4)
+        plt.boxplot(minGeoDist)
+        plt.xlabel("minimum geodesic distance")
+        plt.xticks([i for i in range(1, len(minGeoDist)+1)],[i for i in range(1, len(minGeoDist))]+['NR'])
+        if compare:
+            line_val = next_net.statCal_MinGeodesicDist()
+            plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
+        plt.savefig("pyBSTERGM/"+filename+"_gof_"+is_formation_string+"_minGeodesicDist.png", format='png', bbox_inches='tight')
+        plt.clf()
+
+        plt.figure(5)
+        plt.boxplot(modelStats)
+        plt.xlabel("model statistics")
+        plt.xticks([i for i in range(1, 4+1)],['edge','mutual','transitiveties','cyclicalties'])
+        if compare:
+            line_val = [next_net.statCal_edgeNum(), next_net.statCal_mutuality(),
+                next_net.statCal_transitiveTies(), next_net.statCal_cyclicalTies()]
+            plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
+        plt.savefig("pyBSTERGM/"+filename+"_gof_"+is_formation_string+"_modelStat.png", format='png', bbox_inches='tight')
+        plt.clf()
+
+        plt.figure(6)
+        plt.boxplot(additional)
+        plt.xlabel("additional statistics")
+        if compare:
+            line_val = self.additional_netstats(next_net)
+            plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
+        plt.savefig("pyBSTERGM/"+filename+"_gof_"+is_formation_string+"_additionalStat.png", format='png', bbox_inches='tight')
+        plt.clf()
+
+
     def each_netstat_trace_undirected(self):
         return (
             self.netstat_make_trace(self.sample_nodeDegreeDist),
@@ -230,45 +303,99 @@ class BSTERGM_GOF:
 
         plt.subplot(grid_row, grid_column, 1)
         plt.boxplot(node_Degree)
+        plt.xlabel("degree")
+        plt.xticks([i for i in range(1, len(node_Degree)+1)],[i for i in range(0, len(node_Degree))])
         if compare:
             line_val = next_net.statCal_nodeDegreeDist()
             plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
-            plt.xlabel("degree")
-            plt.xticks([i for i in range(1, len(line_val)+1)],[i for i in range(0, len(line_val))])
 
         plt.subplot(grid_row, grid_column, 2)
         plt.boxplot(ESP)
+        plt.xlabel("edge-wise shared partners")
+        plt.xticks([i for i in range(1, len(ESP)+1)],[i for i in range(0, len(ESP))])
         if compare:
             line_val = next_net.statCal_EdgewiseSharedPartnerDist()
             plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
-            plt.xlabel("edge-wise shared partners")
-            plt.xticks([i for i in range(1, len(line_val)+1)],[i for i in range(0, len(line_val))])
         
         plt.subplot(grid_row, grid_column, 3)
         plt.boxplot(minGeoDist)
+        plt.xlabel("minimum geodesic distance")
+        plt.xticks([i for i in range(1, len(minGeoDist)+1)],[i for i in range(1, len(minGeoDist))]+['NR'])
         if compare:
             line_val = next_net.statCal_MinGeodesicDist()
             plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
-            plt.xlabel("minimum geodesic distance")
-            plt.xticks([i for i in range(1, len(line_val)+1)],[i for i in range(1, len(line_val))]+['NR'])
 
         plt.subplot(grid_row, grid_column, 4)
         plt.boxplot(additional)
+        plt.xlabel("additional statistics")
         if compare:
             line_val = self.additional_netstats(next_net)
             plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
-            plt.xlabel("additional statistics")
 
+
+    def save_boxplot_undirected(self, filename, compare=True):
+        node_Degree, ESP, minGeoDist, additional = self.each_netstat_trace_undirected()
+        next_net = self.target
+        
+        is_formation_string = ""
+        if self.is_formation:
+            is_formation_string = "formation"
+        else:
+            is_formation_string = "dissolution"
+
+        plt.figure(1)
+        plt.boxplot(node_Degree)
+        plt.xlabel("degree")
+        plt.xticks([i for i in range(1, len(node_Degree)+1)],[i for i in range(0, len(node_Degree))])
+        if compare:
+            line_val = next_net.statCal_nodeDegreeDist()
+            plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
+        plt.savefig("pyBSTERGM/"+filename+"_gof_"+is_formation_string+"_nodeDegree.png", format='png', bbox_inches='tight')
+        plt.clf()
+
+        plt.figure(2)
+        plt.boxplot(ESP)
+        plt.xlabel("edge-wise shared partners")
+        plt.xticks([i for i in range(1, len(ESP)+1)],[i for i in range(0, len(ESP))])
+        if compare:
+            line_val = next_net.statCal_EdgewiseSharedPartnerDist()
+            plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
+        plt.savefig("pyBSTERGM/"+filename+"_gof_"+is_formation_string+"_ESP.png", format='png', bbox_inches='tight')
+        plt.clf()
+        
+        plt.figure(3)
+        plt.boxplot(minGeoDist)
+        plt.xlabel("minimum geodesic distance")
+        plt.xticks([i for i in range(1, len(minGeoDist)+1)],[i for i in range(1, len(minGeoDist))]+['NR'])
+        if compare:
+            line_val = next_net.statCal_MinGeodesicDist()
+            plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
+        plt.savefig("pyBSTERGM/"+filename+"_gof_"+is_formation_string+"_minGeodesicDist.png", format='png', bbox_inches='tight')
+        plt.clf()
+
+        plt.figure(4)
+        plt.boxplot(additional)
+        plt.xlabel("additional statistics")
+        if compare:
+            line_val = self.additional_netstats(next_net)
+            plt.plot([i+1 for i in range(len(line_val))], line_val, '-b')
+        plt.savefig("pyBSTERGM/"+filename+"_gof_"+is_formation_string+"_additionalStat.png", format='png', bbox_inches='tight')
+        plt.clf()
 
     def show_boxplot(self, compare=True, show=True):
         if self.isDirected:
-            self.make_boxplot_directed(compare=True)        
+            self.make_boxplot_directed(compare)        
         else:
-            self.make_boxplot_undirected(compare=True)
+            self.make_boxplot_undirected(compare)
 
         if show:
             plt.show()
 
+    def save_boxplot(self, filename, compare=True):
+        if self.isDirected:
+            self.save_boxplot_directed(filename, compare)
+        else:
+            self.save_boxplot_undirected(filename, compare)
 
 
 
@@ -343,16 +470,19 @@ if __name__ == "__main__":
     #def __init__(self, model_fn, initial_formation_param, initial_dissolution_param, obs_network_seq, rng_seed=2021, pid=None):
     test_BSTERGM_sampler = BSTERGM(model_netStat, initial_formation_param, initial_dissolution_param, test_obs_seq, 2021)
     #def run(self, iter, exchange_iter=30, time_lag=None, proposal_cov_rate=0.01, console_string=''):
-    test_BSTERGM_sampler.run(5000, exchange_iter=30, time_lag=0, console_string='timelag0')
+    test_BSTERGM_sampler.run(1000, exchange_iter=30, time_lag=0, console_string='timelag0')
 
 
     # def __init__(self, model_fn, posterior_parameter_samples, is_formation, obs_network_seq, time_lag, additional_netstat_function=None , rng_seed=2021):
     gof_inst01f = BSTERGM_GOF(model_netStat, test_BSTERGM_sampler.formation_BERGM.MC_sample[1000::10], 
         is_formation=True, obs_network_seq=test_obs_seq, time_lag=0, additional_netstat_function=gof_additional_netStat)
-    gof_inst01f.gof_run(num_sim=300, exchange_iter=200)
-    gof_inst01f.show_boxplot(compare=True)
+    gof_inst01f.gof_run(num_sim=30, exchange_iter=200)
+    gof_inst01f.show_boxplot(compare=False)
+    gof_inst01f.save_boxplot("inst01f", True)
 
     gof_inst01d = BSTERGM_GOF(model_netStat, test_BSTERGM_sampler.dissolution_BERGM.MC_sample[1000::10], 
         is_formation=False, obs_network_seq=test_obs_seq, time_lag=0, additional_netstat_function=gof_additional_netStat)
-    gof_inst01d.gof_run(num_sim=300, exchange_iter=200)
-    gof_inst01d.show_boxplot(compare=True)
+    gof_inst01d.gof_run(num_sim=30, exchange_iter=200)
+    gof_inst01d.show_boxplot(compare=False)
+    gof_inst01d.save_boxplot("inst01d", False)
+    

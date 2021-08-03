@@ -1,8 +1,9 @@
 from BSTERGM_diagnosis import BSTERGM_posterior_work, BSTERGM_latest_exchangeSampler_work
 basic_plots = False
+basic_plots_save = False
 netStat_plots = False
-gof = False
-table = True
+gof = True
+table = False
 
 #============================================================================================
 # #tailorshop joint(=t01)
@@ -20,6 +21,16 @@ if basic_plots:
     reader_inst_tailorshop_edgeGWESP.show_histogram(formation_mark=[-2.5621, 0.8827],
         dissolution_mark=[-0.1878, 0.5118], layout=(4,1), mean_vline=True)
     reader_inst_tailorshop_edgeGWESP.show_acfplot(layout=(4,1))
+
+
+if basic_plots_save:
+    reader_inst_tailorshop_edgeGWESP.save_traceplot("/example_results_tailorshop_20210722/tailorshop")
+    reader_inst_tailorshop_edgeGWESP.save_histogram("/example_results_tailorshop_20210722/tailorshop", 
+        formation_mark=[-2.5621, 0.8827],
+        dissolution_mark=[-0.1878, 0.5118], mean_vline=True)
+    reader_inst_tailorshop_edgeGWESP.save_acfplot("/example_results_tailorshop_20210722/tailorshop")
+
+
 
 if netStat_plots:
     netstat_reader_inst_tailorshop_edgeGWESP_f = BSTERGM_latest_exchangeSampler_work()
@@ -49,12 +60,13 @@ if gof:
         is_formation=True, obs_network_seq=sociational_interactions, time_lag=0, additional_netstat_function=model_netStat_edgeGWESP)
     gof_inst_tailorshop_KHEx_f.gof_run(num_sim=300, exchange_iter=200)
     gof_inst_tailorshop_KHEx_f.show_boxplot(compare=True)
+    gof_inst_tailorshop_KHEx_f.save_boxplot("/example_results_tailorshop_20210722/tailorshop", compare=True)
 
     gof_inst_tailorshop_KHEx_d = BSTERGM_GOF(model_netStat_edgeGWESP, reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples, 
         is_formation=False, obs_network_seq=sociational_interactions, time_lag=0, additional_netstat_function=model_netStat_edgeGWESP)
     gof_inst_tailorshop_KHEx_d.gof_run(num_sim=300, exchange_iter=200)
     gof_inst_tailorshop_KHEx_d.show_boxplot(compare=True)
-
+    gof_inst_tailorshop_KHEx_d.save_boxplot("/example_results_tailorshop_20210722/tailorshop", compare=True)
 
 
 #table info
@@ -72,20 +84,25 @@ if table:
         fhead, dhead = idx_pair
         print("chain combination: formation-", fhead, " dissolution-", dhead)
 
-        reader_inst_friendship_KHEx = BSTERGM_posterior_work()
-        reader_inst_friendship_KHEx.read_from_BERGM_csv("example_results_tailorshop_20210722/tailorshop_jointly_normPrior_edgeGWESP_20210722_"+str(fhead)+"chain_formation",
+        reader_inst_tailorshop_edgeGWESP = BSTERGM_posterior_work()
+        reader_inst_tailorshop_edgeGWESP.read_from_BERGM_csv("example_results_tailorshop_20210722/tailorshop_jointly_normPrior_edgeGWESP_20210722_"+str(fhead)+"chain_formation",
                                                             "example_results_tailorshop_20210722/tailorshop_jointly_normPrior_edgeGWESP_20210722_"+str(dhead)+"chain_dissolution")
-        reader_inst_friendship_KHEx.MC_formation_samples = reader_inst_friendship_KHEx.MC_formation_samples[10000::20]
-        reader_inst_friendship_KHEx.MC_dissolution_samples = reader_inst_friendship_KHEx.MC_dissolution_samples[10000::20]
+        reader_inst_tailorshop_edgeGWESP.MC_formation_samples = reader_inst_tailorshop_edgeGWESP.MC_formation_samples[10000::20]
+        reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples = reader_inst_tailorshop_edgeGWESP.MC_dissolution_samples[10000::20]
 
 
         # reader_inst_tailorshop_edgeGWESP.print_summary()
-        formation_means, formation_sds, dissolution_means, dissolution_sds = reader_inst_friendship_KHEx.get_summary()
+        formation_means, formation_sds, dissolution_means, dissolution_sds = reader_inst_tailorshop_edgeGWESP.get_summary()
 
         f_mean_vec.append(formation_means)
         f_sd_vec.append(formation_sds)
         d_mean_vec.append(dissolution_means)
         d_sd_vec.append(dissolution_sds)
+
+        
+        param_string=["edge","gwesp(0.25)"]
+        print(reader_inst_tailorshop_edgeGWESP.get_summary_LATEXver(param_string))
+
 
     # formation_mark=[-2.5621, 0.8827],
     # dissolution_mark=[-0.1878, 0.5118]
